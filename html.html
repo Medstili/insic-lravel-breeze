@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Custom Resource Scheduler with dhtmlxScheduler Timeline</title>
+  <!-- dhtmlxScheduler CSS (Edge version) -->
+  <link rel="stylesheet" href="https://cdn.dhtmlx.com/scheduler/edge/dhtmlxscheduler.css">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    h2 {
+      margin-top: 40px;
+    }
+    /* Scheduler container must have a defined height */
+    .dhx_cal_container {
+      width: 100%;
+      height: 500px;
+      border: 1px solid #ccc;
+    }
+  </style>
+</head>
+<body>
+  <h2>Custom Resource Scheduler</h2>
+  <!-- Single container that will show a timeline grouped by day -->
+  <div id="scheduler_here" class="dhx_cal_container"></div>
+
+  <!-- dhtmlxScheduler JS -->
+  <script src="https://cdn.dhtmlx.com/scheduler/edge/dhtmlxscheduler.js"></script>
+  <script>
+    // Enable multi-day support (to allow events on different days)
+    scheduler.config.multi_day = true;
+
+    // Define the resource list (coaches) with an extra property "day" to group by.
+    // Here we simulate two days: Monday and Thursday with three coaches each.
+    scheduler.serverList("coach", [
+      { key: 'mon1', label: "Coach 1", day: "Monday" },
+      { key: 'mon2', label: "Coach 2", day: "Monday" },
+      { key: 'mon3', label: "Coach 3", day: "Monday" },
+      { key: 'thu1', label: "Coach 1", day: "Thursday" },
+      { key: 'thu2', label: "Coach 2", day: "Thursday" },
+      { key: 'thu3', label: "Coach 3", day: "Thursday" }
+    ]);
+
+    // Create the Timeline view:
+    scheduler.createTimelineView({
+      name: "timeline",
+      x_unit: "hour",
+      x_date: "%H:%i",
+      x_step: 1,
+      x_length: 8,    // 8 hours: 12:00 to 20:00
+      x_start: 12,
+      x_scale: "Hour",
+      y_unit: scheduler.serverList("coach"),
+      y_property: "key",
+      render: "bar",
+      y_group: "day"  // Group resources by the 'day' property.
+    });
+
+    // Initialize the scheduler.
+    // We set the start date to Monday (e.g., February 10, 2025).
+    // With multi_day enabled and grouped resources, both Monday and Thursday will be displayed.
+    scheduler.init('scheduler_here', new Date("2025-02-10"), "timeline");
+
+    // Add sample appointments:
+    // Monday appointments (resources: mon1, mon2, mon3)
+    scheduler.addEvent({
+      id: 1,
+      text: "Appointment (Coach 1, Monday)",
+      start_date: "2025-02-10 12:00",
+      end_date: "2025-02-10 12:45",
+      coach_id: 'mon1'
+    });
+    scheduler.addEvent({
+      id: 2,
+      text: "Appointment (Coach 2, Monday)",
+      start_date: "2025-02-10 13:00",
+      end_date: "2025-02-10 13:45",
+      coach_id: 'mon2'
+    });
+    scheduler.addEvent({
+      id: 3,
+      text: "Appointment (Coach 3, Monday)",
+      start_date: "2025-02-10 14:00",
+      end_date: "2025-02-10 14:45",
+      coach_id: 'mon3'
+    });
+
+    // Thursday appointments (resources: thu1, thu2, thu3)
+    scheduler.addEvent({
+      id: 4,
+      text: "Appointment (Coach 1, Thursday)",
+      start_date: "2025-02-13 12:00",
+      end_date: "2025-02-13 12:45",
+      coach_id: 'thu1'
+    });
+    scheduler.addEvent({
+      id: 5,
+      text: "Appointment (Coach 2, Thursday)",
+      start_date: "2025-02-13 13:00",
+      end_date: "2025-02-13 13:45",
+      coach_id: 'thu2'
+    });
+    scheduler.addEvent({
+      id: 6,
+      text: "Appointment (Coach 3, Thursday)",
+      start_date: "2025-02-13 14:00",
+      end_date: "2025-02-13 14:45",
+      coach_id: 'thu3'
+    });
+  </script>
+</body>
+</html>
