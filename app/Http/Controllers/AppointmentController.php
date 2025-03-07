@@ -353,7 +353,7 @@ class AppointmentController extends Controller
             return isset($plan[$nextweekday]);
         });
     
-            log::debug('full cancellation', [$fullDayCanceled]);
+        log::debug('full cancellation', [$fullDayCanceled]);
             
         if ($fullDayCanceled->isNotEmpty()) {
             Log::debug('Patient canceled the entire day; blocking the full day.', ['day' => $nextweekday]);
@@ -474,9 +474,9 @@ Log::debug('overlapStart and End',[$overlapStart,$overlapEnd]);
     $coachOccupied = [];
     foreach ($coachAppointments as $appointment) {
         $apptPlanning = json_decode($appointment->appointment_planning, true);
-        if (isset($apptPlanning[$day])) {
-            $aStart = strtotime("$day " . $apptPlanning[$day]['startTime']);
-            $aEnd   = strtotime("$day " . $apptPlanning[$day]['endTime']);
+        if (isset($apptPlanning[$nextweekday])) {
+            $aStart = strtotime("$nextweekday " . $apptPlanning[$nextweekday]['startTime']);
+            $aEnd   = strtotime("$nextweekday " . $apptPlanning[$nextweekday]['endTime']);
             if ($aEnd > $pStart && $aStart < $pEnd) {
                 $coachOccupied[] = [
                     'start' => max($pStart, $aStart),

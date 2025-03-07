@@ -138,7 +138,7 @@ class PatientController extends Controller
     public function edit(string $id)
     {
         $patient = Patient::findOrFail($id);
-        $specialities= \App\Models\Speciality::all();
+        $specialities=Speciality::all();
         return view('patient/edit_patient', compact('patient','specialities'));
         
     }
