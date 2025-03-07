@@ -7,9 +7,82 @@ use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
 
 class UserController extends Controller
 {
+    public function globalDashboard(Request $request){
+        // Determine the current week start date from query parameters or default to this Monday.
+        $currentWeekStart = $request->query('week') 
+            ? \Carbon\Carbon::parse($request->query('week'))
+            : \Carbon\Carbon::now()->startOfWeek(); // Assuming week starts on Monday
+
+        // Create an array of dates for Monday through Saturday.
+        $days = [];
+        for ($i = 0; $i < 7; $i++) {
+            $days[] = $currentWeekStart->copy()->addDays($i)->format('Y-m-d');
+        }
+        // dd($days);
+
+        // Define 1-hour time slots from 12:00 to 20:00.
+        $timeSlots = [];
+        for ($hour = 12; $hour < 20; $hour++) {
+            $timeSlots[] = [
+                'start' => sprintf("%02d:00", $hour),
+                'end'   => sprintf("%02d:00", $hour + 1),
+            ];
+        }
+
+        // Retrieve all appointments (with related coach) from the database.
+        $appointments = Appointment::with('coach','patient')->where('status','pending')->get();
+
+        // Group appointments by date and coach.
+        $organizedAppointments = [];
+        foreach ($appointments as $appointment) {
+            // Decode the appointment_planning JSON field.
+            $planning = json_decode($appointment->appointment_planning, true);
+            // dd($planning);
+            if (is_array($planning)) {
+                foreach ($planning as $date => $times) {
+
+                        if (!empty($date)) {  
+                        $coachId = $appointment->coach_id;
+                        $patient_full_name = $appointment->patient->first_name != null ? 
+                        ($appointment->patient->first_name." ".$appointment->patient->last_name)
+                        : 
+                        ( $appointment->patient->parent_first_name." ".$appointment->patient->parent_last_name) ;
+                        $organizedAppointments[$date][$coachId][] = [
+                            'id'         => $appointment->id,
+                            'status'=> $appointment->status,
+                            'patient' => $patient_full_name,
+                            'startTime'  => $times['startTime'], 
+                            'endTime'    => $times['endTime'],  
+                            'speciality' => $appointment->choosen_speciality,
+                        ];
+                    }
+      
+                }
+            }
+        }
+        // dd($organizedAppointments);
+
+        // Retrieve all coaches (adjust the query to your schema; here assuming a flag "is_coach")
+        $coaches = User::where('role', 'coach')->get();
+
+        // Calculate previous and next week start dates for navigation.
+        $prevWeekStart = $currentWeekStart->copy()->subWeek()->format('Y-m-d');
+        $nextWeekStart = $currentWeekStart->copy()->addWeek()->format('Y-m-d');
+
+        return view('admin/global_dashboard', compact(
+            'days',
+            'timeSlots',
+            'coaches',
+            'organizedAppointments',
+            'currentWeekStart',
+            'prevWeekStart',
+            'nextWeekStart'
+        ));
+    }
     public function index(Request $request)
     {
         
@@ -49,15 +122,21 @@ class UserController extends Controller
         // dd($request->all());
             $request->validate([
                 'full_name' => 'required',
-                'email' => 'required|email',
+                'email' => 'required|email|unique:users,email',
                 'password' => 'required',
                 'tel' => 'required',
                 'speciality_id' => 'required',
                 'is_available' => 'required',
                 "planning"=>'required',
                 "role"=>"required"
-                
+            ],[
+                'email.unique' => 'This email is already in use.'
             ]);
+
+            if ($request->planning === '{}' ) {
+                return redirect()->back()->withErrors(['planning' => 'planning is required']);
+            }
+   
         
             $user = new User();
             $user->full_name = $request->full_name;
@@ -109,23 +188,28 @@ class UserController extends Controller
         // dd($request->all());
         $request->validate([
             'full_name' => 'required',
-            'email' => 'required|email',
+            'email' => ['required', 'email', Rule::unique('users', 'email')->ignore($id)],
             'tel' => 'required',
             'speciality_id' => 'required',
             'is_available'=> 'required',
             'planning'=>'required',
-
+        ],[
+            'email.unique' => 'This email is already in use.'
         ]);
+
+        if ($request->planning === '{}' ) {
+            return redirect()->back()->withErrors(['planning' => 'planning is required']);
+        }
+
         $user = User::find($id);
         $user->full_name = $request->full_name;
         $user->email = $request->email;
-        // $user->password = Hash::make($request->input('password'));
         $user->is_available = (int)$request->is_available;
         $user->speciality_id = $request->speciality_id;
         $user->phone = $request->tel;
         $user->planning = $request->planning;
         $user->save();
-       return redirect()->route('user.show', $user->id);
+       return redirect()->route('user.show', $user->id)->with('success','updated successfully');
     }
     public function destroy(string $id)
     {
@@ -148,13 +232,20 @@ class UserController extends Controller
         // dd($request->all());
         $request->validate([
             'full_name' => 'required',
-            'email' => 'required|email',
+            'email' => ['required', 'email', Rule::unique('users', 'email')->ignore($id)],
             'tel' => 'required',
             'speciality_id' => 'required',
             'is_available'=> 'required',
             'planning'=>'required',
 
+        ],[
+            'email.unique' => 'This email is already in use.'
         ]);
+
+        if ($request->planning === '{}' ) {
+            return redirect()->back()->withErrors(['planning' => 'planning is required']);
+        };
+
         $user = User::find($id);
         $user->full_name = $request->full_name;
         $user->email = $request->email;
@@ -164,7 +255,7 @@ class UserController extends Controller
         $user->phone = $request->tel;
         $user->planning = $request->planning;
         $user->save();
-       return redirect()->route('coach_profile', $user->id);
+       return redirect()->route('coach_profile', $user->id)->with('success','updated successfully');
     }
     public function showCoachProfile()
     {

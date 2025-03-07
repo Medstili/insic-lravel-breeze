@@ -12,9 +12,19 @@
         
     }
     #calendar{
-        height: 700px;
+        height: 600px;
     }
+    .is-invalid {
+        border: 2px solid red !important;
+        background-color: #ffe6e6;
+      }
+      .invalid-feedback {
+          color: red;
+          font-size: 14px;
+          display: block;
+      }
 </style>
+
 <div class="container mt-5">
   <div class="card  p-4">
     <h3 class="mb-4">🌟 New Patient Profile</h3>
@@ -23,7 +33,7 @@
         <!-- Patient Type Selection -->
         <div class="col-12">
             <div class="form-floating mb-3">
-            <select id="patientType" name="patient_type" class="form-select bg-transparent">
+            <select id="patientType" name="patient_type" class="form-select bg-transparent" required>
                 <option value="" selected disabled>Select Patient Type</option>
                 <option value="kid">Kid</option>
                 <option value="young">Young</option>
@@ -37,14 +47,14 @@
         <div class="row">
             <div class="col-md-6">
                     <div class="form-floating mb-3">
-                    <input type="number" name="age" id="kidAge" class="form-control bg-transparent" placeholder="Age">
+                    <input type="number" name="age" id="kidAge" class="form-control bg-transparent" placeholder="Age" required>
                     <label for="kidAge">Age</label>
                     </div>
             </div>
             <!-- gender -->
             <div class="col-md-6">
                 <div class="form-floating">
-                    <select name="PatientGender" id="PatientGender" class="form-select bg-transparent">
+                    <select name="PatientGender" id="PatientGender" class="form-select bg-transparent" required>
                         <option value="M">Male</option>
                         <option value="F">Female</option>
                     </select>
@@ -100,13 +110,13 @@
             <div class="row">
             <div class="col-md-6">
                 <div class="form-floating mb-3">
-                <input type="text" name="parent_last_name" id="parentLastName" class="form-control bg-transparent" placeholder="Nom">
+                <input type="text" name="parent_last_name" id="parentLastName" class="form-control bg-transparent" placeholder="Nom" required>
                 <label for="parentLastName">Nom</label>
                 </div>
             </div>
             <div class="col-md-6">
                 <div class="form-floating mb-3">
-                <input type="text" name="parent_first_name" id="parentFirstName" class="form-control bg-transparent" placeholder="Prénom">
+                <input type="text" name="parent_first_name" id="parentFirstName" class="form-control bg-transparent" placeholder="Prénom"required>
                 <label for="parentFirstName">Prénom</label>
                 </div>
             </div>
@@ -114,39 +124,45 @@
             <div class="row">
             <div class="col-md-6">
                 <div class="form-floating mb-3">
-                <input type="tel" name="parent_phone" id="parentPhone" class="form-control bg-transparent" placeholder="Phone">
+                <input type="tel" name="parent_phone" id="parentPhone" class="form-control bg-transparent" placeholder="Phone"required>
                 <label for="parentPhone">Phone</label>
                 </div>
             </div>
             <div class="col-md-6">
                 <div class="form-floating mb-3">
-                <input type="text" name="parent_profession" id="parentProfession" class="form-control bg-transparent" placeholder="Profession">
+                <input type="text" name="parent_profession" id="parentProfession" class="form-control bg-transparent" placeholder="Profession" required>
                 <label for="parentProfession">Profession</label>
                 </div>
             </div>
             </div>
             <div class="form-floating mb-3">
-            <input type="text" name="parent_etablissement" id="parentEtablissement" class="form-control bg-transparent" placeholder="Etablissement">
+            <input type="text" name="parent_etablissement" id="parentEtablissement" class="form-control bg-transparent" placeholder="Etablissement" required>
             <label for="parentEtablissement">Etablissement</label>
             </div>
             <div class="form-floating mb-3">
-            <input type="email" name="parent_email" id="parentEmail" class="form-control bg-transparent" placeholder="Email">
+            <input type="email" name="parent_email" id="parentEmail" class="form-control bg-transparent @error('parent_email') is-invalid @enderror" placeholder="Email">
             <label for="parentEmail">Email</label>
             </div>
+                     <!-- Display Error Message -->
+            @error('parent_email')
+                <div class="invalid-feedback"> 
+                    {{ $message }}
+                </div>
+            @enderror
             <div class="form-floating mb-3">
-            <input type="text" name="parent_adresse" id="parentAdresse" class="form-control bg-transparent" placeholder="Adresse">
+            <input type="text" name="parent_adresse" id="parentAdresse" class="form-control bg-transparent" placeholder="Adresse" required>
             <label for="parentAdresse">Adresse</label>
             </div>
             <div class="mb-3">
             <label for="mode" class="form-label">Mode</label>
-            <select name="mode" id="mode" class="form-select bg-transparent">
+            <select name="mode" id="mode" class="form-select bg-transparent" required>
                 <option value="A Distance">A distance</option>
                 <option value="Presentiel">Presentiel</option>
             </select>
             </div>
             <div class="mb-3">
             <label for="abonnement" class="form-label">Abonnement</label>
-            <select name="abonnement" id="abonnement" class="form-select bg-transparent">
+            <select name="abonnement" id="abonnement" class="form-select bg-transparent" required>
                 <option value="seance">Seance</option>
                 <option value="mois">Mois</option>
                 <option value="pack">Pack</option>
@@ -158,7 +174,7 @@
             <label class="filter-label  text-2xl mb-2">
                Select Specialty
             </label>
-            <select class="glass-select" id="specialtySelect" name="specialty_id">
+            <select class="glass-select" id="specialtySelect" name="specialty_id" required>
                     <option value="">All Specialties</option>
                 @foreach($specialities as $specialty)
                     <option value="{{ $specialty->id }}">{{ $specialty->name }}</option>
@@ -166,6 +182,22 @@
              </select>
         </div>
 
+
+
+              <!-- error message  -->
+        @error('priorities')
+            <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+            <symbol id="exclamation-triangle-fill" fill="currentColor" viewBox="0 0 16 16">
+                <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
+            </symbol>
+            </svg>
+            <div class="alert alert-danger d-flex align-items-center" role="alert">
+            <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:"><use xlink:href="#exclamation-triangle-fill"/></svg>
+            <div>
+                {{ $message }}
+            </div>
+            </div>
+        @enderror
         <!-- Calendar Section -->
         <div class="calendar-container">
             <div id="calendar"></div>
@@ -184,9 +216,8 @@
   </div>
 </div>
 
-
-
 <script>
+     var prioritiesData = {};
     document.addEventListener("DOMContentLoaded", function() {
         const patientTypeSelect = document.getElementById('patientType');
         const kidSection = document.getElementById('kidSection');
@@ -195,42 +226,57 @@
         const kidYoungDetailsTitle = document.querySelector('.KidYoungDetailsTitle');
         const calendarContainer = document.querySelector('.calendar-container');
         const specialities = document.querySelector('.specialities');
+        const kidLastName = document.querySelector('#kidLastName');
+        const kidFirstName = document.querySelector('#kidFirstName');
+        const kidEcole = document.querySelector('#kidEcole');
+        const kidSystem = document.querySelector('#kidSystem');
+        const parentEmail = document.querySelector('#parentEmail');
+
+    
 
         patientTypeSelect.addEventListener('change', function() {
         const selectedType = this.value;
+        console.log(selectedType);
+
         specialities.classList.remove('d-none');
         
         if (selectedType === 'young') {
             kidYoungDetailsTitle.textContent = 'Young Details';
-        } else {
+        }
+        else {
             kidYoungDetailsTitle.textContent = 'Kid Details';
         }
         if (selectedType === 'kid' || selectedType === 'young') {
+
+            kidFirstName.setAttribute("required", "");
+            kidLastName.setAttribute("required", "");
+            kidEcole.setAttribute("required", "");
+            kidSystem.setAttribute("required", "");
+
             kidSection.classList.remove('d-none');
             parentSection.classList.remove('d-none');
-            // For Kid/Young, label the parent section as "Parent Details"
             parentSectionTitle.textContent = 'Parent Details';
-        } else if (selectedType === 'adult') {
+        } 
+        else if (selectedType === 'adult') {
+            kidFirstName.removeAttribute('required');
+            kidLastName.removeAttribute('required');
+            kidEcole.removeAttribute('required');
+            kidSystem.removeAttribute('required');
             kidSection.classList.add('d-none');
             parentSection.classList.remove('d-none');
-            // For adult patients, show only this section
             parentSectionTitle.textContent = 'Patient Details';
-        } else {
+        } 
+        else {
             kidSection.classList.add('d-none');
             parentSection.classList.add('d-none');
             specialities.classList.add('d-none');
         }
         });
-        
+        if (parentEmail.classList.contains('is-invalid')) {
+            parentSection.classList.remove('d-none');
+            console.log('exist'); 
+        }
     });
-
-
-    var prioritiesData = {
-    "priority 1": {},
-    "priority 2": {},
-    "priority 3": {}
-    };
-
     // Add a new event to the prioritiesData object.
     function addEventToPriorities(priorityChoice, date, eventId, startTime, endTime) {
     var priorityKey = "priority " + priorityChoice;
@@ -240,16 +286,15 @@
     if (!prioritiesData[priorityKey][date]) {
         prioritiesData[priorityKey][date] = [];
     }
-    prioritiesData[priorityKey][date].push({
-        id: eventId,
-        startTime: startTime,
-        endTime: endTime
-    });
+    var eventData = {
+    id: eventId,
+    startTime: startTime,
+    endTime: endTime
+    };
+  
+    prioritiesData[priorityKey][date].push(eventData);
     console.log("After addition:", prioritiesData);
     }
-
-    // Update an event when dragged/resized.
-    // If the event’s date changes, remove it from the old date and add it to the new date.
     function updateEventInPriorities(event) {
     // Extract the priority from the event title ("Priority 1", etc.)
     var parts = event.title.split(" ");
@@ -290,26 +335,31 @@
     console.log("After update:", prioritiesData);
     }
 
-    // Delete an event from prioritiesData.
-    // Remove the event from the appropriate date array and delete the date key if the array becomes empty.
     function deleteEventFromPriorities(event) {
     var parts = event.title.split(" ");
     var priorityChoice = parts[1];
     var priorityKey = "priority " + priorityChoice;
+    
+    // If there's no data for that priority, exit early.
+    if (!prioritiesData[priorityKey]) return;
+
     for (var date in prioritiesData[priorityKey]) {
         var arr = prioritiesData[priorityKey][date];
         for (var i = 0; i < arr.length; i++) {
-        if (arr[i].id === event.id) {
-            arr.splice(i, 1);
-            if (arr.length === 0) {
-            delete prioritiesData[priorityKey][date];
+            if (arr[i].id === event.id) {
+                if (arr.length === 0) {
+                    delete prioritiesData[priorityKey][date];
+                }
+                if (Object.keys(prioritiesData[priorityKey]).length === 0) {
+                    delete prioritiesData[priorityKey];
+                }
+                console.log("After deletion:", prioritiesData);
+                return;
             }
-            console.log("After deletion:", prioritiesData);
-            return;
-        }
         }
     }
-    }
+}
+
 
     document.addEventListener("DOMContentLoaded", function() {
     var calendarEl = document.getElementById("calendar");
@@ -321,17 +371,17 @@
         selectable: true,
         editable: true,
         select: function(info) {
-        // info.startStr and info.endStr include the date and time.
-        // If time isn't provided, use defaults.
-        var startDateTime = info.startStr; // e.g., "2025-02-03T14:00:00"
-        var endDateTime = info.endStr;       // e.g., "2025-02-03T14:45:00"
+
+        var startDateTime = info.startStr; 
+        var endDateTime = info.endStr;      
         
-        var date = startDateTime.split("T")[0]; // "YYYY-MM-DD"
+        var date = startDateTime.split("T")[0]; 
         var startTime = startDateTime.split("T")[1] ? startDateTime.split("T")[1].substring(0,5) : "00:00";
         var endTime = endDateTime ? (endDateTime.split("T")[1] ? endDateTime.split("T")[1].substring(0,5) : "23:59") : "23:59";
         
         // Prompt user to choose a priority.
         var priorityChoice = prompt("Enter priority (1=High, 2=Medium, 3=Low):");
+        
         if (!priorityChoice || !["1","2","3"].includes(priorityChoice)) {
             alert("Invalid priority selected.");
             calendar.unselect();
@@ -350,7 +400,6 @@
             backgroundColor: colors[priorityChoice]
         };
         calendar.addEvent(eventObj);
-        // Update the prioritiesData object.
         addEventToPriorities(priorityChoice, date, eventId, startTime, endTime);
         calendar.unselect();
         },
@@ -371,9 +420,7 @@
     calendar.render();
 });
     function storePriorities() {
-    // Update the hidden input with the stringified JSON.
     document.getElementById("prioritiesInput").value = JSON.stringify(prioritiesData);
-    // Return true to allow the form submission to proceed.
     return true;
 }
 

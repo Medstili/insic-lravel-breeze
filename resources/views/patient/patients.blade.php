@@ -48,10 +48,7 @@
         background-color: transparent;
         color: var(--secondary-color);
     }
-    /* Table Styling */
-    /* .table_container{
-        overflow: scroll;
-    } */
+
     .table {
         width:200%;
     }
@@ -78,16 +75,27 @@
         background-color: #e74c3c !important;
     }
     /* Modal adjustments */
-    .modal-content.glass-card {
-        background-color: #fff;
-        color: var(--secondary-color);
-    }
-    .modal-header {
-        border-bottom: none;
-    }
 </style>
 
 <div class="container py-5">
+
+<!-- success message -->
+
+        @if(session('success'))
+            <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+            <symbol id="check-circle-fill" fill="currentColor" viewBox="0 0 16 16">
+                <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
+            </symbol>
+            </svg>
+
+            <div class="alert alert-success d-flex align-items-center" role="alert">
+                <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Success:"><use xlink:href="#check-circle-fill"/></svg>
+                <div>
+                {{ session('success') }}
+                </div>
+            </div>
+
+        @endif
     <!-- Header -->
     <div class="dashboard-header glass-card p-4 mb-4">
         <div class="d-flex justify-content-between align-items-center">
@@ -102,7 +110,7 @@
     </div>
 
     <!-- Search Form -->
-    <form action="{{ route('patient.index') }}" method="GET" class="mb-4 glass-card p-4">
+    <form action="{{ route('patient.index') }}" method="GET"  class="mb-4 glass-card p-4">
         <div class="row g-2">
             <div class="col-md-6">
                 <input type="text" name="q" value="{{ request('q') }}" placeholder="Search by patient" class="form-control bg-transparent">
@@ -165,10 +173,10 @@
                             @if ($patient->first_name==null)
                             <mark><i>vide</i></mark>
                             @else
-                            <div class="d-flex align-items-center">
-                                <div class="symbol symbol-40 me-3">
+                            <div class="">
+                                <!-- <div class="symbol symbol-40 me-3">
                                     <img src="https://i.pravatar.cc/150" class="rounded-circle" width="40" alt="patient Avatar">
-                                </div>
+                                </div> -->
                                 <div>
                                     <div class="fw-bold">{{ $patient->first_name}} {{ $patient->last_name }}</div>
                                 </div>
@@ -225,7 +233,7 @@
                             <a href="{{ route('patient.show', $patient->id) }}" class="btn btn-sm btn-outline-secondary me-2">
                                 <i class="fas fa-eye"></i>
                             </a>
-                            <form action="{{ route('patient.destroy', $patient->id) }}" method="POST" class="d-inline">
+                            <form action="{{ route('patient.destroy', $patient->id) }}" method="POST" onsubmit="return cancellationConfirmation()" class="d-inline">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" class="btn btn-sm btn-outline-danger">
@@ -295,6 +303,9 @@
 
     // Allow form submission
     return true;
+  }
+  function cancellationConfirmation() {
+    return confirm('are you sure you want to delete this patient ?')
   }
 </script>
 @endsection

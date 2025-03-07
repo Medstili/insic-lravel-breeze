@@ -1,13 +1,24 @@
 @extends('layouts.app')
 @section('content')
 <div class="container py-5">
-    <!-- Dashboard Header -->
-    <!-- <div class="dashboard-header glass-card">
-        <h1 class="display-4 mb-3">Coach List</h1>
-        <button class="btn btn-light btn-lg" data-bs-toggle="modal" data-bs-target="#addCoachModal">
-            <i class="fas fa-plus me-2"></i>Add New Coach
-        </button>
-    </div> -->
+
+    @if(session('success'))
+        <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+        <symbol id="check-circle-fill" fill="currentColor" viewBox="0 0 16 16">
+            <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
+        </symbol>
+        </svg>
+
+        <div class="alert alert-success d-flex align-items-center" role="alert">
+            <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Success:"><use xlink:href="#check-circle-fill"/></svg>
+            <div>
+            {{ session('success') }}
+            </div>
+        </div>
+
+
+    @endif
+
     <div class="dashboard-header glass-card p-4 mb-4">
         <div class="d-flex justify-content-between align-items-center">
             <h1 class="display-6 mb-0">Coachs List</h1>
@@ -67,13 +78,8 @@
                 <tr class="coach-card">
                     <td>{{ $user->id }}</td>
                     <td>
-                        <div class="d-flex align-items-center">
-                            <div class="symbol symbol-40 me-3">
-                                <img src="https://i.pravatar.cc/150" 
-                                     class="rounded-circle" 
-                                     width="40" 
-                                     alt="Coach Avatar">
-                            </div>
+                        <div class="">
+                     
                             <div>
                                 <div class="fw-bold">{{ $user->full_name }}</div>
                                 <div class="text-muted small">{{ $user->email }}</div>
@@ -97,7 +103,7 @@
                         <a href="{{ route('user.show', $user->id) }}" class="btn btn-sm btn-outline-secondary me-2">
                            <i class="fas fa-eye"></i>
                         </a>
-                        <form action="{{ route('user.destroy', $user->id) }}" method="POST" class="d-inline">
+                        <form action="{{ route('user.destroy', $user->id) }}" method="POST" onsubmit="return cancellationConfirmation()" class="d-inline">
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="btn btn-sm btn-outline-danger me-2">
@@ -187,4 +193,9 @@
         border-bottom: none;
     } */
 </style>
+<script>
+    function cancellationConfirmation() {
+            return confirm('are you sure you want to delete this coach ?')
+    }
+</script>
 @endsection

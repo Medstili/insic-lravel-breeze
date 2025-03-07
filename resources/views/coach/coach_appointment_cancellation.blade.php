@@ -11,7 +11,7 @@
                     <p class="subtitle">Are you sure you want to cancel this appointment?</p>
                 </div>
                 <!-- Cancellation Form -->
-                <form action="{{ route('appointment_update', $appointment->id) }}" method="POST">
+                <form action="{{ route('appointment_update', $appointment->id) }}" onsubmit="return confirmCancellation() " method="POST">
                     @csrf
                     @method("PATCH")
 
@@ -179,4 +179,11 @@
         display: none;
     }
 </style>
+
+<script>
+    function confirmCancellation() {
+        return confirm("Are you sure you want to cancel this appointment?");
+    }
+</script>
+
 @endsection

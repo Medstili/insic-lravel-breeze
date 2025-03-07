@@ -45,3 +45,14 @@
         </div>
     </form>
 </x-guest-layout>
+
+<script>
+window.onpageshow = function(event) {
+    // Check if the page was loaded from the back-forward cache.
+    if (event.persisted || (window.performance && window.performance.navigation.type === 2)) {
+        window.location.reload();
+    }
+};
+</script>
+
+

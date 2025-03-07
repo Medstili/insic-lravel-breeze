@@ -10,6 +10,7 @@ use App\Models\User;
 use App\Models\Speciality;
 use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
+use DateTime;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
@@ -144,7 +145,6 @@ class AppointmentController extends Controller
         if (Auth::check() && Auth::user()->role == 'admin') {
             return redirect()->route('appointment.index')->with('success', 'Appointment cancelled successfully');
         }else{
-            // return redirect()->route('appointment_list',compact(Auth::user()->id))->with('success', 'Appointment cancelled successfully');    
             return redirect()->back();
         }
     }
@@ -228,34 +228,28 @@ class AppointmentController extends Controller
             'Content-Disposition' => 'inline; filename="report.pdf"'
         ]);
     }
+
     public function findAvailableCoach(Request $request)
     {
-        // 1. Validate input: ensure we have a patient ID.
         $validated = $request->validate([
             'patient_id' => 'required|integer',
         ]);
 
-        
-        // 2. Retrieve the patient record.
         $patient = Patient::findOrFail($validated['patient_id']);
-        // clean the patient priorities 
-        $this->cleanExpiredPriorities($patient->id);
-
-        // Assuming patient has a relation or attribute "speciality" (and its ID is used in coaches query)
         $speciality = $patient->speciality->id; 
     
-        // 3. Decode the patient's priorities (available times, by level).
         $priorities = json_decode($patient->priorities, true);
         $outdatedPrioritiesMessage = '';
         if (count($priorities)==0) {
             $outdatedPrioritiesMessage ='priorities are outdated or there is no prioritites , please update the patient priorities';
         }
+        Log::debug('outdatedPrioritiesMessage',[$outdatedPrioritiesMessage]);
         
-        // 4. Retrieve all available coaches for the given specialty.
+
         $coaches = User::where('speciality_id', $speciality)
                        ->where('is_available', true)
                        ->get();
-    
+        Log::debug('coaches',[$coaches]);
         if ($coaches->isEmpty()) {
             return response()->json([
                 'success' => false,
@@ -264,23 +258,27 @@ class AppointmentController extends Controller
             ]);
         }
         
-        // 5. Loop through priorities in order.
         foreach (['priority 1', 'priority 2', 'priority 3'] as $priorityKey) {
             if (isset($priorities[$priorityKey])) {
                 // $priorityData is an associative array: date => array of intervals.
                 $priorityData = $priorities[$priorityKey];
                 foreach ($priorityData as $day => $intervals) {
-                    // Check if the patient already has a pending appointment on that day.
-                    // (We assume appointments with status 'pending' are blocking a new booking on the same day.)
+      
+  
+                    // Get the weekday from the stored date (e.g. "Monday")
+                    $patientWeekday = date('l', strtotime($day));
+                    // Calculate the next occurrence of that weekday after today
+                    $nextWeekDay = $this->getNextWeekdayDate($patientWeekday);
+                    
                     $patientDailyAppt = Appointment::where('patient_id', $patient->id)
                         ->where('status', 'pending')
-                        ->whereRaw("JSON_EXTRACT(appointment_planning, '$.\"$day\"') IS NOT NULL")
+                        ->whereRaw("JSON_EXTRACT(appointment_planning, '$.\"$nextWeekDay\"') IS NOT NULL")
                         ->first();
                     if ($patientDailyAppt) {
                         // You could either skip this day or return a message.
                         return response()->json([
                             'success' => false,
-                            'message' => "Patient already has a pending appointment on {$day}.",
+                            'message' => "Patient already has a pending appointment on {$nextWeekDay}.",
                             'available_coaches' => []
                         ]);
                     }
@@ -293,13 +291,15 @@ class AppointmentController extends Controller
                         $matchingCoaches = [];
                         // Check each coach for availability during this patient interval.
                         foreach ($coaches as $coach) {
-                            $freeInterval = $this->isTimeAvailableForPatient($coach->id, $patient->id, $day, $pStartTime, $pEndTime);
+                            // Log::debug('each coach',[$coach]);
+                            $freeInterval = $this->isTimeAvailableForPatient($coach->id, $patient->id, $nextWeekDay, $pStartTime, $pEndTime);
+                            
                             if ($freeInterval !== null) {
                                 $matchingCoaches[] = [
                                     'coach' => $coach,
                                     'patient' => $patient,
                                     'speciality' => $coach->speciality, 
-                                    'date' => $day,
+                                    'date' => $nextWeekDay,
                                     'free_interval' => $freeInterval,
                                     'patient_requested_interval' => [
                                         'startTime' => $pStartTime,
@@ -308,6 +308,10 @@ class AppointmentController extends Controller
                                 ];
                             }
                         }
+
+                        Log::debug('freeInterval', [$freeInterval]);
+                        Log::debug('matchingCoaches', [$matchingCoaches]);
+
     
                         if (!empty($matchingCoaches)) {
                             return response()->json([
@@ -321,7 +325,6 @@ class AppointmentController extends Controller
             }
         }
     
-        // If no coaches are available for any of the patient’s priority intervals:
         return response()->json([
             'success' => false,
             'message' => 'No available coaches match the patient’s requirements.',
@@ -329,42 +332,46 @@ class AppointmentController extends Controller
             'available_coaches' => []
         ]);
     }
-    private function isTimeAvailableForPatient($coachId, $patientId, $day, $patientStartTime, $patientEndTime)
-{
-    // Convert the patient’s requested times (with the given day) to timestamps.
-    $pStart = strtotime("$day $patientStartTime");
-    $pEnd   = strtotime("$day $patientEndTime");
+    private function isTimeAvailableForPatient($coachId, $patientId, $nextweekday, $patientStartTime, $patientEndTime)
+    {
+        // Convert the patient’s requested times (with the given day) to timestamps.
+        $pStart = strtotime("$nextweekday $patientStartTime");
+        $pEnd   = strtotime("$nextweekday $patientEndTime");
 
+        // $currentAndFuturesDay = Carbon::today()->format('Y-m-d');
+        // if ($day <= $currentAndFuturesDay) {
+            
+        //     return null;
+        // }
 
-       //     // Check if the patient canceled the entire day.
         $fullDayCanceled = Appointment::where('patient_id', $patientId)       
         ->where('status', 'cancel')
         ->where('cancellation_type', 'entire day')
         ->get()
-        ->filter(function ($appointment) use ($day) {
+        ->filter(function ($appointment) use ($nextweekday) {
             $plan = json_decode($appointment->appointment_planning, true);
-            return isset($plan[$day]);
+            return isset($plan[$nextweekday]);
         });
     
             log::debug('full cancellation', [$fullDayCanceled]);
             
         if ($fullDayCanceled->isNotEmpty()) {
-            Log::debug('Patient canceled the entire day; blocking the full day.', ['day' => $day]);
+            Log::debug('Patient canceled the entire day; blocking the full day.', ['day' => $nextweekday]);
             return null;
         }
     
     // 1. Check for conflicts with the patient’s own pending appointments.
     $existingPatientAppointments = Appointment::where('patient_id', $patientId)
         ->where('status', 'pending')
-        ->whereRaw("JSON_EXTRACT(appointment_planning, '$.\"$day\"') IS NOT NULL")
+        ->whereRaw("JSON_EXTRACT(appointment_planning, '$.\"$nextweekday\"') IS NOT NULL")
         ->get();
     
     $patientOccupied = [];
     foreach ($existingPatientAppointments as $appointment) {
         $apptPlanning = json_decode($appointment->appointment_planning, true);
-        if (isset($apptPlanning[$day])) {
-            $aStart = strtotime("$day " . $apptPlanning[$day]['startTime']);
-            $aEnd   = strtotime("$day " . $apptPlanning[$day]['endTime']);
+        if (isset($apptPlanning[$nextweekday])) {
+            $aStart = strtotime("$nextweekday " . $apptPlanning[$nextweekday]['startTime']);
+            $aEnd   = strtotime("$nextweekday " . $apptPlanning[$nextweekday]['endTime']);
             if ($aEnd > $pStart && $aStart < $pEnd) {
                 $patientOccupied[] = [
                     'start' => max($pStart, $aStart),
@@ -383,9 +390,9 @@ class AppointmentController extends Controller
     foreach ($canceledPatientAppointments as $appointment) {
         $apptPlanning = json_decode($appointment->appointment_planning, true);
         // If there is planning data for the day, treat it as occupied.
-        if (isset($apptPlanning[$day])) {
-            $aStart = strtotime("$day " . $apptPlanning[$day]['startTime']);
-            $aEnd   = strtotime("$day " . $apptPlanning[$day]['endTime']);
+        if (isset($apptPlanning[$nextweekday])) {
+            $aStart = strtotime("$nextweekday " . $apptPlanning[$nextweekday]['startTime']);
+            $aEnd   = strtotime("$nextweekday " . $apptPlanning[$nextweekday]['endTime']);
             if ($aEnd > $pStart && $aStart < $pEnd) {
                 $patientOccupied[] = [
                     'start' => max($pStart, $aStart),
@@ -397,21 +404,54 @@ class AppointmentController extends Controller
     
     // 2. Check the coach’s working schedule.
     $coach = User::find($coachId);
+Log::debug('coach id ', [$coach]);
     if (!$coach) {
         return null;
     }
     $coachPlanning = json_decode($coach->planning, true);
-    if (!isset($coachPlanning[$day])) {
-        return null; // Coach is not working on that day.
+Log::debug('coach planning', [$coachPlanning]);
+    // $date = array_keys($coachPlanning);
+     $workingDay = '';
+    foreach ($coachPlanning as $d => $value) {
+Log::debug('coach day ', [$d]);
+       $coachWeekDay = date('l', strtotime($d));
+       $weekDay = date('l', strtotime($nextweekday));
+Log::debug('coachDay',[$coachWeekDay]);
+Log::debug('currentDay',[$weekDay]);
+Log::debug('day',[$nextweekday]);
+       if ($coachWeekDay === $weekDay) {
+            $workingDay = $d;
+            break;
+        }
+        
     }
-    $coachIntervals = $coachPlanning[$day]; // Array of working intervals on that day.
+Log::debug('working day', [$workingDay]);
+
+
+    if (!$workingDay) {
+        return null;
+    }
+    // if (!isset($coachPlanning[$day])) {
+    //     return null; // Coach is not working on that day.
+    // }
+
+    $coachIntervals = $coachPlanning[$workingDay]; // Array of working intervals on that day.
+    Log::debug('coach intervals', [$coachIntervals]);
+
     $availableIntervals = [];
     // For each coach working interval, compute the overlapping segment with the patient’s requested window.
     foreach ($coachIntervals as $interval) {
-        $coachStart = strtotime("$day " . $interval['startTime']);
-        $coachEnd   = strtotime("$day " . $interval['endTime']);
+        $coachStart = strtotime("$nextweekday " . $interval['startTime']);
+        $coachEnd   = strtotime("$nextweekday " . $interval['endTime']);
         $overlapStart = max($pStart, $coachStart);
         $overlapEnd   = min($pEnd, $coachEnd);
+Log::debug('patientStartTime', [$patientStartTime]);
+Log::debug('patientEndTime', [$patientEndTime]);
+Log::debug('coachStartTime', [$interval['startTime']]);
+Log::debug('coachEndTime', [$interval['endTime']]);
+Log::debug('coachStart and End',[$coachStart,$coachEnd]);
+Log::debug('patient Start and End',[$pStart,$pEnd]);
+Log::debug('overlapStart and End',[$overlapStart,$overlapEnd]);
         if ($overlapEnd > $overlapStart) {
             $availableIntervals[] = [
                 'start' => $overlapStart,
@@ -419,6 +459,8 @@ class AppointmentController extends Controller
             ];
         }
     }
+    Log::debug('available intervals', $availableIntervals);
+
     if (empty($availableIntervals)) {
         return null; // No overlap between coach working hours and patient requested time.
     }
@@ -426,7 +468,7 @@ class AppointmentController extends Controller
     // 3. Check for conflicts with the coach’s pending appointments.
     $coachAppointments = Appointment::where('coach_id', $coachId)
         ->where('status', 'pending')
-        ->whereRaw("JSON_EXTRACT(appointment_planning, '$.\"$day\"') IS NOT NULL")
+        ->whereRaw("JSON_EXTRACT(appointment_planning, '$.\"$nextweekday\"') IS NOT NULL")
         ->get();
     
     $coachOccupied = [];
@@ -475,6 +517,8 @@ class AppointmentController extends Controller
             ];
         }
     }
+    Log::debug('free Intervals in isTimeAvailableForPatient Function', $freeIntervals);
+
     
     // 5. Filter the free intervals to ensure they meet the minimum (45 min) and maximum (60 min) duration rules.
     $minDuration = 45 * 60; // 45 minutes in seconds.
@@ -498,6 +542,16 @@ class AppointmentController extends Controller
     // If no free slot meets the duration requirement, return null.
     return null;
     }
+    private function getNextWeekdayDate($weekday)
+    {
+        $today = new DateTime();
+        // If today is already the desired weekday, you might choose whether to return today or tomorrow
+        while ($today->format('l') !== $weekday) {
+            $today->modify('+1 day');
+        }
+        return $today->format('Y-m-d');
+    }
+
     private function cleanExpiredPriorities($patientId)
     {
         // Fetch the patient record

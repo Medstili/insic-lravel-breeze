@@ -1,7 +1,7 @@
 @extends('layouts.app') {{-- Extend your main layout --}}
 
 @section('content')
-<!--  -->
+
 <style>
     .calendar-container {
     background-color: #fff;
@@ -88,6 +88,15 @@
         opacity: 0.8;
         margin-right: 8px;
     }
+    .is-invalid {
+        border: 2px solid red !important;
+        background-color: #ffe6e6;
+      }
+      .invalid-feedback {
+          color: red;
+          font-size: 14px;
+          display: block;
+      }
 </style>
 <div class="container mt-5">
   <div class="card  p-4">
@@ -100,7 +109,7 @@
         <!-- Patient Type Selection -->
         <div class="col-12">
             <div class="form-floating mb-3">
-            <select id="patientType" name="patient_type" class="form-select bg-transparent">
+            <select id="patientType" name="patient_type" class="form-select bg-transparent" required>
                 <option value="" selected disabled>Select Patient Type</option>
                 <option value="kid" {{  $patient->patient_type == 'kid' ? 'selected' : '' }}>Kid</option>
                 <option value="young" {{ $patient->patient_type == 'young' ? 'selected' : '' }}>Young</option>
@@ -114,14 +123,14 @@
         <div class="row">
             <div class="col-md-6">
                     <div class="form-floating mb-3">
-                    <input type="number" name="age" id="kidAge" class="form-control bg-transparent" value="{{ $patient->age}}" placeholder="Age">
+                    <input type="number" name="age" id="kidAge" class="form-control bg-transparent" value="{{ $patient->age}}" placeholder="Age" required>
                     <label for="kidAge">Age</label>
                     </div>
             </div>
             <!-- gender -->
             <div class="col-md-6">
                 <div class="form-floating">
-                    <select name="PatientGender" id="PatientGender" class="form-select bg-transparent">
+                    <select name="PatientGender" id="PatientGender" class="form-select bg-transparent" required>
                         <option value="M" {{ $patient->gender == 'M' ? 'selected' : '' }}>Male</option>
                         <option value="F" {{ $patient->gender == 'F' ? 'selected' : ''}}>Female</option>
                     </select>
@@ -181,13 +190,13 @@
             <div class="row">
             <div class="col-md-6">
                 <div class="form-floating mb-3">
-                <input type="text" name="parent_last_name" id="parentLastName" class="form-control bg-transparent" value = '{{ $patient->parent_first_name }}'placeholder="Nom">
+                <input type="text" name="parent_last_name" id="parentLastName" class="form-control bg-transparent" value = '{{ $patient->parent_first_name }}'placeholder="Nom" required>
                 <label for="parentLastName">Nom</label>
                 </div>
             </div>
             <div class="col-md-6">
                 <div class="form-floating mb-3">
-                <input type="text" name="parent_first_name" id="parentFirstName" class="form-control bg-transparent"  value = '{{ $patient->parent_last_name }}'  placeholder="Prénom">
+                <input type="text" name="parent_first_name" id="parentFirstName" class="form-control bg-transparent"  value = '{{ $patient->parent_last_name }}'  placeholder="Prénom" required>
                 <label for="parentFirstName">Prénom</label>
                 </div>
             </div>
@@ -196,38 +205,44 @@
             <div class="col-md-6">
                 <div class="form-floating mb-3">
                 <input type="tel" name="parent_phone" id="parentPhone" class="form-control bg-transparent"  value = '{{ $patient->phone }}'  placeholder="Phone">
-                <label for="parentPhone">Phone</label>
+                <label for="parentPhone" required>Phone</label>
                 </div>
             </div>
             <div class="col-md-6">
                 <div class="form-floating mb-3">
-                <input type="text" name="parent_profession" id="parentProfession" class="form-control bg-transparent"  value = '{{ $patient->profession }}' placeholder="Profession">
+                <input type="text" name="parent_profession" id="parentProfession" class="form-control bg-transparent"  value = '{{ $patient->profession }}' placeholder="Profession" required>
                 <label for="parentProfession">Profession</label>
                 </div>
             </div>
             </div>
             <div class="form-floating mb-3">
             <input type="text" name="parent_etablissement" id="parentEtablissement" class="form-control bg-transparent" value = '{{ $patient->etablissment }} '  placeholder="Etablissement">
-            <label for="parentEtablissement">Etablissement</label>
+            <label for="parentEtablissement" required>Etablissement</label>
             </div>
             <div class="form-floating mb-3">
-            <input type="email" name="parent_email" id="parentEmail" class="form-control bg-transparent" value = '{{ $patient->email }}'  placeholder="Email">
-            <label for="parentEmail">Email</label>
+            <input type="email" name="parent_email" id="parentEmail" class="form-control bg-transparent  @error('parent_email') is-invalid @enderror" value = '{{ $patient->email }}'  placeholder="Email">
+            <label for="parentEmail" required>Email</label>
+            <!-- Display Error Message -->
+            @error('parent_email')
+                <div class="invalid-feedback"> 
+                    {{ $message }}
+                </div>
+            @enderror
             </div>
             <div class="form-floating mb-3">
             <input type="text" name="parent_adresse" id="parentAdresse" class="form-control bg-transparent"value = '{{ $patient->address }}'  placeholder="Adresse">
-            <label for="parentAdresse">Adresse</label>
+            <label for="parentAdresse" required>Adresse</label>
             </div>
             <div class="mb-3">
             <label for="mode" class="form-label">Mode</label>
-            <select name="mode" id="mode" class="form-select bg-transparent">
+            <select name="mode" id="mode" class="form-select bg-transparent" required>
                 <option value="A Distance" {{ $patient->mode =='A Distance' ? 'selected' :''}}>A distance</option>
                 <option value="Presentiel" {{ $patient->mode =='Presentiel' ? 'selected' :''}}>Presentiel</option>
             </select>
             </div>
             <div class="mb-3">
             <label for="abonnement" class="form-label">Abonnement</label>
-            <select name="abonnement" id="abonnement" class="form-select bg-transparent">
+            <select name="abonnement" id="abonnement" class="form-select bg-transparent" required>
                 <option value="seance" {{ $patient->subscription =='seance' ? 'selected' :''}}>Seance</option>
                 <option value="mois"  {{ $patient->subscription =='mois' ? 'selected' :''}}>Mois</option>
                 <option value="pack"  {{ $patient->subscription =='pack' ? 'selected' :''}}>Pack</option>
@@ -239,7 +254,7 @@
             <label class="filter-label  text-2xl mb-2">
                Select Specialty
             </label>
-            <select class="glass-select" id="specialtySelect" name="specialty_id">
+            <select class="glass-select" id="specialtySelect" name="specialty_id" required>
                     <option value="">All Specialties</option>
                 @foreach($specialities as $speciality)
                     <option value="{{ $speciality->id }}"  {{ $patient->speciality_id ==$speciality->id ? 'selected' :''}}>{{ $speciality->name }}</option>
@@ -247,10 +262,26 @@
              </select>
         </div>
 
+                           <!-- error message  -->
+        @error('priorities')
+            <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+            <symbol id="exclamation-triangle-fill" fill="currentColor" viewBox="0 0 16 16">
+                <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
+            </symbol>
+            </svg>
+            <div class="alert alert-danger d-flex align-items-center" role="alert">
+            <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:"><use xlink:href="#exclamation-triangle-fill"/></svg>
+            <div>
+                {{ $message }}
+            </div>
+            </div>
+        @enderror
         <!-- Calendar Section -->
         <div class="calendar-container">
             <div id="calendar"></div>
-        </div>           
+        </div>         
+        
+
 
         <!-- Submit Button -->
         <div class="col-12 text-center mt-4">
@@ -265,18 +296,42 @@
   </div>
 </div>
 
-
-
 <script>
    
-//    document.addEventListener("DOMContentLoaded", function() {
+   document.addEventListener("DOMContentLoaded", function() {
     const patientTypeSelect = document.getElementById('patientType');
     const kidSection = document.getElementById('kidSection');
     const parentSection = document.getElementById('parentSection');
     const parentSectionTitle = document.getElementById('parentSectionTitle');
     const kidYoungDetailsTitle = document.querySelector('.KidYoungDetailsTitle');
     const specialities = document.querySelector('.specialities');
+    const kidLastName = document.querySelector('#kidLastName');
+    const kidFirstName = document.querySelector('#kidFirstName');
+    const kidEcole = document.querySelector('#kidEcole');
+    const kidSystem = document.querySelector('#kidSystem');
     const calendarEl = document.querySelector('#calendar');
+
+     if (patientTypeSelect.value == 'kid'|| patientTypeSelect.value=='young') {
+            kidSection.classList.remove('d-none');
+            parentSection.classList.remove('d-none');
+            parentSectionTitle.textContent = 'Parent Details';
+
+            kidFirstName.setAttribute("required", "");
+            kidLastName.setAttribute("required", "");
+            kidEcole.setAttribute("required", "");
+            kidSystem.setAttribute("required", "");
+        }
+        else{
+            kidSection.classList.add('d-none');
+            parentSection.classList.remove('d-none');
+            parentSectionTitle.textContent = 'Patient Details';
+
+            kidFirstName.removeAttribute('required');
+            kidLastName.removeAttribute('required');
+            kidEcole.removeAttribute('required');
+            kidSystem.removeAttribute('required');
+        }
+
     patientTypeSelect.addEventListener('change', function() {
         const selectedType = this.value;
         specialities.classList.remove('d-none');
@@ -287,33 +342,39 @@
             kidYoungDetailsTitle.textContent = 'Kid Details';
         }
         if (selectedType === 'kid' || selectedType === 'young') {
+            kidFirstName.setAttribute("required", "");
+            kidLastName.setAttribute("required", "");
+            kidEcole.setAttribute("required", "");
+            kidSystem.setAttribute("required", "");
+
             kidSection.classList.remove('d-none');
             parentSection.classList.remove('d-none');
             parentSectionTitle.textContent = 'Parent Details';
         } 
-        // if (selectedType === 'adult')
         else  {
+            kidFirstName.removeAttribute('required');
+            kidLastName.removeAttribute('required');
+            kidEcole.removeAttribute('required');
+            kidSystem.removeAttribute('required');
+
             kidSection.classList.add('d-none');
             parentSection.classList.remove('d-none');
             parentSectionTitle.textContent = 'Patient Details';
         } 
-        // else {
-        //     kidSection.classList.add('d-none');
-        //     parentSection.classList.add('d-none');
-        //     specialities.classList.add('d-none');
-        // }
         });
+    
+        initPriorities();
+    });
 
-    // });
     var prioritiesData = {
-    "priority 1": {},
-    "priority 2": {},
-    "priority 3": {}
+    // "priority 1": {},
+    // "priority 2": {},
+    // "priority 3": {}
     };
 
     
 
-    var storedPriorities =<?php echo $patient->priorities ?> ; // this is the data from the database
+    var storedPriorities =<?php echo $patient->priorities ?> ; 
     for (var key in storedPriorities) {        
         if (storedPriorities.hasOwnProperty(key)) {
             prioritiesData[key] = storedPriorities[key];
@@ -329,11 +390,15 @@
     if (!prioritiesData[priorityKey][date]) {
         prioritiesData[priorityKey][date] = [];
     }
-    prioritiesData[priorityKey][date].push({
-        id: eventId,
-        startTime: startTime,
-        endTime: endTime
-    });
+    var eventData = {
+    id: eventId,
+    startTime: startTime,
+    endTime: endTime
+    };
+    // if (isRecurring) {
+    //     eventData.recurrence = "weekly";
+    // }
+    prioritiesData[priorityKey][date].push(eventData);
     console.log("After addition:", prioritiesData);
     }
     function updateEventInPriorities(event) {
@@ -386,25 +451,25 @@
             if (arr.length === 0) {
             delete prioritiesData[priorityKey][date];
             }
+            if (Object.keys(prioritiesData[priorityKey]).length === 0) {
+                    delete prioritiesData[priorityKey];
+                }
             console.log("After deletion:", prioritiesData);
             return;
         }
         }
     }
     }
-    document.addEventListener("DOMContentLoaded", function() {
+    function storePriorities() {
+    // Update the hidden input with the stringified JSON.
+    document.getElementById("prioritiesInput").value = JSON.stringify(prioritiesData);
+    // Return true to allow the form submission to proceed.
+    return true;
+}
+    function initPriorities() {
         const calendarEl = document.querySelector('#calendar');
         var colors = { "1": "red", "2": "orange", "3": "green" };
-        if (patientTypeSelect.value == 'kid'|| patientTypeSelect.value=='young') {
-            kidSection.classList.remove('d-none');
-            parentSection.classList.remove('d-none');
-            parentSectionTitle.textContent = 'Parent Details';
-        }
-        else{
-            kidSection.classList.add('d-none');
-            parentSection.classList.remove('d-none');
-            parentSectionTitle.textContent = 'Patient Details';
-        }
+       
         const calendar = new FullCalendar.Calendar(calendarEl,{
             initialView: "timeGridWeek",
             editable: true,
@@ -414,19 +479,18 @@
                 center: 'title',
                 right: 'dayGridMonth,timeGridWeek,timeGridDay'
                 },
-                // events:[],
+        
                 select: function(info) {
-                    // info.startStr and info.endStr include the date and time.
-                    // If time isn't provided, use defaults.
-                    var startDateTime = info.startStr; // e.g., "2025-02-03T14:00:00"
-                    var endDateTime = info.endStr;       // e.g., "2025-02-03T14:45:00"
+    
+                    var startDateTime = info.startStr; 
+                    var endDateTime = info.endStr;      
                     
-                    var date = startDateTime.split("T")[0]; // "YYYY-MM-DD"
+                    var date = startDateTime.split("T")[0]; 
                     var startTime = startDateTime.split("T")[1] ? startDateTime.split("T")[1].substring(0,5) : "00:00";
                     var endTime = endDateTime ? (endDateTime.split("T")[1] ? endDateTime.split("T")[1].substring(0,5) : "23:59") : "23:59";
-                    // console.log(date);
+    
                     
-                    // Prompt user to choose a priority.
+                  
                     var priorityChoice = prompt("Enter priority (1=High, 2=Medium, 3=Low):");
                     if (!priorityChoice || !["1","2","3"].includes(priorityChoice)) {
                         alert("Invalid priority selected.");
@@ -436,7 +500,7 @@
                     
                     // Create a unique event ID.
                     var eventId = String(Date.now());
-                    // Add the event to the calendar.
+                
                     var eventObj = {
                         id: eventId,
                         title: "Priority " + priorityChoice,
@@ -445,7 +509,8 @@
                         backgroundColor: colors[priorityChoice]
                     };
                     calendar.addEvent(eventObj);
-                    // Update the prioritiesData object.
+           
+                    // var isRecurring = confirm("Do you want this event to repeat every week on this day?");
                     addEventToPriorities(priorityChoice, date, eventId, startTime, endTime);
                     calendar.unselect();
                 },
@@ -523,13 +588,7 @@
                 ?>;
 
         calendar.addEventSource(allEvents);
-}); 
-    function storePriorities() {
-    // Update the hidden input with the stringified JSON.
-    document.getElementById("prioritiesInput").value = JSON.stringify(prioritiesData);
-    // Return true to allow the form submission to proceed.
-    return true;
-}
 
+    }
 </script>
 @endsection

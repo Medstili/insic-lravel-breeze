@@ -1,14 +1,10 @@
 <?php
 
-use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\PatientController;
-use App\Http\Controllers\Auth\AuthenticatedSessionController;
-use App\Models\Appointment;
 use Illuminate\Support\Facades\Route;
 use  Illuminate\Support\Facades\Auth;
-
 
 
 Route::get('/', function () {
@@ -21,6 +17,8 @@ Route::get('/', function () {
     }
     return view('auth.login');
 });
+
+// Route::view('/', 'auth.login');
 Route::middleware(['auth','coach'])->group(function (){
     
     // coach profile route
@@ -51,7 +49,7 @@ Route::middleware(['auth','admin'])->group(function () {
     Route::resource('appointment', AppointmentController::class);
     Route::resource('patient',PatientController::class);
     // Route::view('/booking', 'booking_appointment')->name('booking');
-    Route::view('/global_dashboard', 'admin/global_dashboard')->name('global_dashboard');
+    Route::get('/global_dashboard', [UserController::class, 'globalDashboard'])->name('global_dashboard');
     Route::post('/appointments/{id}/upload-report', [AppointmentController::class, 'uploadReport'])->name('appointments.uploadReport');
     Route::get('/appointments/{id}/download-report', [AppointmentController::class, 'downloadReport'])->name('appointments.downloadReport');
     Route::delete('/appointments/{id}/delete-report', [AppointmentController::class, 'deleteReport'])->name('appointments.deleteReport');

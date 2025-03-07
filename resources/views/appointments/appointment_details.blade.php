@@ -12,6 +12,10 @@
     }else{
         $color = 'status-cancel';
     }
+
+    $patient_first_name = ($appointment->patient->patient_type=='kid'|| $appointment->patient->patient_type=='young')? $appointment->patient->first_name : $appointment->patient->parent_first_name ;
+    $patient_last_name = ($appointment->patient->patient_type=='kid'|| $appointment->patient_type=='young')? $appointment->patient->last_name : $appointment->patient->parent_last;
+    $patient_full_name = $patient_first_name . ' ' . $patient_last_name;
 @endphp
 <div class="appointment-details">
     <div class="max-w-6xl mx-auto">
@@ -31,16 +35,20 @@
             <div class="info-grid">
                 <!-- Client Card -->
                 <div class="info-card client-card">
-                    <i class="fas fa-user-astronaut icon"></i>
+                   
+                    <div class="d-flex justify-content-between">
+                        <i class="fas fa-user-astronaut icon"></i>
+                        <form action="{{ route('patient.show',$appointment->patient->id) }}">
+                            <button class=" text-white bg-primary p-2 rounded">
+                                detials
+                            </button>
+                        </form>
+                    </div>
                     <h3>Client</h3>
 
                     <mark>
                     <span class="" style="margin-left: 5px;"><i class="fas fa-user ml-2"></i> : 
-                        {{ $appointment->patient->first_name != null ? 
-                            ($appointment->patient->first_name." ".$appointment->patient->last_name)
-                            : 
-                            ( $appointment->patient->parent_first_name." ".$appointment->patient->parent_last_name) 
-                        }}
+                        {{ $patient_full_name }}
                     </span>
                     <span class="" style="margin-left: 5px;"><i class="fas fa-phone ml-2"></i> : {{ $appointment->patient->phone }}</span>
                     <span style="margin-left: 5px;">
@@ -62,7 +70,7 @@
                             <p><i class="fa-solid fa-sitemap"></i> System : {{ $appointment->patient->system }}</p>
                         </div>
                         <div class="">
-                            <p><i class="fa-solid fa-hands-holding-child"></i> parent full name : {{ $appointment->patient->parent_last_name }} {{ $appointment->patient->parent_last_name }}</p>
+                            <p><i class="fa-solid fa-hands-holding-child"></i> parent full name : {{ $appointment->patient->parent_first_name }} {{ $appointment->patient->parent_last_name }}</p>
                             <p><i class="fa-solid fa-briefcase"></i> Prefession : {{ $appointment->patient->profession }}</p>
                             <p><i class="fa-solid fa-building"></i> etablissment : {{ $appointment->patient->etablissment }}</p>
                         </div>
@@ -79,7 +87,14 @@
 
                 <!-- Coach Card -->
                 <div class="info-card coach-card">
-                    <i class="fas fa-rocket icon"></i>
+                    <div class="d-flex justify-content-between">
+                        <i class="fas fa-rocket icon"></i>
+                        <form action="{{ route('user.show',$appointment->coach->id) }}">
+                            <button class=" text-white bg-primary p-2 rounded">
+                                detials
+                            </button>
+                        </form>
+                    </div>
                     <h3>Coach</h3>
     
                     <p><i class="fas fa-user ml-2"></i> : {{$appointment->coach->full_name }}</p>

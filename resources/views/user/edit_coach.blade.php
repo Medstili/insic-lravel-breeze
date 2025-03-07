@@ -8,11 +8,20 @@
         padding: 20px;
         box-shadow: 0 2px 4px rgba(0,0,0,0.1);
        }
+       .is-invalid {
+        border: 2px solid red !important;
+        background-color: #ffe6e6;
+      }
+      .invalid-feedback {
+          color: red;
+          font-size: 14px;
+          display: block;
+      }
 </style>
 <div class="container mt-5">
   <div class="card glass-card p-4">
     <h3 class="mb-4">🌟 Update Coach Profile</h3>
-    <form action="{{ route('user.update', $user->id) }}" onsubmit="coachUpdatePlanning()" method="POST" class="row g-4">
+    <form action="{{ route('user.update', $user->id) }}" onsubmit="return coachUpdatePlanning()" method="POST" class="row g-4">
       @csrf
       @method('PUT')
 
@@ -27,13 +36,15 @@
           <label for="tel"><i class="fas fa-phone me-2"></i>Phone Number</label>
         </div>
         <div class="form-floating mt-3">
-          <input type="email" class="form-control" id="email" name="email" value='{{ $user->email}}' required>
+          <input type="email" class="form-control @error('email') is-invalid @enderror" id="email" name="email" value='{{ $user->email}}' required>
           <label for="email"><i class="fas fa-envelope me-2"></i>Email</label>
         </div>
-        <!-- <div class="form-floating mt-3">
-          <input type="password" class="form-control" id="password" name="password" required>
-          <label for="password"><i class="fas fa-lock me-2"></i>Password</label>
-        </div> -->
+                 <!-- Display Error Message -->
+        @error('email')
+          <div class="invalid-feedback"> 
+              {{ $message }}
+          </div>
+        @enderror
       </div>
 
       <!-- Right Column -->
@@ -78,7 +89,20 @@
         </div>
       </div>
 
-  
+               <!-- error message  -->
+        @error('planning')
+          <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+          <symbol id="exclamation-triangle-fill" fill="currentColor" viewBox="0 0 16 16">
+              <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
+          </symbol>
+          </svg>
+          <div class="alert alert-danger d-flex align-items-center" role="alert">
+          <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:"><use xlink:href="#exclamation-triangle-fill"/></svg>
+          <div>
+              {{ $message }}
+          </div>
+          </div>
+        @enderror
          <!-- Calendar Section -->
         <div class="calendar-container">
             <div id="calendar"></div>
@@ -96,13 +120,22 @@
 </div>
 <script>
 
-  var availabilityData = {};
-  var storedPlanning =<?php echo $user->planning ?> ; 
-  availabilityData=storedPlanning;
-  console.log("Initial availabilityData:", availabilityData);
-   
 
-  // Helper function to add an event to availabilityData.
+
+  var availabilityData = {};
+  
+  var storedPlanning = <?php echo $user->planning ? $user->planning : '{}' ?>;
+  console.log(storedPlanning);
+  if (storedPlanning!=null) {
+    availabilityData =storedPlanning;
+  } else {
+    availabilityData={};
+  console.log("Initial availabilityData:", availabilityData);
+
+  }
+  // console.log("Initial availabilityData:", availabilityData);
+
+   
   function addAvailabilityEvent(date, eventId, startTime, endTime) {
     if (!availabilityData[date]) {
       availabilityData[date] = [];
@@ -114,8 +147,7 @@
     });
     console.log("After addition:", availabilityData);
   }
-  // Helper function to update an event in availabilityData.
-  // If the event's date has changed, remove it from the old date and add it under the new date.
+
   function updateAvailabilityEvent(event) {
     var newStart = event.start;
     var newEnd = event.end ? event.end : event.start;
@@ -145,7 +177,7 @@
     });
     console.log("After update:", availabilityData);
   }
-  // Helper function to delete an event from availabilityData.
+
   function deleteAvailabilityEvent(event) {
     for (var date in availabilityData) {
       availabilityData[date] = availabilityData[date].filter(function(slot) {
@@ -158,7 +190,9 @@
     console.log("After deletion:", availabilityData);
   }
   document.addEventListener("DOMContentLoaded", function() {
-    var calendarEl = document.getElementById("calendar");
+    // initAppointmentsCalendar();
+    
+  var calendarEl = document.getElementById("calendar");
     
     // You can choose a default color for coach availability events.
     var defaultColor = "blue";
@@ -167,9 +201,7 @@
       // For example, show a week view.
       initialView: "timeGridWeek",
       selectable: true,
-      editable: true, // Enable drag, resize, etc.
-      
-      // When a coach selects a time slot, automatically capture start/end times.
+      editable: true, 
       select: function(info) {
         var startDateTime = info.startStr; 
         var endDateTime = info.endStr;
@@ -190,21 +222,15 @@
           backgroundColor: defaultColor
         };
         calendar.addEvent(eventObj);
-        
-        // Update our global availabilityData.
         addAvailabilityEvent(date, eventId, startTime, endTime);
         calendar.unselect();
       },
-      
-      // When an event is dragged or resized, update its time.
       eventDrop: function(info) {
         updateAvailabilityEvent(info.event);
       },
       eventResize: function(info) {
         updateAvailabilityEvent(info.event);
       },
-      
-      // When an event is clicked, ask for deletion.
       eventClick: function(info) {
         if (confirm("Do you want to delete this availability slot?")) {
           deleteAvailabilityEvent(info.event);
@@ -215,29 +241,36 @@
   
     calendar.render();
 
+    
     const oldPlanningEvents =  <?php
       $color='orange';
       $coachPlanning =  json_decode($user->planning ,true);
       $events =[];
-      foreach ($coachPlanning as $day => $dayData) {
-        foreach ($dayData as $data) {
-            // dd($data);
-            $id = $data['id'];
-            $title = "Availability";
-            $date = $day;
-            $start=$day.'T'.$data['startTime'].":"."00";
-            $end = $day.'T'.$data['endTime'].":"."00";
-            $backgroundColor = $color;
-            $events[] = [
-              'id' => $id,
-              'title'=> $title,
-              'start'=> $start,
-              'end'=> $end,
-              'backgroundColor'=> $backgroundColor
-            ]; 
+      if ($coachPlanning!=null) {
+        foreach ($coachPlanning as $day => $dayData) {
+          foreach ($dayData as $data) {
+              // dd($data);
+              $id = $data['id'];
+              $title = "Availability";
+              $date = $day;
+              $start=$day.'T'.$data['startTime'].":"."00";
+              $end = $day.'T'.$data['endTime'].":"."00";
+              $backgroundColor = $color;
+              $events[] = [
+                'id' => $id,
+                'title'=> $title,
+                'start'=> $start,
+                'end'=> $end,
+                'backgroundColor'=> $backgroundColor
+              ]; 
+          }
         }
+        echo json_encode($events);   
+
+      }else{
+        echo json_encode([]);
       }
-      echo json_encode($events);   
+    
     ?>;
     
     console.log(oldPlanningEvents);
@@ -245,9 +278,14 @@
     calendar.addEventSource(oldPlanningEvents);
   });
 
+function initAppointmentsCalendar(){
 
-  function coachUpdatePlanning() {
+}
+function coachUpdatePlanning() {
     document.getElementById("planning").value = JSON.stringify(availabilityData);
-  }
+    console.log("Updated planning:", document.getElementById("planning").value);
+    return true; // Allow the form to submit
+}
+
 </script>
 @endsection

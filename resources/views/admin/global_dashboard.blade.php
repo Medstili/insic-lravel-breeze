@@ -3,18 +3,7 @@
     <!-- Main Content -->
     @section('content')
     
-      <style>
-
-      /* Main Content */
-      /* .main-content {
-        width: calc(100%-250px);
-        /* margin:  auto; */
-        /* background-color: red; */
-        /* margin-left: 250px; */
-      /* } */
-
-
-      
+  <style>
       /* Stats Cards */
       .stats-container {
         display: grid;
@@ -101,131 +90,262 @@
         color: #4f46e5;
         display: inline-block;
       }
-    </style>
-
-  
-        <!-- Stats Cards -->
-        <div class="stats-container">
-        <div class="stat-card">
-            <div class="stat-value">24</div>
-            <p>Active Coaches</p>
-            <div class="stat-trend">↑ 12% from last month</div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-value">158</div>
-            <p>Registered Patients</p>
-            <div class="stat-trend">↑ 8% from last week</div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-value">56</div>
-            <p>Appointments</p>
-            <div class="stat-trend">↓ 3% cancellations</div>
-        </div>
-        </div>
-
-        <!-- Interactive Charts -->
-        <div class="charts-container">
-        <div class="chart-box">
-            <div class="chart-header">
-            <h3>Specialty Distribution</h3>
-            </div>
-            <canvas id="specialtyChart"></canvas>
-        </div>
-        <div class="chart-box">
-            <div class="chart-header">
-            <h3>Appointment Status</h3>
-            </div>
-            <canvas id="statusChart"></canvas>
-        </div>
-        </div>
-
-        <!-- Appointment Table -->
-        <div class="appointment-table">
-        <h3>Recent Appointments</h3>
-        <table>
-            <tr>
-            <th>Patient</th>
-            <th>Coach</th>
-            <th>Date</th>
-            <th>Status</th>
-            </tr>
-            <tr>
-            <td>John Doe</td>
-            <td>Dr. Smith</td>
-            <td>2023-08-15</td>
-            <td><span class="status-badge">Pending</span></td>
-            </tr>
-            <tr>
-            <td>Sarah Johnson</td>
-            <td>Coach Wilson</td>
-            <td>2023-08-16</td>
-            <td><span class="status-badge">Completed</span></td>
-            </tr>
-            <tr>
-            <td>Mike Peters</td>
-            <td>Dr. Anderson</td>
-            <td>2023-08-17</td>
-            <td><span class="status-badge">Canceled</span></td>
-            </tr>
-        </table>
-        </div>
 
 
-    <script>
- 
-      // Specialty Chart (Bar Chart)
+    h1 {
+      text-align: center;
+      color: #333;
+      font-size: 40px;
+      font-weight: bold;
+      margin: 20px;
+    }
+
+    .nav-buttons {
+      text-align: center;
+      margin-bottom: 10px;
+      font-size: 18px;
+    }
+    .nav-buttons a {
+      text-decoration: none;
+      color: #2c3e50;
+      margin: 0 15px;
+      font-weight: bold;
+    }
+    .calendar-container {
+    /* width: calc(100% - 250px); */
+    margin: auto;
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.table-container {
+    height: 600px; /* Fixed height */
+    overflow-y: auto; /* Enables vertical scrolling */
+    overflow-x: auto; /* Enables horizontal scrolling */
+    border: 1px solid #ddd;
+    display: block;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed; /* Ensures proper column sizing */
+}
+
+thead th {
+    position: sticky;
+    top: 0;
+    background: #2c3e50;
+    color: white;
+    padding: 10px;
+    z-index: 2;
+}
+
+th, td {
+    border: 1px solid #ccc;
+    padding: 5px;
+    text-align: center;
+    white-space: nowrap; /* Prevents text from wrapping */
+}
+
+.day-header {
+    background: #f8f9fa;
+    font-weight: bold;
+    text-align: left;
+    padding-left: 10px;
+}
+
+/* .appointment {
+    background: #28a745;
+    color: white;
+    padding: 4px 6px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin: 2px 0;
+} */
+.cancel{
+    background:rgb(189, 42, 57);
+    color: white;
+}
+.pending {
+    background-color:rgb(210, 129, 14);
+    color:  white;
+}
+.passed{
+    background-color:rgb(8, 152, 15);
+    color: white;
+}
+
+/* event style */
+
+.appointment {
+        border: none !important;
+        border-radius: 8px !important;
+        padding: 5px !important;
+        font-weight: 500 !important;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        box-shadow: 0 3px 6px rgba(0,0,0,0.16) !important;
+        position: relative;
+        overflow-x: scroll;
+        scrollbar-width:none ;
+    }
+
+    .appointment::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 4px;
+        height: 100%;
+    }
+    /* cancel */
+        .appointment.cancel {
+            background: rgba(255, 167, 38, 0.15) !important;
+            color:rgb(255, 38, 38) !important;
+        }
+        .appointment.cancel::before {
+            background:rgb(255, 38, 38);
+        }
+
+        /* pending  */
+        .appointment.pending {
+            background: rgba(102, 187, 106, 0.15) !important;
+            color:rgb(231, 140, 2) !important;
+        }
+        .appointment.pending::before {
+            background: rgb(231, 140, 2);
+        }
+
+        /* passed  */
+        .appointment.passed {
+            background: rgba(239, 83, 80, 0.15) !important;
+            color:rgb(16, 236, 0) !important;
+        }
+        .appointment.passed::before {
+            background: rgb(16, 236, 0) ;
+        }
+    .cancel .appointment-time,
+    .cancel .appointment-title {
+      color:rgb(206, 1, 1) !important; 
     
-    new Chart(document.getElementById('specialtyChart'), {
-      type: 'bar',
-      data: {
-        labels: ['Nutrition', 'Fitness', 'Mental', 'Rehab', 'Yoga'],
-        datasets: [{
-          label: 'Appointments',
-          data: [35, 28, 20, 12, 5],
-          backgroundColor: [
-            'rgba(44, 62, 80, 0.8)',
-            'rgba(52, 73, 94, 0.8)',
-            'rgba(74, 101, 114, 0.8)',
-            'rgba(127, 140, 141, 0.8)',
-            'rgba(189, 195, 199, 0.8)'
-          ],
-          borderColor: '#fff',
-          borderWidth: 2,
-          borderRadius: 12
-        }]
-      },
-      options: {
-        responsive: true,
-        plugins: {
-          legend: { display: false }
-        }
-      }
-    });
+    }
 
-    // Status Chart (Doughnut)
-    new Chart(document.getElementById('statusChart'), {
-      type: 'doughnut',
-      data: {
-        labels: ['Completed', 'Pending', 'Canceled'],
-        datasets: [{
-          data: [60, 25, 15],
-          backgroundColor: [
-            'rgba(44, 62, 80, 0.8)',
-            'rgba(52, 73, 94, 0.8)',
-            'rgba(74, 101, 114, 0.8)'
-          ],
-          borderColor: '#fff',
-          borderWidth: 3
-        }]
-      },
-      options: {
-        cutout: '70%',
-        plugins: {
-          legend: { position: 'bottom' }
-        }
-      }
-    });
-    </script>
-   
+    .pending .appointment-time,
+    .pending .appointment-title {
+    color:rgb(251, 145, 6) !important; 
+    }
+
+    .passed .appointment-time,
+    .passed .appointment-title {
+    color:rgb(1, 174, 27) !important;
+    }
+
+    /* Hover Effects */
+    .appointment:hover {
+        transform: translateY(-2px) scale(1.02);
+        box-shadow: 0 6px 12px rgba(0,0,0,0.25) !important;
+    }
+
+    /* Time Styling */
+    .appointment-title {
+        font-weight: 300;
+        opacity: 0.8;
+        margin-right: 8px;
+        font-size: 12px;
+        font-weight: bold;
+    }
+    .appointment-time{
+      font-size: 10px;
+    }
+
+  </style>
+
+    <div class="calendar-container">
+      <h1>All Coach Appointment Calendar</h1>
+      <div class="nav-buttons">
+        <a href="{{ route('global_dashboard', ['week' => $prevWeekStart]) }}">&#171; Previous Week</a>
+        <span>
+          {{ \Carbon\Carbon::parse($currentWeekStart)->format('M d, Y') }} -
+          {{ \Carbon\Carbon::parse($currentWeekStart)->addDays(5)->format('M d, Y') }}
+        </span>
+        <a href="{{ route('global_dashboard', ['week' => $nextWeekStart]) }}">Next Week &#187;</a>
+      </div>
+      
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Day / Coach</th>
+              @foreach ($timeSlots as $slot)
+                <th>{{ $slot['start'] }} - {{ $slot['end'] }}</th>
+              @endforeach
+            </tr>
+          </thead>
+          <tbody>
+            @foreach ($days as $day)
+              <tr>
+                <td colspan="{{ count($timeSlots) + 1 }}" class="day-header text-center bg-secondary text-light">
+                  {{ \Carbon\Carbon::parse($day)->format('l, M d, Y') }}
+                </td>
+              </tr>
+              @foreach ($coaches as $coach)
+                <tr>
+                  <td class="text-wrap">{{ $coach->full_name }}</td>
+                  @foreach ($timeSlots as $slot)
+                    <td>
+                      @php
+                        $slotStart = strtotime($day . ' ' . $slot['start']);
+                        $slotEnd   = strtotime($day . ' ' . $slot['end']);
+                        $cellAppointments = [];
+                        if(isset($organizedAppointments[$day][$coach->id])) {
+                            foreach ($organizedAppointments[$day][$coach->id] as $appointment) {
+                                $apptStart = strtotime($day . ' ' . $appointment['startTime']);
+                                if ($apptStart >= $slotStart && $apptStart < $slotEnd) {
+                                    $cellAppointments[] = $appointment;
+                                }
+                            }
+                        }
+                      @endphp
+                      @if(count($cellAppointments) > 0)
+                        @foreach ($cellAppointments as $appointment)
+                          @php
+                          $class ='';
+                          if($appointment['status'] == 'passed'){
+                          $class = 'passed';
+                          }
+                          elseif ($appointment['status'] == 'cancel'){
+                          $class = 'cancel';
+                          }
+                          elseif ($appointment['status'] == 'pending'){
+                          $class = 'pending';
+                          }
+                      
+                          @endphp
+                      
+                          <div class="appointment {{ $class }}" onclick="window.location.href='appointment/<?php echo $appointment['id']; ?>'">
+                            
+
+                            <div class="">
+                              <div class="appointment-title">{{ $appointment['patient'] }}</div>
+                              <span class="appointment-time">{{ $appointment['startTime'] }}</span>
+                              <span class="appointment-time">{{ $appointment['endTime'] }}</span>
+                            </div>
+                          </div>
+                        @endforeach
+                      @else
+                        &ndash;
+                      @endif
+                    </td>
+                  @endforeach
+                </tr>
+              @endforeach
+            @endforeach
+          </tbody>
+        </table>
+      </div>
+    </div>
+  
 
     @endsection

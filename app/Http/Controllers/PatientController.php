@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use \App\Models\Speciality;
 use App\Models\User;
+use Illuminate\Validation\Rule;
 
 class PatientController extends Controller
 {
@@ -50,7 +51,7 @@ class PatientController extends Controller
      */
     public function create()
     {
-        $specialities= \App\Models\Speciality::all();
+        $specialities= Speciality::all();
         return view('patient\add_patient',compact('specialities'));
     }
 
@@ -60,7 +61,6 @@ class PatientController extends Controller
     public function store(Request $request)
     {
 
-        // dd( $request->all());
         request()->validate([
             'patient_type'        => 'required',
             'PatientGender'       => 'required',
@@ -74,14 +74,20 @@ class PatientController extends Controller
             'parent_profession'   => 'required',
             'parent_phone'        => 'required',
             'parent_etablissement'=> 'required',
-            'parent_email'        => 'required',
+            'parent_email'        => 'required|email|unique:patients,email',
             'parent_adresse'      => 'required',
             'mode'                => 'required',
             'abonnement'          => 'required',
             'specialty_id'        => 'required',
             'priorities'          => 'required',
+        ],[
+            "parent_email.unique"=>"this email already in use"
         ]);
         
+        if($request->priorities === "{}"){
+            // dd( $request->all());    
+            return redirect()->back()->withErrors(['priorities' => 'priorities is required']);
+        }
 
         
         $patient = new Patient();
@@ -104,9 +110,10 @@ class PatientController extends Controller
         $patient->speciality_id = $request->specialty_id;
         $patient->priorities = $request->priorities;
     
+      
 
         $patient->save();
-        return redirect()->route('patient.index');
+        return redirect()->route('patient.index')->with('success', 'patient added successfully');
     }
 
     /**
@@ -156,14 +163,20 @@ class PatientController extends Controller
             'parent_profession'   => 'required',
             'parent_phone'        => 'required',
             'parent_etablissement'=> 'required',
-            'parent_email'        => 'required',
+            'parent_email'        => ['required','email',Rule::unique('patients', 'email')->ignore($id)],
             'parent_adresse'      => 'required',
             'mode'                => 'required',
             'abonnement'          => 'required',
             'specialty_id'        => 'required',
             'priorities'          => 'required',
+        ],[
+            'parent_email.unique','this email already in use'
         ]);
-        
+
+        if($request->priorities === "{}"){
+            // dd( $request->all());    
+            return redirect()->back()->withErrors(['priorities' => 'priorities is required']);
+        }
 
         
         $patient = Patient::findOrFail($id);
@@ -188,7 +201,7 @@ class PatientController extends Controller
     
 
         $patient->save();
-        return redirect()->route('patient.index');
+        return redirect()->route('patient.show',$id)->with('updated', 'updated successfully');
     }
 
     /**

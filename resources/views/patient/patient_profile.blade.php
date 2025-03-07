@@ -1,17 +1,37 @@
 @extends('layouts.app')
 @section('content')
 @php
-    $first_name = ($patient->patient_type == 'Kid'||$patient->patient_type == 'young')? $patient->first_name  : $patient->parent_first_name;
-    $last_name = ($patient->parent_last_name == 'Kid'||$patient->parent_last_name == 'young') ? $patient->last_name : $patient->parent_last_name;
+
+
+$patient_first_name = ($patient->patient_type=='kid'|| $patient->patient_type=='young')? $patient->first_name : $patient->parent_first_name ;
+$patient_last_name = ($patient->patient_type=='kid'|| $patient->patient_type=='young')? $patient->last_name : $patient->parent_last_name;
+$patient_full_name = $patient_first_name . ' ' . $patient_last_name;
+
+
 @endphp
 
 <div class="patient-profile">
+
+    @if(session('updated'))
+        <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+        <symbol id="check-circle-fill" fill="currentColor" viewBox="0 0 16 16">
+            <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
+        </symbol>
+        </svg>
+        <div class="alert alert-success d-flex align-items-center" role="alert">
+            <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Success:"><use xlink:href="#check-circle-fill"/></svg>
+            <div>
+            {{ session('updated') }}
+            </div>
+        </div>
+
+    @endif
     <!-- Header Section -->
     <div class="profile-header d-flex justify-content-between align-items-center">
         <div>
-        <img src="https://i.pravatar.cc/150" width="100" alt="Patient" class="patient-avatar">
+        <!-- <img src="https://i.pravatar.cc/150" width="100" alt="Patient" class="patient-avatar"> -->
         <div class="header-info">
-            <h1 class="patient-name">{{ $first_name }} {{ $last_name }}</h1>
+            <h1 class="patient-name">{{ $patient_full_name }}</h1>
 
             <div class="patient-meta">
                 <span><mark><i class="fa-solid fa-user"></i> {{ $patient->patient_type }}</mark></span>
@@ -29,13 +49,13 @@
                 <input type="hidden" name="patient_id" id="patient_id" value="{{ $patient->id }}">
             </div>
             <hr class="mb-2 mt-2">
-            @if ($patient->patient_type == 'kid'||$patient->patient_type == 'young')
+            @if ($patient->patient_type == 'kid' || $patient->patient_type == 'young')
                 <div class="patient-meta">
                     <span><i class="fa-solid fa-school-flag"></i> ecole : {{ $patient->ecole }}</span>
                     <span><i class="fa-solid fa-sitemap"></i> System : {{ $patient->system }}</span>
                 </div>
                 <div class="patient-meta">
-                    <span><i class="fa-solid fa-hands-holding-child"></i> parent full name : {{ $patient->parent_last_name }} {{ $patient->parent_last_name }}</span>
+                    <span><i class="fa-solid fa-hands-holding-child"></i> parent full name : {{ $patient->parent_first_name }} {{ $patient->parent_last_name }}</span>
                     <span><i class="fa-solid fa-briefcase"></i> Prefession : {{ $patient->profession }}</span>
                     <span><i class="fa-solid fa-building"></i> etablissment : {{ $patient->etablissment }}</span>
                 </div>
@@ -409,8 +429,10 @@
         } 
         else {
             var message =result.message;
-            if (result.outdatedPrioritiesMessage != '') {
+            if (result.outdatedPrioritiesMessage!=undefined) {
+                
                 message = result.outdatedPrioritiesMessage;
+                console.log(message);
                 console.log('outdatedPrioritiesMessage is not null');  
             } 
             container.innerHTML = `
@@ -418,9 +440,7 @@
                         <i class="fas fa-exclamation-triangle text-2xl mb-2"></i>
                         ${message}
                     </div>
-                `;
-            console.log(message);
-            
+                `;            
         }
     })
     .catch(error => console.error("Error fetching events:", error));
@@ -430,44 +450,54 @@
         var calendarEl = document.getElementById("availabilities-calendar");
         var allPatientPriorities = 
             <?php
-                $patientPriorities = json_decode($patient->priorities, true);
-                $allPriorities = [];
-                foreach ($patientPriorities as $priorityKey => $data) {
-                        // dd($priorityKey,$data);
-                        $priorityClass ='';
-                        switch ($priorityKey) {
-                            case 'priority 1':
-                                $priorityClass = 'priority1';
-                                break;
-                            case 'priority 2':
-                                $priorityClass = 'priority2';
-                                break;
-                            case 'priority 3':
-                                $priorityClass = 'priority3';
-                                break;
-                        }
-                    foreach ($data as $day => $slots) {
-                            // dd($slots[0]['startTime']);
-                            foreach ($slots as $slot) {
-                                // dd($slot);
-                                $startTime = $slot['startTime'].':00';
-                                $endTime = $slot['endTime'].':00';
-                                $allPriorities[]=[
-                                    'id' => $slot['id'],
-                                    'title' => $priorityKey,
-                                    'start'=> $day.'T'.$startTime,
-                                    'end' => $day.'T'.$endTime,
-                                    'className' => $priorityClass,
-                                    'extendedProps' => [
-                                        'priority' => $priorityKey
-                                    ]                       
-                                ];
-                            }
+$patientPriorities = json_decode($patient->priorities, true);
+$allPriorities = [];
+// dd($patientPriorities);
 
-                    }
-                }
-                // dd($allPriorities)
-                echo json_encode($allPriorities);
+foreach ($patientPriorities as $priorityKey => $data) {
+    // dd($priorityKey,$data);
+    $priorityClass = '';
+    switch ($priorityKey) {
+        case 'priority 1':
+            $priorityClass = 'priority1';
+            break;
+        case 'priority 2':
+            $priorityClass = 'priority2';
+            break;
+        case 'priority 3':
+            $priorityClass = 'priority3';
+            break;
+    }
+
+    foreach ($data as $day => $slots) {
+
+        foreach ($slots as $slot) {
+            // dd($slot["startTime"].':00');
+            $startTime = $slot['startTime'] . ':00';
+            $endTime = $slot['endTime'] . ':00';
+            $allPriorities[] = [
+                'id' => $slot['id'],
+                'title' => $priorityKey,
+                'start' => $day . 'T' . $startTime,
+                'end' => $day . 'T' . $endTime,
+                'className' => $priorityClass,
+                'extendedProps' => [
+                    'priority' => $priorityKey
+                ]
+            ];
+        }
+
+        // if ($slot['recurrence'] && $slot['recurrence'] === "weekly") {
+        //     $extraEvents = generateRecurringEvents($day, $slot, $slot['recurrence'], 6);
+        //     // dd($extraEvents);
+        //     $allPriorities = array_merge($allPriorities, $extraEvents);
+        //   }
+
+    }
+}
+
+// dd($allPriorities)
+echo json_encode($allPriorities);
                 ?>;
 
                 console.log(allPatientPriorities);
@@ -483,9 +513,37 @@
         });
         calendar.render();
         return calendar;
-    }
+    };
+
+//  <?php
+//     function generateRecurringEvents($date, $slot, $recurrence, $occurrences = 5) {
+//         // $date is expected to be in "YYYY-MM-DD" format.
+//         $events = [];
+//         $currentDate = DateTime::createFromFormat('Y-m-d', $date);
+
+//         for ($i = 1; $i <= $occurrences; $i++) {
+//             // Add 7 days to the current date for each occurrence.
+//             $currentDate->modify('+7 days');
+//             $newDate = $currentDate->format('Y-m-d');
+
+//             $events[] = [
+//                 'id' => $slot['id'] . '-' . $i, // unique id for occurrence
+//                 'title' => 'Priority 1',         // Adjust accordingly or include priority info
+//                 'start' => $newDate . 'T' . $slot['startTime'] . ':00',
+//                 'end' => $newDate . 'T' . $slot['endTime'] . ':00',
+//                 'backgroundColor' => 'red',      // Use appropriate color based on priority
+//                 'extendedProps' => [
+//                     'recurrence' => $recurrence
+//                 ]
+//             ];
+//         }
+//         return $events;
+//     }
+
+//  ?>
 
 </script>
+
 @endsection
 
 

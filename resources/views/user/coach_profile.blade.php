@@ -1,10 +1,12 @@
 @extends('layouts.app')
 @section('content')
+@php
+@endphp
 <div class="coach-profile">
     <!-- Coach Header -->
     <div class="coach-header">
         <div class="coach-info">
-            <img src="https://i.pravatar.cc/150" alt="Coach" class="coach-avatar">
+            <!-- <img src="https://i.pravatar.cc/150" alt="Coach" class="coach-avatar"> -->
             <div class="coach-details">
                 <h1>{{$coach->full_name}}</h1>
                 <div class="coach-tags">
@@ -67,68 +69,70 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach ($coachAppointments as $appointment)
-                
-                    <tr>
-                        <td>
-                            @if ($appointment->patient->first_name==null)
-                            {{ $appointment->patient->parent_first_name}} {{ $appointment->patient->parent_last_name }}
-                            @else
-                                {{ $appointment->patient->first_name}} {{ $appointment->patient->last_name }}
-                            @endif
-                        </td>
-                      
-                        @php
-                        $appointmentDate = json_decode($appointment->appointment_planning, true);
-                        @endphp
-                        <td>
-                            @if(is_array($appointmentDate))
-                                @foreach ($appointmentDate as $date => $time)
-                                    <span>{{ $date }} - </span>
-                                    @foreach ($time as $slot)
-                                        <span>{{ $slot }} </span>
-                                    @endforeach
-                                @endforeach
-                            @endif
-                        </td>
-                        @php
-                            $color = '';
-                            if ($appointment->status == 'pending') {
-                                $color = 'pending';
-                            } elseif ($appointment->status == 'passed') {
-                                $color = 'passed';
-                            } elseif ($appointment->status == 'cancel') {
-                                $color = 'cancel';
-                            }
-                        @endphp
-                        <td><span class="status-badge {{$color}}">{{ $appointment->status }}</span></td>
-                        @if ($appointment->report_path)
-                        <td>
-                            <a href="{{ route('appointments.viewReport', $appointment->id) }}" target="_blank" class="action-btn">
-                                <i class="fas fa-file-alt"></i>
-                            </a>
-                            <a href="{{ route('appointments.downloadReport', $appointment->id) }}" class="action-btn">
-                                <i class="fas fa-cloud-download-alt"></i>
-                            </a>
-                        </td>
-                        @else
-                        <td>No Report</td>
-                        @endif
-                        <!-- <td> -->
-                            <!-- <form action="{{ route('appointment.show', $appointment->id) }}" method="get">
-                                @csrf
-                                <button class="action-btn"><i class="fas fa-eye"></i> Details</button>
-                            </form> -->
-                        <!-- </td> -->
+                    @if ($coachAppointments!=null)
+                        @foreach ($coachAppointments as $appointment)
+                            <tr>
+                                <td>
+                                    @if ($appointment->patient->first_name==null)
+                                    {{ $appointment->patient->parent_first_name}} {{ $appointment->patient->parent_last_name }}
+                                    @else
+                                        {{ $appointment->patient->first_name}} {{ $appointment->patient->last_name }}
+                                    @endif
+                                </td>
                             
-                        <td class="text-center">
-                            <a href="{{ route('appointment.show', $appointment->id) }}" class="btn btn-sm btn-outline-secondary me-2">
-                                <i class="fas fa-eye"></i>
-                            </a>
-                            
-                        </td>
-                    </tr>
-                    @endforeach
+                                @php
+                                $appointmentDate = json_decode($appointment->appointment_planning, true);
+                                @endphp
+                                <td>
+                                    @if(is_array($appointmentDate))
+                                        @foreach ($appointmentDate as $date => $time)
+                                            <span>{{ $date }} - </span>
+                                            @foreach ($time as $slot)
+                                                <span>{{ $slot }} </span>
+                                            @endforeach
+                                        @endforeach
+                                    @endif
+                                </td>
+                                @php
+                                    $color = '';
+                                    if ($appointment->status == 'pending') {
+                                        $color = 'pending';
+                                    } elseif ($appointment->status == 'passed') {
+                                        $color = 'passed';
+                                    } elseif ($appointment->status == 'cancel') {
+                                        $color = 'cancel';
+                                    }
+                                @endphp
+                                <td><span class="status-badge {{$color}}">{{ $appointment->status }}</span></td>
+                                @if ($appointment->report_path)
+                                <td>
+                                    <a href="{{ route('appointments.viewReport', $appointment->id) }}" target="_blank" class="action-btn">
+                                        <i class="fas fa-file-alt"></i>
+                                    </a>
+                                    <a href="{{ route('appointments.downloadReport', $appointment->id) }}" class="action-btn">
+                                        <i class="fas fa-cloud-download-alt"></i>
+                                    </a>
+                                </td>
+                                @else
+                                <td>No Report</td>
+                                @endif
+                                <!-- <td> -->
+                                    <!-- <form action="{{ route('appointment.show', $appointment->id) }}" method="get">
+                                        @csrf
+                                        <button class="action-btn"><i class="fas fa-eye"></i> Details</button>
+                                    </form> -->
+                                <!-- </td> -->
+                                    
+                                <td class="text-center">
+                                    <a href="{{ route('appointment.show', $appointment->id) }}" class="btn btn-sm btn-outline-secondary me-2">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    
+                                </td>
+                            </tr>
+                        @endforeach
+                    @endif
+                  
                     <!-- More rows if needed -->
                 </tbody>
             </table>
@@ -525,42 +529,45 @@
  function initAppointmentsCalendar(){
     var events = <?php
         $allEvents = [];
-        foreach ($coachAppointments as $app) {
-            // dd($app);
-            $statusClass = '';
-            switch ($app->status) {
-                case 'passed':
-                    $statusClass = 'passed';
-                    break;
-                case 'pending':
-                    $statusClass = 'pending';
-                    break;
-                case 'cancel':
-                    $statusClass = 'cancel';
-                    break;
-            }
-            $appointment_date = json_decode($app->appointment_planning, true);
-            // $patient = App\Models\Patient::find($app->patient_id);
-            foreach ($appointment_date as $date => $time) {
+        if ($coachAppointments!=null) {
+            foreach ($coachAppointments as $app) {
                 // dd($app);
-                $fullName = ($app->patient->patient_type == 'kid'||$app->patient->patient_type == 'young') ? 
-                    $app->patient->first_name ." ".$app->patient->last_name :
-                    $app->patient->parent_first_name." ".$app->patient->parent_last_name;   
-
-                $startTime = $time['startTime'] . "00";
-                $endTime = $time['endTime'] . "00";
-                $allEvents[] = [
-                    'id'    => $app->id,
-                    'title' => $fullName,
-                    'start' => $date . 'T' . $startTime,
-                    'end'   => $date . 'T' . $endTime,
-                    'className' => $statusClass,
-                    'extendedProps' => [
-                        'status' => '{{ $app->status }}'
-                    ]
-                ];
+                $statusClass = '';
+                switch ($app->status) {
+                    case 'passed':
+                        $statusClass = 'passed';
+                        break;
+                    case 'pending':
+                        $statusClass = 'pending';
+                        break;
+                    case 'cancel':
+                        $statusClass = 'cancel';
+                        break;
+                }
+                $appointment_date = json_decode($app->appointment_planning, true);
+                // $patient = App\Models\Patient::find($app->patient_id);
+                foreach ($appointment_date as $date => $time) {
+                    // dd($app);
+                    $fullName = ($app->patient->patient_type == 'kid'||$app->patient->patient_type == 'young') ? 
+                        $app->patient->first_name ." ".$app->patient->last_name :
+                        $app->patient->parent_first_name." ".$app->patient->parent_last_name;   
+    
+                    $startTime = $time['startTime'] . "00";
+                    $endTime = $time['endTime'] . "00";
+                    $allEvents[] = [
+                        'id'    => $app->id,
+                        'title' => $fullName,
+                        'start' => $date . 'T' . $startTime,
+                        'end'   => $date . 'T' . $endTime,
+                        'className' => $statusClass,
+                        'extendedProps' => [
+                            'status' => '{{ $app->status }}'
+                        ]
+                    ];
+                }
             }
         }
+       
         echo json_encode($allEvents);
     ?>;
     console.log(events);
@@ -604,21 +611,24 @@ function initAvailabilitiesCalendar() {
         const oldPlanningEvents = <?php
             $coachPlanning = json_decode($coach->planning, true);
             $events = [];
-            foreach ($coachPlanning as $day => $dayData) {
-                foreach ($dayData as $data) {
-                    $id = $data['id'];
-                    $title = "Available";
-                    $date = $day;
-                    $start = $day.'T'.$data['startTime'].":00";
-                    $end = $day.'T'.$data['endTime'].":00";
-                    $events[] = [
-                        'id' => $id,
-                        'title' => $title,
-                        'start' => $start,
-                        'end' => $end,
-                    ];
+            if ($coachPlanning!=null) {
+                foreach ($coachPlanning as $day => $dayData) {
+                    foreach ($dayData as $data) {
+                        $id = $data['id'];
+                        $title = "Available";
+                        $date = $day;
+                        $start = $day.'T'.$data['startTime'].":00";
+                        $end = $day.'T'.$data['endTime'].":00";
+                        $events[] = [
+                            'id' => $id,
+                            'title' => $title,
+                            'start' => $start,
+                            'end' => $end,
+                        ];
+                    }
                 }
             }
+            
             echo json_encode($events);
         ?>;
         var calendar = new FullCalendar.Calendar(calendarEl, {
