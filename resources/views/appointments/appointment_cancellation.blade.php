@@ -8,56 +8,56 @@
             <!-- Header -->
             <div class="header text-center mb-8">
                 <i class="fas fa-calendar-times text-4xl text-red-400 mb-4"></i>
-                <h1 class="title text-3xl font-bold mb-2">Cancel Appointment</h1>
-                <p class="subtitle">Are you sure you want to cancel this appointment?</p>
+                <h1 class="title text-3xl font-bold mb-2">Annuler le Rendez-vous</h1>
+                <p class="subtitle">Êtes-vous sûr de vouloir annuler ce rendez-vous ?</p>
             </div>
             <!-- Cancellation Form -->
-            <form action="{{ route('appointment.update', $appointment->id) }}" method="POST">
+            <form action="{{ route('appointment.update', $appointment->id) }} " onsubmit="return confrimCancellation()" method="POST">
                 @csrf
                 @method("PATCH")
 
                 <!-- Canceller Selection -->
                 <div class="form-group mb-6">
-                    <label class="form-label">Cancelled By</label>
+                    <label class="form-label">Annulé Par</label>
                     <div class="relative">
                         <select name="cancelled_by" class="form-select" required>
-                            <option value="" disabled selected>Select who is cancelling</option>
+                            <option value="" disabled selected>Sélectionnez qui annule</option>
                             <option value="patient">Patient</option>
                             <option value="coach">Coach</option>
                         </select>
                     </div>
                 </div>
                 <!-- Canceller Selection -->
-                <div class="form-group mb-6">
-                    <label class="form-label">Cancellation Type</label>
+                <!-- <div class="form-group mb-6">
+                    <label class="form-label">Type d'Annulation</label>
                     <div class="relative">
                         <select name="cancellation_type" class="form-select" required>
-                            <option value="normal" selected>Normal</option>
-                            <option value="entire day">entire day</option>
+                            <option value="normal" selected>Normale</option>
+                            <option value="entire day">Journée entière</option>
                         </select>
                     </div>
-                </div>
+                </div> -->
 
                 <!-- Reason Input -->
                 <div class="form-group mb-8">
-                    <label class="form-label">Cancellation Reason</label>
-                    <textarea name="description" class="form-textarea" rows="4" placeholder="Please describe the reason for cancellation..." required></textarea>
+                    <label class="form-label">Raison de l'Annulation</label>
+                    <textarea name="description" class="form-textarea" rows="4" placeholder="Veuillez décrire la raison de l'annulation..." required></textarea>
                 </div>
 
                 <!-- Action Buttons -->
                 <div class="action-buttons flex justify-between space-x-4">
                     <a href="{{ url()->previous() }}" class="btn btn-back">
-                        <i class="fas fa-arrow-left mr-2"></i> Go Back
+                        <i class="fas fa-arrow-left mr-2"></i> Retour
                     </a>
                     <button type="submit" class="btn btn-cancel">
-                        <i class="fas fa-ban mr-2"></i> Confirm Cancellation
+                        <i class="fas fa-ban mr-2"></i> Confirmer l'Annulation
                     </button>
                 </div>
 
                 <!-- Warning Message -->
                 <div class="warning mt-6 text-center">
                     <i class="fas fa-exclamation-triangle mr-2"></i>
-                    This action cannot be undone
+                    Cette action est irréversible
                 </div>
             </form>
         </div>
@@ -181,4 +181,9 @@
         display: none;
     }
 </style>
+<script>
+    function confrimCancellation() {
+        return confirm('Êtes-vous sûr de vouloir annuler ce rendez-vous ?');
+    }
+</script>
 @endsection

@@ -23,7 +23,19 @@ class User extends Authenticatable
         'speciality_id',
         'phone',
         'password',
+        'image_path',
     ];
+
+    protected $casts = [
+        'can_see' => 'array',
+    ];
+    
+    public function patients()
+    {
+        return $this->belongsToMany(Patient::class, 'coach_patient')
+                    ->withPivot('max_appointments','used_count')
+                    ->withTimestamps();
+    }
 
     public function speciality()
     {

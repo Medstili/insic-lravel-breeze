@@ -1,466 +1,608 @@
 @extends('layouts.coach_app')
+
 @section('content')
-    @php 
-        $color = '';
-        if($appointment->status == 'pending'){
-            $color = 'status-pending';
-        }elseif($appointment->status == 'passed'){
-            $color = 'status-passed';
-        }else{
-            $color = 'status-cancel';
-        }
-    @endphp
-    <div class="appointment-details">
-        <div class="max-w-6xl mx-auto">
-            <!-- Header -->
-            <div class="header-section">
-                <h1 class="header-title">
-                    <i class="fas fa-calendar-star mr-4"></i>Appointment Details
-                </h1>
-                <form action="{{ Route('appointments_list',Auth::user()->id)}}" method="get">
-                    <button class="back-btn"><i class="fas fa-arrow-left"></i></button>
-                </form>
+@php
+    $color = '';
+    if($appointment->status == 'pending'){
+        $color = 'bg-warning text-white';
+    }elseif($appointment->status == 'passed'){
+        $color = 'bg-success text-white';
+    }else{
+        $color = 'bg-danger text-white';
+    }
+
+    $patient_first_name = ($appointment->patient->patient_type=='kid'|| $appointment->patient->patient_type=='young') ? $appointment->patient->first_name : $appointment->patient->parent_first_name;
+    $patient_last_name = ($appointment->patient->patient_type=='kid'|| $appointment->patient_type=='young') ? $appointment->patient->last_name : $appointment->patient->parent_last_name;
+    $patient_full_name = $patient_first_name . ' ' . $patient_last_name;
+@endphp
+<div class="appointment-container">
+    <!-- Header -->
+    <div class="appointment-header">
+        <h1>Détails du Rendez-vous</h1>
+        <span class="status-badge {{ $color }}">{{ ucfirst($appointment->status) }}</span>
+    </div>
+
+    <!-- Main Content -->
+    <div class="appointment-content">
+        <!-- Patient Section -->
+        <div class="detail-card patient-info">
+            <div class="card-header">
+                <i class="fas fa-user-injured"></i>
+                <h2>Détails du Patient</h2>
+                <a href="{{ route('patient_profile',$appointment->patient->id) }}" class="view-profile">
+                    Voir le Profil <i class="fas fa-external-link-alt"></i>
+                </a>
             </div>
+            <div class="card-body container p-4 ">
+                <div class="row">
 
-            <!-- Main Card -->
-            <div class="glass-card main-card">
-                <!-- Info Grid -->
-                <div class="info-grid">
-                    <!-- Client Card -->
-                    <div class="info-card client-card">
-                        <i class="fas fa-user-astronaut icon"></i>
-                        <h3>Client</h3>
+                <div class="col">
+                <div class="info-row">
+                        <label>id:</label>
+                        <span> {{ $appointment->patient->id }}</span>
+                    </div>
+                    <div class="info-row ">
+                        <label>Nom:</label>
+                        <span>{{ $patient_full_name }}</span>
+                    </div>
+                    <div class="info-row">
+                        <label>Téléphone:</label>
+                        <span>{{ $appointment->patient->phone }}</span>
+                    </div>
+                    <div class="info-row">
+                        <label>Email:</label>
+                        <span>{{ $appointment->patient->email }}</span>
+                    </div>
+                    <div class="info-row">
+                        <label>Adresse:</label>
+                        <span>{{ $appointment->patient->address }}</span>
+                    </div>
+                </div>
 
-                        <mark>
-                        <span class="" style="margin-left: 5px;"><i class="fas fa-user ml-2"></i> : 
-                            {{ $appointment->patient->first_name != null ? 
-                                ($appointment->patient->first_name." ".$appointment->patient->last_name)
-                                : 
-                                ( $appointment->patient->parent_first_name." ".$appointment->patient->parent_last_name) 
-                            }}
-                        </span>
-                        <span class="" style="margin-left: 5px;"><i class="fas fa-phone ml-2"></i> : {{ $appointment->patient->phone }}</span>
-                        <span style="margin-left: 5px;">
-                        <!-- <span style="margin-left: 5px;"> -->
+                <div class="col">
+                    <div class="info-row">
+                        <label>Sexe:</label>
+                        <span>{{ $appointment->patient->patient_type }}</span>
+                    </div>
+                    <div class="info-row">
+                        <label>Genre:</label>
                         @if ($appointment->patient->gender == "M")
-                            Male <i class="bi bi-gender-male"></i>
+                           <span> Masculin <i class="bi bi-gender-male"></i></span>
                         @elseif ($appointment->patient->gender == "F")
-                            Female <i class="bi bi-gender-female"></i>
+                           <span>
+                           Féminin <i class="bi bi-gender-female"></i>
+                           </span> 
                         @endif
-                        <!-- </span> -->
-                        </span>
-                        <span style="margin-left: 5px;"> <mark> <i class="fas fa-file-medical"></i> ID : {{ $appointment->patient->id }} <mark></span>
-                        </mark>
-
-                        <hr class="mb-2 mt-2">
-                        @if ($appointment->patient->patient_type == 'kid'||$appointment->patient->patient_type == 'young')
-                            <div class="">
-                                <p><i class="fa-solid fa-school-flag"></i> ecole : {{ $appointment->patient->ecole }}</p>
-                                <p><i class="fa-solid fa-sitemap"></i> System : {{ $appointment->patient->system }}</p>
-                            </div>
-                            <div class="">
-                                <p><i class="fa-solid fa-hands-holding-child"></i> parent full name : {{ $appointment->patient->parent_last_name }} {{ $appointment->patient->parent_last_name }}</p>
-                                <p><i class="fa-solid fa-briefcase"></i> Prefession : {{ $appointment->patient->profession }}</p>
-                                <p><i class="fa-solid fa-building"></i> etablissment : {{ $appointment->patient->etablissment }}</p>
-                            </div>
-                        @endif
-
-                        <div class="">
-                            <p><i class="bi bi-envelope-at-fill"></i> email : {{ $appointment->patient->email }}</p>
-                            <p><i class="bi bi-geo-alt-fill"></i> adress : {{ $appointment->patient->address }}</p>
-                            <p><i class="fa-solid fa-people-arrows"></i> mode : {{ $appointment->patient->mode }}</p>
-                            <p><i class="fas fa-file-medical"></i> subscription : {{ $appointment->patient->subscription }}</p>
-                            <p><i class="fa-solid fa-hospital-user"></i> Speciality : {{ $appointment->patient->speciality->name }}</p>
-                        </div>
                     </div>
-
-                    <!-- Coach Card -->
-                    <div class="info-card coach-card">
-                        <i class="fas fa-rocket icon"></i>
-                        <h3>Coach</h3>
-        
-                        <p><i class="fas fa-user ml-2"></i> : {{$appointment->coach->full_name }}</p>
-                        <span class="badge-glass">{{ $appointment->speciality->name }}</span>
+                    <div class="info-row">
+                        <label>Âge:</label>
+                        <span>{{ $appointment->patient->age }}</span>
                     </div>
-
-                    <!-- Time Card -->
-                    <div class="info-card time-card">
-                        <i class="fas fa-clock icon"></i>
-                        <h3>Date & Time</h3>
-                        @php
-                            $schedule = json_decode($appointment->appointment_planning, true);
-                        @endphp
-                        @foreach ($schedule as $day => $time)
-                            <div class="schedule-group">
-                                <span class="schedule-day">{{ $day }} :</span>
-                                <span class="schedule-time">
-                                    @foreach ($time as $slot)
-                                        {{ $slot }}
-                                    @endforeach
-                                </span>
-                            </div>
-                        @endforeach
+                    <div class="info-row">
+                        <label>Mode:</label>
+                        <span>{{ $appointment->patient->mode }}</span>
                     </div>
-
-                    <!-- Status Card -->
-                    <div class="info-card status-card">
-                        <div class="status-header">
-                            <i class="fas fa-hourglass-half icon"></i>
-                            <h3>Status</h3>
-                    
-                            <p class="status-badge {{ $color }}">{{ ucfirst($appointment->status) }}</p>
-                        </div>
-                        @if ($appointment->status=='cancel')
-                            <div class="cancel-info glass-card-inner">
-                                <div class="cancel-header">
-                                    <h3>Cancelled By : <span>{{ $appointment->cancelledBy }}</span></h3>
-                                </div>
-                                <div class="cancel-description">
-                                    <h3>Description :</h3>
-                                    <p>{{ $appointment->reason }}</p>
-                                </div>
-                            </div>
-                        @endif
+                    <div class="info-row">
+                        <label>Abonnement:</label>
+                        <span>{{ $appointment->patient->subscription }}</span>
                     </div>
                 </div>
 
-                <!-- Report Section -->
-                @if ($appointment->status != 'cancel')
-                <div class="report-section">
-                    <div class="report-header">
-                        <i class="fas fa-file-waveform icon"></i>
-                        <h3>Session Report</h3>
+                 @if ($appointment->patient->patient_type == 'kid'||$appointment->patient->patient_type == 'young')
+                    <div class="col">
+
+                        <div class="info-row">
+                            <label>École:</label>
+                            <span>{{ $appointment->patient->ecole }}</span>
+                        </div>
+                        <div class="info-row">
+                            <label>Système:</label>
+                            <span>{{ $appointment->patient->system }}</span>
+                        </div>
+                        <div class="info-row">
+                            <label>Nom complet du parent:</label>
+                            <span>
+                            {{ $appointment->patient->parent_first_name }} {{ $appointment->patient->parent_last_name }}
+                            </span>
+                        </div>
+                        <div class="info-row">
+                            <label>Profession:</label>
+                            <span> {{ $appointment->patient->profession }}</span>
+                        </div>
+                        <div class="info-row">
+                            <label>Établissement:</label>
+                            <span> {{ $appointment->patient->etablissment }}</span>
+                        </div>
                     </div>
-
-                    @if($appointment->report_path)
-                        <div class="report-card glass-card-inner">
-                            <div class="report-info">
-                                <i class="fas fa-file-pdf"></i>
-                                <span>{{ basename($appointment->report_path) }}</span>
-                            </div>
-                            <div class="report-actions">
-                                <form action="{{ route('coach-appointments.deleteReport', $appointment->id) }}" method="POST">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button class="action-btn delete-btn"><i class="fas fa-trash-alt"></i></button>
-                                </form>
-                                <form action="{{ route('coach-appointments.downloadReport', $appointment->id) }}" method="GET">
-                                    @csrf
-                                    <button class="action-btn download-btn"><i class="fas fa-cloud-download-alt"></i></button>
-                                </form>
-                                <a href="{{ route('coach-appointments.viewReport', $appointment->id) }}" target="_blank" class="action-btn view-btn">
-                                    <i class="fas fa-file-alt"></i>
-                                </a>
-                            </div>
-                        </div>
-                    @else
-                        <div class="report-upload glass-card-inner">
-                            <form action="{{ route('coach-appointments.uploadReport', $appointment->id) }}"
-                                method="POST" 
-                                enctype="multipart/form-data"
-                                class="upload-form">
-                                @csrf
-                                <div class="alert alert-info" id="report-file-info">
-                                    <i class="fas fa-info-circle"></i>
-                                    <span>Only PDF, DOC, DOCX files are allowed</span>
-                                </div>
-                                <div class="" id="report-file" style="display: none;">
-                                    <span id="report-file-name"></span>
-                                </div>
-
-                                <label class="upload-label">
-                                    <div>
-                                        <i class="fas fa-cloud-upload-alt icon"></i>
-                                        <span>Upload Session Report</span>
-                                    </div>
-                                    <input type="file" 
-                                        name="report" 
-                                            id="report"
-                                        hidden
-                                        accept=".pdf,.doc,.docx">
-                                </label>
-                                <button type="submit" style="display: none;" class="upload-btn">
-                                    <i class="fas fa-upload"></i> Submit Report
-                                </button>
-                            </form>
-                        </div>
-                    @endif
-                </div>
                 @endif
-
-                <div class="action-buttons">
-                    @if ($appointment->status == 'pending')
-                        <div class="btn-group">
-                            <form action="{{ route('appointment_edit',$appointment->id) }}" method="get">
-                                @csrf
-                                <button type="submit" class="btn btn-secondary">Cancel Appointment</button>
-                            </form>
-
-                            <form action="{{ route('coach-update-appointment-status' ,[$appointment->id,'passed']) }}" method="POST">
-                                @csrf
-                                @method('PATCH')
-                                <button type="submit" class="btn btn-success">Completed Appointment</button>
-                            </form>
-                        </div>
-                    @endif
                 </div>
+             
             </div>
         </div>
+
+        <!-- Schedule Section -->
+        <div class="detail-card schedule-info">
+            <div class="card-header">
+                <i class="fas fa-calendar-alt"></i>
+                <h2>Planning</h2>
+            </div>
+            <div class="card-body">
+                    @php
+                        $schedule = json_decode($appointment->appointment_planning, true);
+                    @endphp
+                @foreach ($schedule as $day => $time)
+                <div class="schedule-item">
+                    <span class="day">{{ $day }}</span>
+                    <span class="time">
+                        @foreach ($time as $slot)
+                        {{ $slot }}
+                        @endforeach
+                    </span>
+                </div>
+                @endforeach
+            </div>
+        </div>
+        <!-- Reason Section -->
+        @if ($appointment->status=='cancel')
+            <div class="detail-card schedule-info reason-info">
+                <div class="card-header">
+                    <i class="fas fa-question"></i>
+                    <h2>Raison</h2>
+                </div>
+                <div class="card-body">
+                        
+                        <div class="cancel-info">
+                            <div class="info-row">
+                                <label>Annulé par :</label>
+                                <span>{{ $appointment->cancelledBy }}</span>
+                            </div>
+                            <div class="cancel-description">
+                                <div class="info-row">
+                                    <label>Description :</label>
+                                    <span>{{ $appointment->reason }}</span>
+                                </div>
+                            </div>
+                        </div>
+                </div>
+            </div>
+        @endif
+        <!-- Report Section -->
+      <div class="detail-card report-section">
+    <div class="card-header">
+        <i class="fas fa-file-medical"></i>
+        <h2>Rapport de Session</h2>
     </div>
-    <style>
-        /* Main container styling to account for the fixed sidebar */
-        .appointment-details {
-            background-color: #ecf0f1;
-            min-height: calc(100vh - 60px);
-            padding: 40px;
-        }
+    <div class="card-body">
+        @if($appointment->report_path)
+        <!-- Existing Report -->
+        <div class="existing-report">
+            <div class="file-info">
+                <i class="fas fa-file-pdf text-red-500"></i>
+                <div>
+                    <p class="filename">{{ basename($appointment->report_path) }}</p>
+                    <small class="text-muted">Téléchargé {{ $appointment->updated_at->diffForHumans() }}</small>
+                </div>
+            </div>
+            <div class="file-actions">
+                <a href="{{route('coach-appointments.downloadReport', $appointment->id)  }}" 
+                   class="btn-download">
+                   <i class="fas fa-download"></i>
+                </a>
+                <a href="{{ route('coach-appointments.viewReport', $appointment->id)}}" 
+                   target="_blank" 
+                   class="btn-view">
+                   <i class="fas fa-eye"></i>
+                </a>
+                <form action="{{  route('coach-appointments.deleteReport', $appointment->id)}}" 
+                      method="POST" 
+                      class="delete-form">
+                    @csrf
+                    @method('DELETE')
+                    <button type="button" class="btn-delete" onclick="confirmDelete(this)">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+        @else
+        <!-- Upload Form -->
+        <form action="{{route('coach-appointments.uploadReport', $appointment->id)  }}"
+              method="POST" 
+              enctype="multipart/form-data"
+              id="report-form"
+              class="upload-form">
+            @csrf
+            
+            <div class="upload-container">
+                <!-- File Preview -->
+                <div id="file-preview" class="hidden">
+                    <i class="fas fa-file-upload"></i>
+                    <span id="file-name"></span>
+                    <button type="button" class="btn-remove" onclick="clearFile()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
 
-        /* Header Section */
-        .header-section {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 2rem;
-        }
-        .header-title {
-            font-size: 2.5rem;
-            font-weight: bold;
-            color: #2c3e50;
-        }
-        .back-btn {
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            color: #8e44ad;
-            cursor: pointer;
-        }
-        .back-btn:hover {
-            color: #732d91;
-        }
+                <!-- Upload Box -->
+                <label class="upload-box" id="upload-label">
+                    <input type="file" name="report" id="report-input" accept=".pdf,.doc,.docx" hidden>
+                    <div class="upload-content">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <p>Glissez et déposez des fichiers ou <span class="browse-link">Parcourir</span></p>
+                        <small>Formats supportés: PDF, DOC, DOCX (Max 10MB)</small>
+                    </div>
+                </label>
 
-        /* Glass Card styling */
-        .glass-card {
-            background: rgba(255, 255, 255, 0.85);
-            border-radius: 12px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            padding: 2rem;
-            backdrop-filter: blur(10px);
-            margin-bottom: 2rem;
-        }
+                <!-- Upload Button -->
+                <button type="submit" id="submit-btn" class="hidden">
+                    <i class="fas fa-upload"></i> Télécharger le Rapport
+                </button>
+            </div>
 
-        .glass-card-inner {
-            background: rgba(255, 255, 255, 0.9);
-            border-radius: 8px;
-            padding: 1rem;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
+            <!-- Error Messages -->
+            @if($errors->has('report'))
+                <div class="error-msg">{{ $errors->first('report') }}</div>
+            @endif
+        </form>
+        @endif
+    </div>
+        </div>
 
-        /* Info Grid: Two columns */
-        .info-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 1.5rem;
-            margin-bottom: 2rem;
-        }
-        .info-card {
-            background: rgba(255, 255, 255, 0.9);
-            border-radius: 8px;
-            padding: 1.5rem;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        .info-card .icon {
-            font-size: 2rem;
-            margin-bottom: 1rem;
-            color: #6c63ff;
-        }
-        .info-card h3 {
-            font-size: 1.25rem;
-            margin-bottom: 0.5rem;
-            color: #2c3e50;
-        }
-        .info-card p {
-            font-size: 1rem;
-            color: #555;
-            margin-bottom: 0.5rem;
-        }
+        <!-- Action Buttons -->
+        @if ($appointment->status == 'pending')
+        <div class="action-buttons">
+            <a href="{{ route('appointment_edit',$appointment->id)}}" class="btn cancel-btn">
+                Annuler le Rendez-vous
+            </a>
+            <form method="POST" action="{{  route('coach-update-appointment-status' ,[$appointment->id,'passed'])}}">
+                @csrf
+                @method('PATCH')
+                <button type="submit" class="btn complete-btn">
+                    Marquer comme Terminé
+                </button>
+            </form>
+        </div>
+        @endif
+    </div>
+</div>
 
-        /* Badge Glass */
-        .badge-glass {
-            display: inline-block;
-            background: rgba(44, 62, 80, 0.8);
-            color: #ecf0f1;
-            padding: 0.3rem 0.6rem;
-            border-radius: 4px;
-            font-size: 0.875rem;
-            margin-top: 0.5rem;
-        }
+<style>
 
-        /* Schedule Styling */
-        .schedule-group {
-            margin-bottom: 0.5rem;
-        }
-        .schedule-day {
-            font-weight: bold;
-            color: #8e44ad;
-        }
-        .schedule-time {
-            margin-left: 0.5rem;
-            color: #555;
-        }
+/* Report Section Styling */
+.report-section {
+    margin-top: 2rem;
+}
 
-        /* Status Card */
-        .status-header {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-        .status-header h3 {
-            margin: 0;
-            font-size: 1.25rem;
-            color: #2c3e50;
-        }
-        .status-badge {
-            padding: 0.3rem 0.6rem;
-            border-radius: 4px;
-            font-size: 0.875rem;
-            color: #fff;
-        }
-        .status-pending {
-            background-color: #f1c40f;
-        }
-        .status-passed {
-            background-color: #2ecc71;
-        }
-        .status-cancel {
-            background-color: #e74c3c;
-        }
 
-        /* Report Section */
-        .report-section {
-            margin-bottom: 2rem;
-        }
-        .report-header {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            margin-bottom: 1rem;
-            color: #2c3e50;
-        }
-        .report-card {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 1rem;
-        }
-        .report-info {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            color: #e74c3c;
-            font-size: 1.1rem;
-        }
-        .report-actions {
-            display: flex;
-            gap: 0.5rem;
-        }
-        .action-btn {
-            background: none;
-            border: none;
-            font-size: 1.2rem;
-            cursor: pointer;
-            color: #2c3e50;
-        }
-        .action-btn:hover {
-            color: #8e44ad;
-        }
-        .report-upload {
-            text-align: center;
-        }
-        .upload-form {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 1rem;
-        }
-        .upload-label {
-            cursor: pointer;
-            color: #2c3e50;
-            font-size: 1.2rem;
-        }
-        .upload-btn {
-            background-color: #2ecc71;
-            color: #fff;
-            border: none;
-            padding: 0.5rem 1rem;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        .upload-btn:hover {
-            background-color: #27ae60;
-        }
+.existing-report {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: 8px;
+}
 
-        /* Action Buttons */
-        .action-buttons {
-            text-align: center;
-            margin-top: 2rem;
-        }
-        .btn-group {
-            display: flex;
-            justify-content: center;
-            gap: 1rem;
-        }
-        .btn {
-            padding: 0.5rem 1rem;
-            border-radius: 4px;
-            font-size: 1rem;
-            cursor: pointer;
-            border: none;
-        }
-        .btn-secondary {
-            background-color: #e74c3c;
-            color: #fff;
-        }
-        .btn-secondary:hover {
-            background-color: #c0392b;
-        }
-        .btn-success {
-            background-color: #2ecc71;
-            color: #fff;
-        }
-        .btn-success:hover {
-            background-color: #27ae60;
-        }
+.file-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
 
-        /* Responsive Adjustments */
-        @media (max-width: 768px) {
-            .appointment-details {
-                margin-left: 0;
-                padding: 20px;
-            }
-        }
-    </style>
-    <script>
-        // Listen for changes on the file input
-    document.getElementById('report').addEventListener('change', function() {
-        const fileInput = this;
-        const reportFileDiv = document.getElementById('report-file');
-        const reportFileNameSpan = document.getElementById('report-file-name');
+.file-actions {
+    display: flex;
+    gap: 1rem;
+}
 
-        // Check if any file is selected
-        if (fileInput.files && fileInput.files.length > 0) {
-        // Get the name of the first file
-        const fileName = fileInput.files[0].name;
-        // Set the file name to the span
-        reportFileNameSpan.textContent = fileName;
-        // Display the container div
-        reportFileDiv.style.display = 'block';
-            // Hide the info alert
-            document.getElementById('report-file-info').style.display = 'none';
-            document.querySelector('.upload-btn').style.display = 'block';
+.btn-download, .btn-view, .btn-delete {
+    padding: 0.5rem;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+}
 
+.btn-download {
+    color: #2563eb;
+    background: #dbeafe;
+}
+
+.btn-view {
+    color: #16a34a;
+    background: #dcfce7;
+}
+
+.btn-delete {
+    color: #dc2626;
+    background: #fee2e2;
+}
+
+.upload-container {
+    position: relative;
+    border: 2px dashed #cbd5e1;
+    border-radius: 8px;
+    padding: 2rem;
+    text-align: center;
+    transition: border-color 0.3s ease;
+}
+
+.upload-box {
+    display: block;
+    width: 100%;
+    height: 200px;
+    cursor: pointer;
+    position: relative;
+}
+.upload-box:hover .upload-container {
+    border-color: #2563eb;
+}
+
+#file-preview {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    padding: 1rem;
+    background: #f8fafc;
+    border-radius: 6px;
+}
+
+#file-preview.hidden {
+    display: none;
+}
+
+.upload-content i {
+    font-size: 2rem;
+    color: #94a3b8;
+    margin-bottom: 1rem;
+}
+
+.browse-link {
+    color: #2563eb;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+#submit-btn {
+    margin-top: 1rem;
+    background: #2563eb;
+    color: white;
+    padding: 0.75rem 1.5rem;
+}
+
+#submit-btn.hidden {
+    display: none;
+}
+
+.error-msg {
+    color: #dc2626;
+    margin-top: 0.5rem;
+    font-size: 0.875rem;
+}
+
+/* Drag & Drop Hover State */
+.upload-box.dragover {
+    border-color: #2563eb;
+    background: #f8fafc;
+}
+
+
+
+    /* Modern Clean CSS */
+    .appointment-container {
+        max-width: 1200px;
+        margin: 2rem auto;
+        padding: 0 1rem;
+    }
+
+    .appointment-header {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 2rem;
+        padding: 1rem;
+        background: #f8f9fa;
+        border-radius: 8px;
+    }
+
+    .back-button {
+        padding: 0.5rem;
+        color: #6c757d;
+        transition: all 0.3s ease;
+    }
+
+    .back-button:hover {
+        color: #0d6efd;
+        transform: translateX(-3px);
+    }
+
+    .status-badge {
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        margin-left: auto;
+    }
+
+    .detail-card {
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        margin-bottom: 1.5rem;
+    }
+
+    .card-header {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem;
+        border-bottom: 1px solid #eee;
+    }
+
+    .card-header i {
+        font-size: 1.25rem;
+        color: #6c757d;
+    }
+
+    .view-profile {
+        margin-left: auto;
+        color: #0d6efd;
+        text-decoration: none;
+    }
+
+    .card-body {
+        padding: 1rem;
+    }
+
+    .info-row {
+        display: grid;
+        grid-template-columns: 120px 1fr;
+        gap: 1rem;
+        padding: 0.5rem 0;
+    }
+
+    .info-row label {
+        color:rgb(197, 53, 241);
+        font-weight: bold;
+    }
+    .info-row span {
+        color: #6c757d;
+        font-weight: 500;
+        font-size: small;
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 1rem;
+        margin-top: 2rem;
+    }
+
+    .btn {
+        padding: 0.5rem 1.25rem;
+        border-radius: 6px;
+        border: none;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .cancel-btn {
+        background: #dc3545;
+        color: white;
+    }
+
+    .complete-btn {
+        background: #198754;
+        color: white;
+    }
+
+    /* Status Colors */
+    .status-pending { background: #ffc107; color: black; }
+    .status-passed { background: #198754; color: white; }
+    .status-cancel { background: #dc3545; color: white; }
+
+    @media (max-width: 768px) {
+        .info-row {
+            grid-template-columns: 1fr;
         }
         
-    });
+        .action-buttons {
+            flex-direction: column;
+        }
+    }
+</style>
 
-    </script>
+<script>
+
+
+// File Upload Handling
+const input = document.getElementById('report-input');
+const preview = document.getElementById('file-preview');
+const fileName = document.getElementById('file-name');
+const submitBtn = document.getElementById('submit-btn');
+const uploadLabel = document.getElementById('upload-label');
+
+// File Input Change
+input.addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file) {
+        preview.classList.remove('hidden');
+        fileName.textContent = file.name;
+        submitBtn.classList.remove('hidden');
+        uploadLabel.classList.add('hidden');
+    }
+});
+    
+// Prevent default drag behaviors
+['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+    uploadLabel.addEventListener(eventName, preventDefaults, false);
+    document.body.addEventListener(eventName, preventDefaults, false);
+});
+
+function preventDefaults (e) {
+    e.preventDefault();
+    e.stopPropagation();
+}
+
+// Highlight drop area when item is dragged over it
+
+['dragenter', 'dragover'].forEach(eventName => {
+    uploadLabel.addEventListener(eventName, highlight, false);
+});
+
+['dragleave', 'drop'].forEach(eventName => {
+    uploadLabel.addEventListener(eventName, unhighlight, false);
+});
+
+function highlight(e) {
+    uploadLabel.classList.add('dragover');
+}
+
+function unhighlight(e) {
+    uploadLabel.classList.remove('dragover');
+}
+
+// Handle dropped files
+uploadLabel.addEventListener('drop', handleDrop, false);
+
+function handleDrop(e) {
+    const dt = e.dataTransfer;
+    const files = dt.files;
+    
+    // Create a new DataTransfer object and add the file
+    const dataTransfer = new DataTransfer();
+    dataTransfer.items.add(files[0]);
+    input.files = dataTransfer.files;
+    
+    updateFileDisplay(files[0]);
+}
+
+// Handle file input change
+input.addEventListener('change', function(e) {
+    if (this.files && this.files[0]) {
+        updateFileDisplay(this.files[0]);
+    }
+});
+
+function updateFileDisplay(file) {
+    preview.classList.remove('hidden');
+    fileName.textContent = file.name;
+    submitBtn.classList.remove('hidden');
+    uploadLabel.classList.add('hidden');
+}
+
+// Clear File
+function clearFile() {
+    input.value = '';
+    preview.classList.add('hidden');
+    submitBtn.classList.add('hidden');
+    uploadLabel.classList.remove('hidden');
+}
+
+// Delete Confirmation
+function confirmDelete(button) {
+    if (confirm('Êtes-vous sûr de vouloir supprimer ce rapport ?')) {
+        button.closest('form').submit();
+    }
+}
+
+</script>
+
+
 @endsection

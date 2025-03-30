@@ -1,102 +1,245 @@
-@extends('layouts.coach_app') 
+@extends('layouts.app')
+
 @section('content')
 <style>
-        .calendar-container {
-        background-color: #fff;
+    :root {
+        --primary: #6366f1;
+        --secondary: #4f46e5;
+        --light-bg: #f8fafc;
+        --dark-text: #1e293b;
+    }
+
+    .coach-form-container {
+        max-width: 1200px;
+        margin: 2rem auto;
+        padding: 2rem;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    }
+
+    .form-header {
+        font-size: 1.75rem;
+        font-weight: 600;
+        color: var(--dark-text);
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+        border-bottom: 2px solid var(--primary);
+    }
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    .form-card {
+        background: var(--light-bg);
         border-radius: 8px;
-        padding: 20px;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-       }
+        padding: 1.5rem;
+    }
+
+    .form-floating {
+        position: relative;
+        margin-bottom: 1.5rem;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 1rem;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+    }
+
+    .form-control:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+    }
+
+    .calendar-container {
+        background: white;
+        border-radius: 8px;
+        padding: 1.5rem;
+        margin-top: 2rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    }
+    
+    #calendar {
+        background: white;
+        border-radius: 12px;
+        padding: 1rem;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+    .fc-header-toolbar {
+        background: linear-gradient(195deg, var(--primary-color), var(--secondary-color));
+        color: white;
+        padding: 1rem;
+        border-radius: 8px 8px 0 0;
+    }
+    .fc-button-primary {
+        background-color: var(--primary-color) !important;
+        border-color: var(--primary-color) !important;
+    }
+    .btn-submit {
+        background: var(--primary);
+        color: white;
+        padding: 1rem 2rem;
+        border-radius: 8px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        width: 100%;
+        max-width: 300px;
+        margin: 2rem auto 0;
+    }
+
+    .btn-submit:hover {
+        background: var(--secondary);
+        transform: translateY(-2px);
+    }
+
+    .invalid-feedback {
+        color: #ef4444;
+        font-size: 0.875rem;
+        margin-top: 0.5rem;
+    }
+
+    .is-invalid {
+        border-color: #ef4444 !important;
+        background-color: #fef2f2;
+    }
+
+    .alert-danger {
+        background: #fef2f2;
+        color: #ef4444;
+        padding: 1rem;
+        border-radius: 8px;
+        margin: 1rem 0;
+    }
 </style>
-<div class="container mt-5">
-  <div class="card glass-card p-4">
-    <h3 class="mb-4">🌟 Update Profile</h3>
-    <form action="{{ route('update_profile', $user->id) }}" onsubmit="coachUpdatePlanning()" method="POST" class="row g-4">
+
+<div class="coach-form-container">
+    <h1 class="form-header">Mettre à jour le profil de l'entraîneur</h1>
+    
+    <form action="{{route('update_profile', $user->id)  }}" onsubmit="return coachUpdatePlanning()" enctype="multipart/form-data"  method="POST" class="row g-4">
       @csrf
       @method('PUT')
 
-      <!-- Left Column -->
-      <div class="col-md-6">
-        <div class="form-floating">
-          <input type="text" class="form-control" id="fullName" name="full_name" value='{{ $user->full_name }}' required>
-          <label for="fullName"><i class="fas fa-user me-2"></i>Full Name</label>
-        </div>
-        <div class="form-floating mt-2">
-          <input type="number" class="form-control" id="tel" name="tel" value='{{ $user->phone }}' required>
-          <label for="tel"><i class="fas fa-phone me-2"></i>Phone Number</label>
-        </div>
-        <div class="form-floating mt-3">
-          <input type="email" class="form-control" id="email" name="email" value='{{ $user->email}}' required>
-          <label for="email"><i class="fas fa-envelope me-2"></i>Email</label>
-        </div>
-      </div>
+        <div class="form-grid">
+            <!-- Left Column -->
+            <div class="form-card">
+                <div class="form-floating">
+                    <input type="text" class="form-control" id="fullName" name="full_name" value='{{ $user->full_name }}' required>
+                    <label for="fullName">Nom complet</label>
+                </div>
+                
+                <div class="form-floating">
+                    <input type="number" class="form-control" id="tel" name="tel" value='{{ $user->phone }}' required>
+                    <label for="tel">Numéro de téléphone</label>
+                </div>
+                
+                <div class="form-floating">
+                    <input type="email" class="form-control @error('email') is-invalid @enderror" 
+                           id="email" name="email"  value='{{ $user->email}}' required>
+                    <label for="email">Adresse e-mail</label>
+                    @error('email')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
 
-      <!-- Right Column -->
-      <div class="col-md-6">
-        <div class="card border-0 mb-3">
-          <div class="card-body p-0">
-            <h5 class="card-title"><i class="fas fa-dumbbell me-2"></i>Specialization</h5>
-            <select class="form-select" id="specialist" name="speciality_id" required>
-              <option value="" selected disabled>Select Specialization</option>
-              @foreach ($specialities as $speciality)
-                <option value="{{ $speciality->id }}" {{ $user->speciality_id == $speciality->id ? 'selected':''}}>{{ $speciality->name }}</option>
-              @endforeach
-            </select> 
-          </div>
+            </div>
+
+            <!-- Right Column -->
+            <div class="form-card">
+                <div class="form-floating">
+                    <select class="form-control" id="specialist" name="speciality_id" required>
+                        <option value="" selected disabled>Sélectionnez une spécialisation</option>
+                        @foreach ($specialities as $speciality)
+                          <option value="{{ $speciality->id }}" {{ $user->speciality_id == $speciality->id ? 'selected':''}}>{{ $speciality->name }}</option>
+                        @endforeach
+                    </select>
+                    <label for="specialist">Spécialisation</label>
+                </div>
+
+                <div class="form-floating">
+                    <select class="form-control" name="is_available">
+                      <option value="1" {{ $user->is_available == 1 ? 'selected':''}}>Disponible</option>
+                      <option value="0" {{ $user->is_available == 0 ? 'selected':''}}>Indisponible</option>
+                    </select>
+                    <label>Statut de disponibilité</label>
+                </div>
+
+                <div class="form-floating">
+                    <select class="form-control" name="role">
+                      <option value="coach" {{ $user->role == 'coach' ?'selected' : '' }}>Entraîneur</option>
+                      <option value="admin" {{ $user->role == 'admin' ?'selected' : '' }}>Administrateur</option>
+                    </select>
+                    <label>Rôle dans le system</label>
+                </div>
+
+                <div class="form-group text-center mt-4">
+                    <label class="form-label fw-bold mb-2">Choose an Image:</label>
+
+                    <!-- Hidden File Input -->
+                    <input type="file" name="image" id="image-input" accept="image/*" hidden onchange="previewImage(event)">
+
+                    <!-- Custom Button -->
+                    <label for="image-input" class="btn btn-primary">
+                      <i class="fas fa-upload me-2"></i> Upload Image
+                    </label>
+
+                    <!-- Image Preview (Circle or Square) -->
+                    <div id="image-preview" class="mt-3 {{  $user->image_path ==null ? 'd-none': ''}} ">
+                      <img src="{{ asset('storage/' . $user->image_path) }}" alt="Image Preview" id="image-preview-img" class="rounded-circle shadow img-thumbnail" style="width: 80px; height: 80px; object-fit: cover;">
+                    </div>
+                </div>
+
+            </div>
         </div>
-        <div class="row g-2">
-          <div class="col-6">
-            <div class="card border-0">
-              <div class="card-body p-0">
-                <h5 class="card-title"><i class="fas fa-calendar-check me-2"></i>Availability</h5>
-                <select class="form-select" name="is_available">
-                  <option value="1" {{ $user->is_available == 1 ? 'selected':''}}>Available</option>
-                  <option value="0" {{ $user->is_available == 0 ? 'selected':''}}>Unavailable</option>
-                </select>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-                    <!-- error message  -->
-        @error('planning')
-            <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
-            <symbol id="exclamation-triangle-fill" fill="currentColor" viewBox="0 0 16 16">
-                <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
-            </symbol>
-            </svg>
-            <div class="alert alert-danger d-flex align-items-center" role="alert">
-            <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:"><use xlink:href="#exclamation-triangle-fill"/></svg>
-            <div>
-                {{ $message }}
-            </div>
-            </div>
-        @enderror
-  
-         <!-- Calendar Section -->
+
+                <!-- Error Messages -->
+                @error('planning')
+                  <div class="alert-danger">
+                      <i class="fas fa-exclamation-circle mr-2"></i>
+                      {{ $message }}
+                  </div>
+                @enderror
+
+        <!-- Calendar Section -->
         <div class="calendar-container">
             <div id="calendar"></div>
         </div>
 
-      <!-- Submit Button -->
-      <div class="col-12 text-center mt-4">
+
+
+        <!-- Hidden Input & Submit -->
         <input type="hidden" id="planning" name="planning">
-        <button type="submit" class="btn btn-light btn-lg px-5">
-          <i class="fas fa-save me-2"></i>Update Profile
+        <button type="submit" class="btn-submit">
+            <i class="fas fa-save mr-2"></i>Mettre à jour le profil de l'entraîneur
         </button>
-      </div>
     </form>
-  </div>
 </div>
+
 <script>
 
-  var availabilityData = {};
-  var storedPlanning =<?php echo $user->planning ?> ; 
-  availabilityData=storedPlanning;
-  console.log("Initial availabilityData:", availabilityData);
-   
 
-  // Helper function to add an event to availabilityData.
+
+
+  var availabilityData = {};
+  
+  var storedPlanning = <?php echo $user->planning ? $user->planning : '{}' ?>;
+  console.log(storedPlanning);
+  if (storedPlanning!=null) {
+    availabilityData =storedPlanning;
+  } else {
+    availabilityData={};
+  console.log("Disponibilités initiales :", availabilityData);
+
+  }
+  // console.log("Initial availabilityData:", availabilityData);
+
+   
   function addAvailabilityEvent(date, eventId, startTime, endTime) {
     if (!availabilityData[date]) {
       availabilityData[date] = [];
@@ -106,10 +249,9 @@
       startTime: startTime,
       endTime: endTime
     });
-    console.log("After addition:", availabilityData);
+    console.log("Après ajout :", availabilityData);
   }
-  // Helper function to update an event in availabilityData.
-  // If the event's date has changed, remove it from the old date and add it under the new date.
+
   function updateAvailabilityEvent(event) {
     var newStart = event.start;
     var newEnd = event.end ? event.end : event.start;
@@ -137,9 +279,9 @@
       startTime: newStartTime,
       endTime: newEndTime
     });
-    console.log("After update:", availabilityData);
+    console.log("Après mise à jour :", availabilityData);
   }
-  // Helper function to delete an event from availabilityData.
+
   function deleteAvailabilityEvent(event) {
     for (var date in availabilityData) {
       availabilityData[date] = availabilityData[date].filter(function(slot) {
@@ -149,23 +291,30 @@
         delete availabilityData[date];
       }
     }
-    console.log("After deletion:", availabilityData);
+    console.log("Après suppression :", availabilityData);
   }
   document.addEventListener("DOMContentLoaded", function() {
-    availabilitiesCalendar();
-  });
-
-  function availabilitiesCalendar() {
-    var calendarEl = document.getElementById("calendar");
+    // initAppointmentsCalendar();
+    let initialDate;
+  var calendarEl = document.getElementById("calendar");
+    
     // You can choose a default color for coach availability events.
     var defaultColor = "blue";
+
     var calendar = new FullCalendar.Calendar(calendarEl, {
       // For example, show a week view.
       initialView: "timeGridWeek",
       selectable: true,
-      editable: true, // Enable drag, resize, etc.
+      editable: true,
+      height:'500px',
       
-      // When a coach selects a time slot, automatically capture start/end times.
+      firstDay: 1, 
+      hiddenDays: [0], 
+      slotMinTime: '12:00:00',
+      slotMaxTime: '20:00:00',
+      allDaySlot: false,
+      nowIndicator: true,
+      expandRows: true, 
       select: function(info) {
         var startDateTime = info.startStr; 
         var endDateTime = info.endStr;
@@ -186,23 +335,17 @@
           backgroundColor: defaultColor
         };
         calendar.addEvent(eventObj);
-        
-        // Update our global availabilityData.
         addAvailabilityEvent(date, eventId, startTime, endTime);
         calendar.unselect();
       },
-      
-      // When an event is dragged or resized, update its time.
       eventDrop: function(info) {
         updateAvailabilityEvent(info.event);
       },
       eventResize: function(info) {
         updateAvailabilityEvent(info.event);
       },
-      
-      // When an event is clicked, ask for deletion.
       eventClick: function(info) {
-        if (confirm("Do you want to delete this availability slot?")) {
+        if (confirm("Voulez-vous supprimer ce créneau de disponibilité ?")) {
           deleteAvailabilityEvent(info.event);
           info.event.remove();
         }
@@ -211,38 +354,64 @@
   
     calendar.render();
 
+    
     const oldPlanningEvents =  <?php
       $color='orange';
       $coachPlanning =  json_decode($user->planning ,true);
       $events =[];
-      foreach ($coachPlanning as $day => $dayData) {
-        foreach ($dayData as $data) {
-            // dd($data);
-            $id = $data['id'];
-            $title = "Availability";
-            $date = $day;
-            $start=$day.'T'.$data['startTime'].":"."00";
-            $end = $day.'T'.$data['endTime'].":"."00";
-            $backgroundColor = $color;
-            $events[] = [
-              'id' => $id,
-              'title'=> $title,
-              'start'=> $start,
-              'end'=> $end,
-              'backgroundColor'=> $backgroundColor
-            ]; 
+      if ($coachPlanning!=null) {
+        foreach ($coachPlanning as $day => $dayData) {
+          foreach ($dayData as $data) {
+              // dd($data);
+              $id = $data['id'];
+              $title = "Availability";
+              $date = $day;
+              $start=$day.'T'.$data['startTime'].":"."00";
+              $end = $day.'T'.$data['endTime'].":"."00";
+              $backgroundColor = $color;
+              $events[] = [
+                'id' => $id,
+                'title'=> $title,
+                'start'=> $start,
+                'end'=> $end,
+                'backgroundColor'=> $backgroundColor
+              ]; 
+          }
         }
+        echo json_encode($events);   
+
+      }else{
+        echo json_encode([]);
       }
-      echo json_encode($events);   
+    
     ?>;
     
-    console.log(oldPlanningEvents);
+    console.log("Événements de planification existants :", oldPlanningEvents);
     
+    initialDate = oldPlanningEvents.length>0? oldPlanningEvents[0].start :null;
+    initialDate = initialDate.split('T')[0];
+    calendar.gotoDate(initialDate);
     calendar.addEventSource(oldPlanningEvents);
-  }
-
+  });
   function coachUpdatePlanning() {
-    document.getElementById("planning").value = JSON.stringify(availabilityData);
+      document.getElementById("planning").value = JSON.stringify(availabilityData);
+      console.log("Planification mise à jour :", document.getElementById("planning").value);
+      return true; // Allow the form to submit
   }
+  function previewImage(event) {
+        const input = event.target;
+        const previewContainer = document.getElementById("image-preview");
+        const previewImage = document.getElementById("image-preview-img");
+
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                previewImage.src = e.target.result;
+                previewContainer.classList.remove("d-none"); // Show preview
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+ 
 </script>
 @endsection

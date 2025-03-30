@@ -7,182 +7,206 @@ $patient_first_name = ($patient->patient_type=='kid'|| $patient->patient_type=='
 $patient_last_name = ($patient->patient_type=='kid'|| $patient->patient_type=='young')? $patient->last_name : $patient->parent_last_name;
 $patient_full_name = $patient_first_name . ' ' . $patient_last_name;
 
-
 @endphp
-
-<div class="patient-profile">
-
-    @if(session('updated'))
-        <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
-        <symbol id="check-circle-fill" fill="currentColor" viewBox="0 0 16 16">
-            <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
-        </symbol>
-        </svg>
-        <div class="alert alert-success d-flex align-items-center" role="alert">
-            <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Success:"><use xlink:href="#check-circle-fill"/></svg>
-            <div>
-            {{ session('updated') }}
-            </div>
-        </div>
-
-    @endif
-    <!-- Header Section -->
-    <div class="profile-header d-flex justify-content-between align-items-center">
-        <div>
-        <!-- <img src="https://i.pravatar.cc/150" width="100" alt="Patient" class="patient-avatar"> -->
-        <div class="header-info">
-            <h1 class="patient-name">{{ $patient_full_name }}</h1>
-
-            <div class="patient-meta">
-                <span><mark><i class="fa-solid fa-user"></i> {{ $patient->patient_type }}</mark></span>
-                <span> <mark> <i class="fas fa-birthday-cake"></i> {{ $patient->age }} years </mark></span>
-                <span>
-                    <mark>
-                    @if ($patient->gender == "M")
-                        Male <i class="bi bi-gender-male"></i>
-                    @elseif ($patient->gender == "F")
-                        Female <i class="bi bi-gender-female"></i>
-                    @endif
-                    </mark>
-                </span>
-                <span> <mark> <i class="fas fa-file-medical"></i> ID : {{ $patient->id }} <mark></span>
-                <input type="hidden" name="patient_id" id="patient_id" value="{{ $patient->id }}">
-            </div>
-            <hr class="mb-2 mt-2">
-            @if ($patient->patient_type == 'kid' || $patient->patient_type == 'young')
-                <div class="patient-meta">
-                    <span><i class="fa-solid fa-school-flag"></i> ecole : {{ $patient->ecole }}</span>
-                    <span><i class="fa-solid fa-sitemap"></i> System : {{ $patient->system }}</span>
-                </div>
-                <div class="patient-meta">
-                    <span><i class="fa-solid fa-hands-holding-child"></i> parent full name : {{ $patient->parent_first_name }} {{ $patient->parent_last_name }}</span>
-                    <span><i class="fa-solid fa-briefcase"></i> Prefession : {{ $patient->profession }}</span>
-                    <span><i class="fa-solid fa-building"></i> etablissment : {{ $patient->etablissment }}</span>
-                </div>
-            @endif
-            <div class="patient-meta">
-                <p><i class="bi bi-envelope-at-fill"></i> email : {{ $patient->email }}</p>
-                <p><i class="bi bi-geo-alt-fill"></i> adress : {{ $patient->address }}</p>
-                <p><i class="fa-solid fa-people-arrows"></i> mode : {{ $patient->mode }}</p>
-                <p><i class="fas fa-file-medical"></i> subscription : {{ $patient->subscription }}</p>
-                <p><i class="fa-solid fa-hospital-user"></i> Speciality : {{ $patient->speciality->name }}</p>
-            </div>
-
-        </div>
-
-        </div>
-        <form action="{{ route('patient.edit', $patient->id) }}" method="GET">
-            @csrf
-            <button class="btn btn-secondary btn-lg" >
-                <i class="fas fa-plus me-2"></i>edit Patient 
-            </button>
-        </form>
-    </div>
-    <div id="coachAvailabilityMessage" class="mb-4 mt-4"></div>
-    <!-- Calendars Switcher -->
-    <div class="calendar-switcher mb-4">
-        <button class="action-btn" id="appointments_id" onclick="switchCalendars('appointments-calendar')">
-            <i class="fas fa-calendar-check"></i> Appointments Calendar
-        </button>
-        <button class="action-btn" id="availabilities_id" onclick="switchCalendars('availabilities-calendar')">
-            <i class="fas fa-users"></i> Disponibilities Calendar
-        </button>
-    </div>
-    <!-- Calendar Section -->
-    <div class="calendar-container appointments-calendar">
-        <div id="appointments-calendar"></div>
-    </div>
-    <div class="calendar-container availabilities-calendar">
-        <div id="availabilities-calendar"></div>
-    </div>  
-</div>
 <style>
+  :root {
+        --primary-color: #6366f1;
+        --secondary-color: #4f46e5;
+        --light-bg: #f8fafc;
+        --dark-text: #1e293b;
+    }
 
-       /* Action Button */
-       .action-btn {
-        background-color: #3498db;
-        color: #fff;
-        border: none;
-        padding: 8px 16px;
-        border-radius: 6px;
-        font-size: 0.9rem;
-        cursor: pointer;
-        transition: background-color 0.3s;
-    }
-    .action-btn:hover {
-        background-color: #2980b9;
-    }
-    /* Overall Container */
+
     .patient-profile {
-        /* Main-content background is set by the layout (#ecf0f1) */
-        margin: 20px;
+        display: grid;
+        grid-template-columns: 300px 1fr;
+        gap: 2rem;
+        padding: 2rem;
+        background: var(--light-bg);
+        min-height: 100vh;
     }
-    /* Profile Header */
+
+    .patient-sidebar {
+        background: white;
+        border-radius: 12px;
+        padding: 2rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        height: fit-content;
+    }
+
+    .patient-main {
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+    }
+
     .profile-header {
         display: flex;
-        align-items: center;
-        background-color: #fff;
-        padding: 20px;
-        border-radius: 8px;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        margin-bottom: 20px;
+        flex-direction: column;
+        align-items: start;
+        gap: 1rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 1px solid #e2e8f0;
     }
+
     .patient-avatar {
         width: 80px;
         height: 80px;
         border-radius: 50%;
-        margin-right: 20px;
-        object-fit: cover;
-        border: 3px solid #3498db;
+        background: var(--primary-color);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 2rem;
     }
-    .header-info h1.patient-name {
-        font-size: 1.8rem;
-        color: #2c3e50;
-        margin-bottom: 8px;
-    }
-    .patient-meta{
-        margin-top: 10px;
 
+    .patient-img-avatar {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 3px solid var(--primary-color);
     }
-    .patient-meta span ,p{
-        /* display: inline-block; */
-        margin-top: 10px;
-        margin-right: 25px;
-        color: #7f8c8d;
-        font-size: 0.9rem;
+
+    .patient-stats {
+        display: grid;
+        gap: 1rem;
     }
-    .calendar-container {
-        background-color: #fff;
+
+    .stat-card {
+        background: var(--light-bg);
+        padding: 1rem;
         border-radius: 8px;
-        padding: 20px;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-       }
-    
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .stat-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 8px;
+        background: rgba(99, 102, 241, 0.1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--primary-color);
+    }
+
+    .detail-section {
+        background: white;
+        border-radius: 12px;
+        padding: 2rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    }
+
+    .nav-tabs {
+        display: flex;
+        gap: 1rem;
+        border-bottom: 1px solid #e2e8f0;
+        padding-bottom: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .nav-item {
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .nav-item.active {
+        background: var(--primary-color);
+        color: white;
+    }
+
+    .calendar-container {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        height: 650px; 
+        min-height: 350px;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .calendar-nav {
+        display: flex;
+        gap: 1rem;
+        padding: 1rem;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+
+    #availabilities-calendar {
+        flex: 1;
+        padding: 1rem;
+    }
+
+  
+    .fc {
+        --fc-border-color: #e2e8f0;
+        --fc-today-bg-color: #f8fafc;
+        --fc-neutral-bg-color: #f8fafc;
+        --fc-page-bg-color: white;
+    }
+
+    .fc-header-toolbar {
+        background: linear-gradient(195deg, var(--primary-color), var(--secondary-color));
+        color: white;
+        padding: 1rem;
+        margin: 0 !important;
+        border-radius: 8px 8px 0 0;
+    }
+    .fc-view-harness {
+        height: 100% !important;
+    }
+    .fc-button-primary {
+        background-color: var(--primary-color) !important;
+        border-color: var(--primary-color) !important;
+    }
+
     .fc-event {
-            border: none !important;
-            border-radius: 8px !important;
-            padding: 8px 12px !important;
-            margin: 4px !important;
-            font-weight: 500 !important;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-            box-shadow: 0 3px 6px rgba(0,0,0,0.16) !important;
-            position: relative;
-            overflow: hidden;
+        border: none !important;
+        border-radius: 8px !important;
+        padding: 6px 8px !important;
+        margin: 4px !important;
+        font-weight: 500 !important;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        box-shadow: 0 3px 6px rgba(0,0,0,0.16) !important;
+        position: relative;
+        overflow: hidden;
     }
 
     .fc-event::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 4px;
-            height: 100%;
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 4px;
+        height: 100%;
     }
-    #appointments-calendar, #availabilities-calendar {
-        /* color: var(--secondary-color); */
-        height: 600px;
+    .fc .fc-button-primary {
+        background: var(--primary-color);
+        border-color: var(--primary-color);
+        text-transform: capitalize;
     }
 
+    /* Hover Effects */
+    .fc-event:hover {
+        transform: translateY(-2px) scale(1.02);
+        box-shadow: 0 6px 12px rgba(0,0,0,0.25) !important;
+    }
+
+    /* Time Styling */
+    .fc-event-time {
+        font-weight: 300;
+        opacity: 0.8;
+        margin-right: 8px;
+    }
+
+    
     .priority1 .fc-event-title,
     .priority1 .fc-event-time {
     color:rgb(206, 1, 1) !important; 
@@ -197,85 +221,342 @@ $patient_full_name = $patient_first_name . ' ' . $patient_last_name;
     .priority3 .fc-event-time {
     color:rgb(1, 174, 27) !important;
     }
-        /* priority 1 - Amber */
-        .fc-event.priority1 {
-            background: rgba(255, 167, 38, 0.15) !important;
-            color:rgb(255, 38, 38) !important;
-        }
-        .fc-event.priority1::before {
-            background:rgb(255, 38, 38);
-        }
-
-        /* priority 2 - Emerald */
-        .fc-event.priority2 {
-            background: rgba(102, 187, 106, 0.15) !important;
-            color:rgb(231, 140, 2) !important;
-        }
-        .fc-event.priority2::before {
-            background: rgb(231, 140, 2);
-        }
-
-        /* priority 3 - Rose */
-        .fc-event.priority3 {
-            background: rgba(239, 83, 80, 0.15) !important;
-            color:rgb(16, 236, 0) !important;
-        }
-        .fc-event.priority3::before {
-            background: rgb(16, 236, 0) ;
-        }
-
-        /* Hover Effects */
-        .fc-event:hover {
-            transform: translateY(-2px) scale(1.02);
-            box-shadow: 0 6px 12px rgba(0,0,0,0.25) !important;
-        }
-
-        /* Time Styling */
-        .fc-event-time {
-            font-weight: 300;
-            opacity: 0.8;
-            margin-right: 8px;
-        }
-
-
-/* Smaller Coach Cards */
-    .glass-card {
-        background-color: #2c3e50;
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 8px;
-        padding: 10px; /* Reduced padding for a smaller card */
-        transition: transform 0.3s, box-shadow 0.3s;
-        color: #ecf0f1;
-        font-size: 0.9rem; /* Slightly smaller text */
+    .priority1 { background: rgba(255, 76, 76, 0.1) !important; border-left: 4px solid #ff4c4c !important; }
+    .priority2 { background: rgba(255, 152, 0, 0.1) !important; border-left: 4px solid #ff9800 !important; }
+    .priority3 { background: rgba(76, 175, 80, 0.1) !important; border-left: 4px solid #4caf50 !important; }
+    .table-responsive {
+        border-radius: 12px;
+        max-height: 70vh;
     }
 
+    .appointments-table th {
+        background: linear-gradient(195deg, var(--primary-color), var(--secondary-color));
+        color: white;
+        padding: 1rem;
+        font-weight: 500;
+        position: sticky;
+        top: 0;
+        z-index: 2;
+    }
+
+    .appointments-table td {
+        padding: 0.75rem;
+        border-bottom: 1px solid #e2e8f0;
+        vertical-align: middle;
+    }
+    .patient-table {
+        width: 200%;
+        overflow: scroll;
+        border-collapse: collapse;
+        background: var(--glass-bg);
+    }
+    .appointments-table , .reports-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
     
 </style>
+<div class="patient-profile">
+    <!-- Left Sidebar -->
+    <div class="patient-sidebar">
+        <div class="profile-header">
+
+        @if ($patient->image_path)
+            <div class="patient-avatar-initials">
+                <img src="{{ asset('storage/' . $patient->image_path) }}" alt="Image Previe" class="patient-img-avatar">
+                
+            </div>
+        @else
+            <div class="patient-avatar">
+                {{ strtoupper(substr($patient_full_name, 0, 1)) }}
+            </div>
+        
+        @endif
+
+            <h2 class="text-xl font-semibold">{{ $patient_full_name }}</h2>
+            <span class="text-sm text-gray-500">ID: {{ $patient->id }}</span>
+            <input type="hidden" name="patient_id" id="patient_id" value="{{ $patient->id }}">
+
+            <form action="{{ route('patient.edit', $patient->id) }}" method="GET">
+                    @csrf
+                    <button class="btn btn-primary btn-smdeepsee">
+                        <i class="fas fa-plus me-2"></i>Modifier le patient
+                    </button>
+            </form>
+
+        </div>
+
+        <div class="patient-stats">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-user-tag"></i>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-500">Type</p>
+                    <p class="font-medium">{{ ucfirst($patient->patient_type) }}</p>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-birthday-cake"></i>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-500">Âge</p>
+                    <p class="font-medium">{{ $patient->age }} ans</p>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">
+                    @if ($patient->gender == "M")
+                        <i class="fas fa-mars"></i>
+                    @else
+                        <i class="fas fa-venus"></i>
+                    @endif
+                </div>
+                <div>
+                    <p class="text-sm text-gray-500">Genre</p>
+                    <p class="font-medium">{{ $patient->gender == "M" ? 'Homme' : 'Femme' }}</p>
+                </div>
+
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">
+                     <i class="fas fa-calendar-week"></i>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-500">Quota hebdomadaire</p>
+                    <p class="font-medium">{{ $patient->weekly_quota }} Max</p>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="patient-main">
+        <!-- Navigation Tabs -->
+        <div class="nav-tabs">
+            <div class="nav-item active" onclick="showTab('personal', this)">Informations personnelles</div>
+            <div class="nav-item" onclick="showTab('medical', this)">Informations médicales</div>
+            <div class="nav-item" onclick="showTab('coaches', this)">Informations des coachs</div>
+            <div class="nav-item" onclick="showTab('appointmentsHistory', this)">Rendez vous</div>
+            <div class="nav-item" onclick="showTab('calendar', this)">Calendrier</div>
+        </div>
+
+
+        <!-- Personal Info Tab -->
+        <div class="detail-section" id="personalTab">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Informations de contact</h3>
+                    <div class="space-y-2">
+                        <p><i class="fas fa-phone mr-2"></i> {{ $patient->phone }}</p>
+                        <p><i class="fas fa-envelope mr-2"></i> {{ $patient->email }}</p>
+                        <p><i class="fas fa-map-marker-alt mr-2"></i> {{ $patient->address }}</p>
+                    </div>
+                </div>
+
+                @if ($patient->patient_type == 'kid' || $patient->patient_type == 'young')
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Détails du tuteur</h3>
+                    <div class="space-y-2">
+                        <p><i class="fas fa-user-tie mr-2"></i> {{ $patient->parent_first_name }} {{ $patient->parent_last_name }}</p>
+                        <p><i class="fas fa-briefcase mr-2"></i> {{ $patient->profession }}</p>
+                        <p><i class="fas fa-building mr-2"></i> {{ $patient->etablissment }}</p>
+                    </div>
+                </div>
+                @endif
+            </div>
+        </div>
+
+        <!-- Medical Info Tab -->
+        <div class="detail-section hidden" id="medicalTab">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Informations sur le traitement</h3>
+                    <div class="space-y-2">
+                        <p><i class="fas fa-calendar-alt mr-2"></i> {{
+                         $patient->subscription 
+                          }}</p>
+                        <p><i class="fas fa-user-md mr-2"></i> {{ $patient->speciality->name }}</p>
+                        <p><i class="fas fa-laptop-medical mr-2"></i> {{ $patient->mode }}</p>
+                    </div>
+                </div>
+
+                @if ($patient->patient_type == 'kid' || $patient->patient_type == 'young')
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Détails de l'éducation</h3>
+                    <div class="space-y-2">
+                        <p><i class="fas fa-school mr-2"></i> {{ $patient->ecole }}</p>
+                        <p><i class="fas fa-sitemap mr-2"></i> {{ $patient->system }} Système</p>
+                    </div>
+                </div>
+                @endif
+            </div>
+        </div>
+        <!-- appointments history Info Tab -->
+        <div class="detail-section hidden" id="appointmentsHistoryTab">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+           
+                    <h3 class="text-lg font-semibold mb-4">appointments </h3>
+                    <div id="appointments-table" class="data-table-container active-view">
+
+            
+                            <div class="table-responsive">   
+                                <table class="appointments-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Entraîneur</th>
+                                            <th>Date &amp; Heure</th>
+                                            <th>Statut</th>
+                                            <th>Rapport</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @php
+                                        @endphp
+                                        @if ($appointments!=null)
+                                            @foreach ($appointments as $appointment)
+                                                <tr>
+                                                    <td>
+                                                      {{ $appointment->coach->full_name }}
+                                                    </td>
+                                                
+                                                    @php
+                                                    $appointmentDate = json_decode($appointment->appointment_planning, true);
+                                                    @endphp
+                                                    <td>
+                                                        @if(is_array($appointmentDate))
+                                                            @foreach ($appointmentDate as $date => $time)
+                                                                <span>{{ $date }} - </span>
+                                                                @foreach ($time as $slot)
+                                                                    <span>{{ $slot }} </span>
+                                                                @endforeach
+                                                            @endforeach
+                                                        @endif
+                                                    </td>
+                                                    @php
+                                                        $color = '';
+                                                        if ($appointment->status == 'pending') {
+                                                            $color = 'pending';
+                                                        } elseif ($appointment->status == 'passed') {
+                                                            $color = 'passed';
+                                                        } elseif ($appointment->status == 'cancel') {
+                                                            $color = 'cancel';
+                                                        }
+                                                    @endphp
+                                                    <td><span class="status-badge {{$color}}">{{ $appointment->status }}</span></td>
+                                                    @if ($appointment->report_path)
+                                                    <td>
+                                                        <a href="{{ route('appointments.viewReport', $appointment->id) }}" target="_blank" class="action-btn">
+                                                            <i class="fas fa-file-alt"></i>
+                                                        </a>
+                                                        <a href="{{ route('appointments.downloadReport', $appointment->id) }}" class="action-btn">
+                                                            <i class="fas fa-cloud-download-alt"></i>
+                                                        </a>
+                                                    </td>
+                                                    @else
+                                                    <td>Pas de rapport</td>
+                                                    @endif
+                                                        
+                                                    <td class="text-center">
+                                                        <a href="{{ route('appointment.show', $appointment->id) }}" class="btn btn-sm btn-outline-secondary me-2">
+                                                            <i class="fas fa-eye"></i>
+                                                        </a>
+                                                        
+                                                    </td>
+                                                </tr>
+                                            @endforeach
+                                        @endif
+                                    
+                                        <!-- More rows if needed -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        
+                    </div>
+            </div>
+        </div>
+
+              <!-- assigned coach Info Tab -->
+        <div class="detail-section hidden" id="coachesTab">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Coachs assignés</h3>
+                    <p class="alert alert-info"> Sélectionnez qui peut voir <q> <b><i>{{ $patient_full_name }}</i></b> </q> rapports </p>
+                    <div class="space-y-2">
+                    <form action="{{ route('who_can_See',$patient->id) }}" method="post" >
+                        @csrf
+
+                        @foreach ($patient->coaches as $coach)
+                            <input type="checkbox"
+                                id="coachCheckbox{{ $coach->id }}"
+                                name="coaches[]"
+                                value="{{ $coach->id }}"
+                                {{ in_array($patient->id, $coach->can_see ?? []) ? 'checked' : '' }}>
+                            <label class="form-check-label" for="coachCheckbox{{ $coach->id }}">
+                                {{ $coach->full_name }}
+                            </label>
+                            <br>
+                        @endforeach
+
+                        <div class="text-center w-100">
+                            <button type="submit" class="btn btn-primary"> Enregistrer </button>
+                        </div>
+                    </form>
+                    
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+        <div class="calendar-container  " id="calendarTab">
+            <div id="availabilities-calendar"></div>
+        </div> 
+  
+    </div>
+</div>
+
 <script>
-    // Global calendar instance variables
-    let appointmentsCalendarInstance;
+
+      // Global calendar instance variables
+
     let availabilitiesCalendarInstance;
-    // Function to switch calendars and update size
-    function switchCalendars(calendarClass) {
-        // Hide all calendar containers
-        const calendars = document.querySelectorAll('.calendar-container');
-        calendars.forEach(c => c.style.display = 'none');
+    // Tab navigation
+    function showTab(tabName, element) {
+        // Remove active class and hide all sections
+        document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+        document.querySelectorAll('.detail-section, .calendar-container').forEach(el => el.style.display = 'none');
+        
+        // If an element is passed (i.e. from a click event), mark it as active
+        if (element) {
+            element.classList.add('active');
+        }
+        
+        // Show the target tab
+        document.getElementById(tabName + 'Tab').style.display = 'block';
 
-        // Show the selected calendar container
-        const selectedCalendar = document.querySelector('.' + calendarClass);
-        if (selectedCalendar) {
-            selectedCalendar.style.display = 'block';
-
-            // Call updateSize() on the appropriate FullCalendar instance
-            if (calendarClass === 'appointments-calendar' && appointmentsCalendarInstance) {
-                appointmentsCalendarInstance.updateSize();
-            } else if (calendarClass === 'availabilities-calendar' && availabilitiesCalendarInstance) {
-                availabilitiesCalendarInstance.updateSize();
-            }
+        // If showing the calendar tab, re-render and update its size after a brief delay
+        if (tabName === 'calendar' && availabilitiesCalendarInstance) {
+            setTimeout(() => {
+            availabilitiesCalendarInstance.render();
+            availabilitiesCalendarInstance.updateSize();
+            }, 100);
         }
     }
-    function bookAppointment(coachId, appointmentDate, startTime, endTime, patientId, specialityId) {
+    // Initialize default tab
+    document.addEventListener('DOMContentLoaded', () => {
+        showTab('personal');
+        availabilitiesCalendarInstance = initAvailabilitiesCalendar();
+    });
 
+    function bookAppointment(coachId, appointmentDate, startTime, endTime, patientId, specialityId) {
         const planning = {};
         planning[appointmentDate] = {
             startTime: startTime,
@@ -306,202 +587,66 @@ $patient_full_name = $patient_first_name . ' ' . $patient_last_name;
         })
         .then(result => {
             console.log('Appointment stored successfully:', result);
-            alert('Appointment booked successfully!');
+            alert('Rendez-vous réservé avec succès!');
         })
         .catch(error => {
-            console.error('Error storing appointment:', error);
-            alert('There was an error booking the appointment.');
+            console.error('Erreur lors de l\'enregistrement du rendez-vous:', error);
+            alert('Une erreur s\'est produite lors de la réservation du rendez-vous.');
         });
         
     }    
-    document.addEventListener('DOMContentLoaded', function() {
-        // Initialize and store appointments calendar instance
-        appointmentsCalendarInstance = initAppointmentsCalendar();
-        // Initialize and store availabilities calendar instance
-        availabilitiesCalendarInstance = initAvailabilitiesCalendar();
-
-        // Show appointments calendar by default and hide availabilities
-        document.querySelector('.appointments-calendar').style.display = 'block';
-        document.querySelector('.availabilities-calendar').style.display = 'none';
-    });
-    function initAppointmentsCalendar() {
-    const patientId = document.getElementById('patient_id').value;    
-    const calendarEl = document.getElementById('appointments-calendar');
-    const calendar = new FullCalendar.Calendar(calendarEl, {
-        initialView: 'dayGridMonth',
-        headerToolbar: {
-            left: 'prev,next today',
-            center: 'title',
-            right: 'dayGridMonth,timeGridWeek,timeGridDay'
-        },
-        events: [], // start with no events
-        eventContent: function(arg) {
-            return {
-                html: `<div class="fc-event-inner">
-                         <span class="fc-event-time">${arg.timeText}</span>
-                         <span class="fc-event-title">${arg.event.title}</span>
-                       </div>`
-            };
-        },
-        eventDidMount: function(arg) {
-            arg.el.addEventListener('mouseenter', function() {
-                arg.el.style.zIndex = '999';
-            });
-            arg.el.addEventListener('mouseleave', function() {
-                arg.el.style.zIndex = 'auto';
-            });
-        },
-        eventClick: function(info) {
-            const coachId = info.event.extendedProps.coach_id;
-            const patientId = info.event.extendedProps.patient_id;
-            const date = info.event.extendedProps.date;
-            const specialityId = info.event.extendedProps.speciality_id;
-            const priority = info.event.extendedProps.priority;
-            
-            // Use moment.js or native methods to get time in HH:mm format
-            const startTimeApp = moment(info.event.start).format('HH:mm');
-            const endTimeApp = moment(info.event.end).format('HH:mm');
-            
-            console.log(coachId, patientId, date, specialityId, priority, startTimeApp, endTimeApp);
-            bookAppointment(coachId, date, startTimeApp, endTimeApp, patientId, specialityId );
-        }
-    });
-    calendar.render();
-    // Now fetch events and add them to the calendar
-    const data = { patient_id: patientId };
-    fetch("{{ route('coach-availability') }}", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').content
-        },
-        body: JSON.stringify(data)
-    })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error("Network response was not ok");
-        }
-        return response.json();
-    })
-    .then(result => {
-        const container = document.querySelector('#coachAvailabilityMessage')
-        if (result.success) {
-            console.log(result);
-            let priorityUsedClass = '';
-            switch (result['priorityUsed']) {
-                case 'priority 1':
-                    priorityUsedClass = 'priority1';
-                    break;
-                case 'priority 2':
-                    priorityUsedClass = 'priority2';
-                    break;
-                case 'priority 3':
-                    priorityUsedClass = 'priority3';
-                    break;
-            }
-            result.available_coaches.forEach(av => {
-                const coach = av['coach']['full_name'];
-                const coach_id = av['coach']['id'];
-                const speciality_id = av['speciality']['id'];
-                const patient_id = av['patient']['id'];
-                const date = av['date'];
-                // Ensure time strings are formatted properly
-                const startTime = av['free_interval']['startTime'] + ":00";
-                const endTime = av['free_interval']['endTime'] + ":00";
-                
-                // Build the event object
-                const eventObj = {
-                    title: coach,
-                    start: date + 'T' + startTime,
-                    end: date + 'T' + endTime,
-                    className: priorityUsedClass,
-                    extendedProps: {
-                        priority: result['priorityUsed'],
-                        patient_id: patient_id,
-                        coach_id: coach_id,
-                        date: date,
-                        speciality_id: speciality_id
-                    }
-                };
-                // Add the event to the calendar
-                calendar.addEvent(eventObj);
-            });
-        } 
-        else {
-            var message =result.message;
-            if (result.outdatedPrioritiesMessage!=undefined) {
-                
-                message = result.outdatedPrioritiesMessage;
-                console.log(message);
-                console.log('outdatedPrioritiesMessage is not null');  
-            } 
-            container.innerHTML = `
-                    <div class="glass-card p-4 text-center text-white/70">
-                        <i class="fas fa-exclamation-triangle text-2xl mb-2"></i>
-                        ${message}
-                    </div>
-                `;            
-        }
-    })
-    .catch(error => console.error("Error fetching events:", error));
-}
     // Function to initialize the availabilities calendar
     function initAvailabilitiesCalendar() {
+        let initialDate;
         var calendarEl = document.getElementById("availabilities-calendar");
         var allPatientPriorities = 
-            <?php
-$patientPriorities = json_decode($patient->priorities, true);
-$allPriorities = [];
-// dd($patientPriorities);
+        <?php
+            $patientPriorities = json_decode($patient->priorities, true);
+            $allPriorities = [];
+            // dd($patientPriorities);
 
-foreach ($patientPriorities as $priorityKey => $data) {
-    // dd($priorityKey,$data);
-    $priorityClass = '';
-    switch ($priorityKey) {
-        case 'priority 1':
-            $priorityClass = 'priority1';
-            break;
-        case 'priority 2':
-            $priorityClass = 'priority2';
-            break;
-        case 'priority 3':
-            $priorityClass = 'priority3';
-            break;
-    }
+            foreach ($patientPriorities as $priorityKey => $data) {
+                // dd($priorityKey,$data);
+                $priorityClass = '';
+                switch ($priorityKey) {
+                    case 'priority 1':
+                        $priorityClass = 'priority1';
+                        break;
+                    case 'priority 2':
+                        $priorityClass = 'priority2';
+                        break;
+                    case 'priority 3':
+                        $priorityClass = 'priority3';
+                        break;
+                }
 
-    foreach ($data as $day => $slots) {
+                foreach ($data as $day => $slots) {
 
-        foreach ($slots as $slot) {
-            // dd($slot["startTime"].':00');
-            $startTime = $slot['startTime'] . ':00';
-            $endTime = $slot['endTime'] . ':00';
-            $allPriorities[] = [
-                'id' => $slot['id'],
-                'title' => $priorityKey,
-                'start' => $day . 'T' . $startTime,
-                'end' => $day . 'T' . $endTime,
-                'className' => $priorityClass,
-                'extendedProps' => [
-                    'priority' => $priorityKey
-                ]
-            ];
-        }
+                    foreach ($slots as $slot) {
+                        // dd($slot["startTime"].':00');
+                        $startTime = $slot['startTime'] . ':00';
+                        $endTime = $slot['endTime'] . ':00';
+                        $allPriorities[] = [
+                            'id' => $slot['id'],
+                            'start' => $day . 'T' . $startTime,
+                            'end' => $day . 'T' . $endTime,
+                            'className' => $priorityClass,
+                            'extendedProps' => [
+                                'priority' => $priorityKey
+                            ]
+                        ];
+                    }
+                }
+            }
 
-        // if ($slot['recurrence'] && $slot['recurrence'] === "weekly") {
-        //     $extraEvents = generateRecurringEvents($day, $slot, $slot['recurrence'], 6);
-        //     // dd($extraEvents);
-        //     $allPriorities = array_merge($allPriorities, $extraEvents);
-        //   }
+            // dd($allPriorities)
+            echo json_encode($allPriorities);
+        ?>;
+        initialDate = allPatientPriorities.length > 0 ? allPatientPriorities[0].start : null;
+        initialDate = initialDate.split('T')[0]
 
-    }
-}
-
-// dd($allPriorities)
-echo json_encode($allPriorities);
-                ?>;
-
-                console.log(allPatientPriorities);
-                
+                        console.log(allPatientPriorities);
+                        
         var calendar = new FullCalendar.Calendar(calendarEl, {
             initialView: "timeGridWeek",
             headerToolbar: {
@@ -509,41 +654,25 @@ echo json_encode($allPriorities);
                 center: 'title',
                 right: 'dayGridMonth,timeGridWeek,timeGridDay'
             },
+            height: 'auto',
+            contentHeight: 'auto',
+            aspectRatio: 1.8,
+            firstDay: 1, 
+            hiddenDays: [0], 
+            eventMinHeight: 50,
+            slotMinTime: '12:00:00',
+            slotMaxTime: '20:00:00',
+            allDaySlot: false,
+            nowIndicator: true,
+            expandRows: true,
             events: allPatientPriorities,
         });
         calendar.render();
+        calendar.gotoDate(initialDate);
+
         return calendar;
     };
-
-//  <?php
-//     function generateRecurringEvents($date, $slot, $recurrence, $occurrences = 5) {
-//         // $date is expected to be in "YYYY-MM-DD" format.
-//         $events = [];
-//         $currentDate = DateTime::createFromFormat('Y-m-d', $date);
-
-//         for ($i = 1; $i <= $occurrences; $i++) {
-//             // Add 7 days to the current date for each occurrence.
-//             $currentDate->modify('+7 days');
-//             $newDate = $currentDate->format('Y-m-d');
-
-//             $events[] = [
-//                 'id' => $slot['id'] . '-' . $i, // unique id for occurrence
-//                 'title' => 'Priority 1',         // Adjust accordingly or include priority info
-//                 'start' => $newDate . 'T' . $slot['startTime'] . ':00',
-//                 'end' => $newDate . 'T' . $slot['endTime'] . ':00',
-//                 'backgroundColor' => 'red',      // Use appropriate color based on priority
-//                 'extendedProps' => [
-//                     'recurrence' => $recurrence
-//                 ]
-//             ];
-//         }
-//         return $events;
-//     }
-
-//  ?>
 
 </script>
 
 @endsection
-
-

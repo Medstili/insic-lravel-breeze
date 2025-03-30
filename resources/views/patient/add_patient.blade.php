@@ -1,231 +1,417 @@
-@extends('layouts.app') {{-- Extend your main layout --}}
+@extends('layouts.app')
 
 @section('content')
-
 <style>
-        .calendar-container {
-        background-color: #fff;
+    :root {
+        --primary-color: #6366f1;
+        --secondary-color: #4f46e5;
+        --accent-color: #818cf8;
+        --light-bg: #f8fafc;
+        --dark-text: #1e293b;
+        --glass-bg: rgba(255, 255, 255, 0.9);
+    }
+
+    .creation-container {
+        background: var(--light-bg);
+        padding: 2rem;
+        border-radius: 12px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    }
+
+    .form-header {
+        color: var(--secondary-color);
+        font-weight: 600;
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+        border-bottom: 2px solid var(--primary-color);
+    }
+
+    .glass-card {
+        background: var(--glass-bg);
+        backdrop-filter: blur(10px);
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+
+    .form-floating label {
+        color: #64748b;
+        transition: all 0.3s ease;
+    }
+
+    .form-control, .form-select {
         border-radius: 8px;
-        padding: 20px;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        margin-bottom: 20px;
-        
+        border: 1px solid #e2e8f0;
+        transition: all 0.3s ease;
+        padding: 0.75rem 1rem;
     }
-    #calendar{
-        height: 600px;
+
+    .form-control:focus, .form-select:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
     }
+
+    .section-title {
+        color: var(--secondary-color);
+        font-weight: 500;
+        margin: 1.5rem 0;
+        padding-left: 0.5rem;
+        border-left: 3px solid var(--primary-color);
+    }
+
+    #calendar {
+        background: white;
+        border-radius: 12px;
+        padding: 1rem;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+
+    .fc-header-toolbar {
+        background: linear-gradient(195deg, var(--primary-color), var(--secondary-color));
+        color: white;
+        padding: 1rem;
+        border-radius: 8px 8px 0 0;
+    }
+
+    .fc-button-primary {
+        background-color: var(--primary-color) !important;
+        border-color: var(--primary-color) !important;
+    }
+
+    .priority-marker {
+        display: inline-block;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        margin-right: 0.5rem;
+    }
+
+    .btn-primary {
+        background: var(--primary-color);
+        border: none;
+        padding: 0.75rem 2rem;
+        transition: all 0.3s ease;
+    }
+
+    .btn-primary:hover {
+        background: var(--secondary-color);
+        transform: translateY(-2px);
+    }
+
+    .alert-danger {
+        background: rgba(239, 68, 68, 0.1);
+        border: none;
+        color: #ef4444;
+        border-radius: 8px;
+    }
+
     .is-invalid {
-        border: 2px solid red !important;
-        background-color: #ffe6e6;
-      }
-      .invalid-feedback {
-          color: red;
-          font-size: 14px;
-          display: block;
-      }
+        border-color: #ef4444 !important;
+    }
+
+
+    .coach-section {
+    background: var(--glass-bg);
+    padding: 1rem;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+.coach-section .form-check {
+    margin-bottom: 0.5rem;
+}
+.coach-section .form-check-input {
+    cursor: pointer;
+}
+.coach-section .form-check-label {
+    color: var(--dark-text);
+    cursor: pointer;
+}
+
+.invalid-feedback {
+        color: #ef4444;
+        font-size: 0.875rem;
+        margin-top: 0.5rem;
+    }
+
 </style>
 
-<div class="container mt-5">
-  <div class="card  p-4">
-    <h3 class="mb-4">🌟 New Patient Profile</h3>
-    <form action="{{ route('patient.store') }}" onsubmit="storePriorities()" method="POST" class="row g-4">
-      @csrf
-        <!-- Patient Type Selection -->
-        <div class="col-12">
-            <div class="form-floating mb-3">
-            <select id="patientType" name="patient_type" class="form-select bg-transparent" required>
-                <option value="" selected disabled>Select Patient Type</option>
-                <option value="kid">Kid</option>
-                <option value="young">Young</option>
-                <option value="adult">Adult</option>
-            </select>
-            <label for="patientType">Patient Type</label>
-            </div>
-        </div>
+<div class="creation-container">
+    <div class="glass-card">
+        <h3 class="form-header">✨ Nouveau Profil Patient</h3>
+        
+        <form action="{{ route('patient.store') }}" method="POST" enctype="multipart/form-data" onsubmit="storePriorities()" class="row g-3">
+            @csrf
 
-        <!-- age -->
-        <div class="row">
-            <div class="col-md-6">
-                    <div class="form-floating mb-3">
-                    <input type="number" name="age" id="kidAge" class="form-control bg-transparent" placeholder="Age" required>
-                    <label for="kidAge">Age</label>
-                    </div>
+            <!-- Patient Type Selection -->
+            <div class="col-12">
+                <div class="form-floating">
+                    <select id="patientType" name="patient_type" class="form-select" required>
+                        <option value="" selected disabled>Sélectionner le Type de Patient</option>
+                        <option value="kid">Enfant</option>
+                        <option value="young">Jeune</option>
+                        <option value="adult">Adulte</option>
+                    </select>
+                    <label for="patientType">Patient Type</label>
+                </div>
+            </div>
+
+            <!-- Age & Gender -->
+            <div class="col-md-4">
+                <div class="form-floating">
+                    <input type="number" name="age" class="form-control" placeholder="Age" required>
+                    <label>Âge</label>
+                </div>
             </div>
             <!-- gender -->
-            <div class="col-md-6">
+            <div class="col-md-4">
                 <div class="form-floating">
-                    <select name="PatientGender" id="PatientGender" class="form-select bg-transparent" required>
-                        <option value="M">Male</option>
-                        <option value="F">Female</option>
+                    <select name="PatientGender" class="form-select" required>
+                        <option value="M">Homme</option>
+                        <option value="F">Femme</option>
                     </select>
-                    <label for="PatientGender">Patient Gender</label>
+                    <label for="PatientGender">Genre</label>
                 </div>
             </div>
-        </div>
-        
-        <!-- Kid/Young Section: Only for Kid or Young -->
-        <div id="kidSection" class="col-12 d-none">
-            <h4 class="KidYoungDetailsTitle">Kid Details</h4>
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="form-floating mb-3">
-                    <input type="text" name="kid_last_name" id="kidLastName" class="form-control bg-transparent" placeholder="Nom">
-                    <label for="kidLastName">Nom</label>
+            <!-- speciality -->
+            <div class="col-md-4">
+                <div class="form-floating">
+                    <select class="form-select" id="specialtySelect" name="speciality_id"  required>
+                        <option value="">All Specialties</option>
+                        @foreach($specialities as $speciality)
+                            <option value="{{ $speciality->id }}">{{ $speciality->name }}</option>
+                        @endforeach
+                    </select>
+                    <label>Sélectionner la Spécialité</label>
+                </div>
+            </div>
+            <!-- Kid/Young Section -->
+            <div id="kidSection" class="d-none">
+                <h4 class="section-title kid-title ">Informations sur l'Enfant</h4>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <div class="form-floating">
+                            <input type="text" id="kidLastName" name="kid_last_name" class="form-control" placeholder="Last Name">
+                            <label>Nom</label>
+                           
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-floating">
+                            <input type="text" id="kidFirstName" name="kid_first_name" class="form-control @error('parent_email') is-invalid @enderror" placeholder="First Name">
+                            <label>Prénom</label>
+                            @error('kid_first_name')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-floating">
+                            <input type="text" id="kidEcole" name="kid_ecole" class="form-control" placeholder="School">
+                            <label>École</label>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-floating">
+                            <select id="kidSystem" name="kid_system" class="form-select">
+                                <option value="" disabled selected>Sélectionner un Système</option>
+                                <option value="moroccan">Système Marocain</option>
+                                <option value="mission">Système Mission</option>
+                            </select>
+                            <label>Education System</label>
+                        </div>
                     </div>
                 </div>
-                <div class="col-md-6">
-                    <div class="form-floating mb-3">
-                    <input type="text" name="kid_first_name" id="kidFirstName" class="form-control bg-transparent" placeholder="Prénom">
-                    <label for="kidFirstName">Prénom</label>
+            </div>
+
+            <!-- Guardian Section -->
+            <div id="parentSection" class="d-none">
+                <h4 class="section-title parent-title">Informations sur le Tuteur</h4>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <div class="form-floating">
+                            <input type="text" name="parent_last_name" class="form-control" placeholder="Last Name" required>
+                            <label>Nom</label>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-floating">
+                            <input type="text" name="parent_first_name" class="form-control @error('parent_email') is-invalid @enderror" placeholder="First Name" required>
+                            <label>Prénom</label>
+                            @error('parent_first_name')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-floating">
+                            <input type="tel" name="parent_phone" class="form-control" placeholder="Phone" required>
+                            <label>Numéro de Téléphone</label>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-floating">
+                            <input type="email" id="parentEmail" name="parent_email" class="form-control @error('parent_email') is-invalid @enderror" placeholder="Email">
+                            <label>Adresse Email</label>
+                            @error('parent_email')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-floating">
+                            <input type="text" name="parent_profession" class="form-control" placeholder="Profession" required>
+                            <label>Profession</label>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-floating">
+                            <input type="text" name="parent_etablissement" id="parentEtablissement" class="form-control bg-transparent" placeholder="Etablissement" required>
+                            <label for="parentEtablissement">Établissement</label>
+                        </div>
+                    </div>
+            
+                    <div class="col-12">
+                        <div class="form-floating">
+                            <input type="text" name="parent_adresse" class="form-control" placeholder="Address" required>
+                            <label>Adresse</label>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-floating">
+                            <select name="mode" class="form-select" required>
+                                <option value="A Distance">À Distance</option>
+                                <option value="Presentiel">Présentiel</option>
+                            </select>
+                            <label>Mode de Consultation</label>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-floating">
+                            <select name="abonnement" class="form-select" required>
+                                <option value="seance">Par Séance</option>
+                                <option value="mois">Mensuel</option>
+                                <option value="pack">Pack</option>
+                            </select>
+                            <label>Type d'Abonnement</label>
+                        </div>
                     </div>
                 </div>
             </div>
-            <div class="row">
-                <!-- ecole -->
-                <div class="col-md-6">
-                    <div class="form-floating mb-3">
-                    <input type="text" name="kid_ecole" id="kidEcole" class="form-control bg-transparent" placeholder="Ecole">
-                    <label for="kidEcole">Ecole</label>
+            
+            <!-- Coaches Section -->
+            <div class="col-12">
+                <h4 class="section-title">Sélectionner les Coachs</h4>
+                <div class="coach-section" id="coachContainer">
+                    @foreach ($coaches as $coach)
+                        <div class="form-check coach-item" data-coach-id="{{ $coach->id }}">
+                            <input type="checkbox" name="coaches[]" id="coachCheckBox{{ $coach->id }}" class="form-check-input" value="{{ $coach->id }}" onchange="maxCountDisplay('{{ $coach->id }}', this)">
+                            <label class="form-check-label" for="coachCheckBox{{ $coach->id }}">
+                                {{ $coach->full_name }}
+                            </label>
+                            <input type="number" id="coach{{ $coach->id }}" name="coach{{ $coach->id }}" class="d-none" min="1" max="3" style="width: 100px;">
+                        </div>
+                    @endforeach
+                </div>
+                <!-- Hidden input to store the order -->
+                <input type="hidden" name="coach_order" id="coach_order">
+            </div>
+
+            <!-- max appointments on a week -->
+            <div class="col-md-4">
+            <h4 class="section-title" >Rendez-vous par Semaine</h4>
+                <div class="form-floating">
+                    <input type="number" min="1" max="3" name="max_appointments" class="form-control" required>
+                    <label >Nombre maximum de rendez-vous par semaine</label>
+                </div>
+            </div>
+
+            <!-- image section -->
+            
+            <div class="form-group text-center mt-4">
+                    <label class="form-label fw-bold mb-2">Choose an Image:</label>
+
+                    <!-- Hidden File Input -->
+                    <input type="file" name="image" id="image-input" accept="image/*" hidden onchange="previewImage(event)">
+
+                    <!-- Custom Button -->
+                    <label for="image-input" class="btn btn-primary">
+                      <i class="fas fa-upload me-2"></i> Upload Image
+                    </label>
+
+                    <!-- Image Preview (Circle or Square) -->
+                    <div id="image-preview" class="mt-3 d-none ">
+                      <img src="#" alt="Image Preview" id="image-preview-img" class="rounded-circle shadow img-thumbnail" style="width: 80px; height: 80px; object-fit: cover;">
                     </div>
-                </div>
-                <!-- system -->
+            </div>
 
+            
+
+            <!-- Calendar Section -->
+            <div class="col-12">
+                <h4 class="section-title mt-4">Planifier les Priorités</h4>
+                
                 <div class="col-md-6">
-                    <div class="form-floating">
-                        <select name="kid_system" id="kidSystem" class="form-select bg-transparent">
-                        <option value="" selected disabled>Select A system</option>
-                        <option value="moroccan">Moroccan System</option>
-                        <option value="mission">Mission System</option>
-                        </select>
-                        <label for="kid_system">System</label>
+                        <div class="form-floating">
+                            <select id="priorityChoice" name="priority_choice" class="form-select">
+                                <option value="1" selected>Priorité 1</option>
+                                <option value="2" >Priorité 2</option>
+                                <option value="3" >Priorité 3</option>
+                            </select>
+                            <label>Choisir une Priorité</label>
+                        </div>
+                </div>
+                
+                @error('priorities')
+                    <div class="alert alert-danger">
+                        <i class="fas fa-exclamation-circle me-2"></i>{{ $message }}
                     </div>
-                </div>
+                @enderror
+                <div id="calendar"></div>
             </div>
-        </div>
-        
-     
-        <!-- Parent / Adult Section -->
-        <div id="parentSection" class="col-12 d-none">
-            <h4 id="parentSectionTitle">Parent / Patient Details</h4>
-            <div class="row">
-            <div class="col-md-6">
-                <div class="form-floating mb-3">
-                <input type="text" name="parent_last_name" id="parentLastName" class="form-control bg-transparent" placeholder="Nom" required>
-                <label for="parentLastName">Nom</label>
-                </div>
-            </div>
-            <div class="col-md-6">
-                <div class="form-floating mb-3">
-                <input type="text" name="parent_first_name" id="parentFirstName" class="form-control bg-transparent" placeholder="Prénom"required>
-                <label for="parentFirstName">Prénom</label>
-                </div>
-            </div>
-            </div>
-            <div class="row">
-            <div class="col-md-6">
-                <div class="form-floating mb-3">
-                <input type="tel" name="parent_phone" id="parentPhone" class="form-control bg-transparent" placeholder="Phone"required>
-                <label for="parentPhone">Phone</label>
-                </div>
-            </div>
-            <div class="col-md-6">
-                <div class="form-floating mb-3">
-                <input type="text" name="parent_profession" id="parentProfession" class="form-control bg-transparent" placeholder="Profession" required>
-                <label for="parentProfession">Profession</label>
-                </div>
-            </div>
-            </div>
-            <div class="form-floating mb-3">
-            <input type="text" name="parent_etablissement" id="parentEtablissement" class="form-control bg-transparent" placeholder="Etablissement" required>
-            <label for="parentEtablissement">Etablissement</label>
-            </div>
-            <div class="form-floating mb-3">
-            <input type="email" name="parent_email" id="parentEmail" class="form-control bg-transparent @error('parent_email') is-invalid @enderror" placeholder="Email">
-            <label for="parentEmail">Email</label>
-            </div>
-                     <!-- Display Error Message -->
-            @error('parent_email')
-                <div class="invalid-feedback"> 
-                    {{ $message }}
-                </div>
-            @enderror
-            <div class="form-floating mb-3">
-            <input type="text" name="parent_adresse" id="parentAdresse" class="form-control bg-transparent" placeholder="Adresse" required>
-            <label for="parentAdresse">Adresse</label>
-            </div>
-            <div class="mb-3">
-            <label for="mode" class="form-label">Mode</label>
-            <select name="mode" id="mode" class="form-select bg-transparent" required>
-                <option value="A Distance">A distance</option>
-                <option value="Presentiel">Presentiel</option>
-            </select>
-            </div>
-            <div class="mb-3">
-            <label for="abonnement" class="form-label">Abonnement</label>
-            <select name="abonnement" id="abonnement" class="form-select bg-transparent" required>
-                <option value="seance">Seance</option>
-                <option value="mois">Mois</option>
-                <option value="pack">Pack</option>
-            </select>
-            </div>
-        </div>
 
-        <div class="specialities d-none">
-            <label class="filter-label  text-2xl mb-2">
-               Select Specialty
-            </label>
-            <select class="glass-select" id="specialtySelect" name="specialty_id" required>
-                    <option value="">All Specialties</option>
-                @foreach($specialities as $specialty)
-                    <option value="{{ $specialty->id }}">{{ $specialty->name }}</option>
-                @endforeach
-             </select>
-        </div>
+         
 
-
-
-              <!-- error message  -->
-        @error('priorities')
-            <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
-            <symbol id="exclamation-triangle-fill" fill="currentColor" viewBox="0 0 16 16">
-                <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
-            </symbol>
-            </svg>
-            <div class="alert alert-danger d-flex align-items-center" role="alert">
-            <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:"><use xlink:href="#exclamation-triangle-fill"/></svg>
-            <div>
-                {{ $message }}
+            <!-- Hidden Input & Submit -->
+            <div class="col-12 text-center mt-4">
+                <input type="hidden" name="priorities" id="prioritiesInput">
+                <button type="submit" class="btn btn-primary px-5 py-2">
+                    <i class="fas fa-save me-2"></i>Créer le Profil du Patient
+                </button>
             </div>
-            </div>
-        @enderror
-        <!-- Calendar Section -->
-        <div class="calendar-container">
-            <div id="calendar"></div>
-        </div>           
-
-        <!-- Submit Button -->
-        <div class="col-12 text-center mt-4">
-            <input type="hidden" name="priorities" id="prioritiesInput">
-            <button type="submit" class="btn btn-primary btn-lg px-5">
-            <i class="fas fa-save me-2"></i>Add Patient
-            </button>
-        </div>
-
-  
-    </form>
-  </div>
+        </form>
+    </div>
 </div>
 
 <script>
-     var prioritiesData = {};
+    function  maxCountDisplay(id,event) {
+        if (event.checked) {
+            document.querySelector(`#coach${id}`).classList.remove('d-none'); 
+            document.querySelector(`#coach-order${id}`).classList.remove('d-none');
+            document.querySelector(`#coach-order-label${id}`).classList.remove('d-none');
+
+            console.log(id);
+            
+            
+        }else{
+        document.querySelector(`#coach${id}`).classList.add('d-none');
+        document.querySelector(`#coach${id}`).value = ''; 
+        document.querySelector(`#coach-order${id}`).classList.add('d-none');
+        document.querySelector(`#coach-order${id}`).value = '';
+        document.querySelector(`#coach-order-label${id}`).classList.add('d-none');
+
+        }
+
+    }
+    var prioritiesData = {};
     document.addEventListener("DOMContentLoaded", function() {
         const patientTypeSelect = document.getElementById('patientType');
         const kidSection = document.getElementById('kidSection');
         const parentSection = document.getElementById('parentSection');
-        const parentSectionTitle = document.getElementById('parentSectionTitle');
-        const kidYoungDetailsTitle = document.querySelector('.KidYoungDetailsTitle');
-        const calendarContainer = document.querySelector('.calendar-container');
-        const specialities = document.querySelector('.specialities');
+        const parentTitle = document.getElementsByClassName('parent-title');
+        const kidTitle = document.querySelector('.kid-title');
         const kidLastName = document.querySelector('#kidLastName');
         const kidFirstName = document.querySelector('#kidFirstName');
         const kidEcole = document.querySelector('#kidEcole');
@@ -238,13 +424,12 @@
         const selectedType = this.value;
         console.log(selectedType);
 
-        specialities.classList.remove('d-none');
         
         if (selectedType === 'young') {
-            kidYoungDetailsTitle.textContent = 'Young Details';
+            kidTitle.textContent = 'Young Details';
         }
         else {
-            kidYoungDetailsTitle.textContent = 'Kid Details';
+            kidTitle.textContent = 'Kid Details';
         }
         if (selectedType === 'kid' || selectedType === 'young') {
 
@@ -255,7 +440,7 @@
 
             kidSection.classList.remove('d-none');
             parentSection.classList.remove('d-none');
-            parentSectionTitle.textContent = 'Parent Details';
+            parentTitle.textContent = 'Parent Details';
         } 
         else if (selectedType === 'adult') {
             kidFirstName.removeAttribute('required');
@@ -264,20 +449,46 @@
             kidSystem.removeAttribute('required');
             kidSection.classList.add('d-none');
             parentSection.classList.remove('d-none');
-            parentSectionTitle.textContent = 'Patient Details';
+            parentTitle.textContent = 'Patient Details';
         } 
         else {
             kidSection.classList.add('d-none');
             parentSection.classList.add('d-none');
-            specialities.classList.add('d-none');
+          
         }
         });
         if (parentEmail.classList.contains('is-invalid')) {
             parentSection.classList.remove('d-none');
             console.log('exist'); 
         }
+
+        
+    }); 
+    document.addEventListener('DOMContentLoaded', function() {
+    // Initialize SortableJS on the coach container
+    var coachContainer = document.getElementById('coachContainer');
+    Sortable.create(coachContainer, {
+        animation: 150, // Smooth animation
+        onEnd: function(evt) {
+            updateCoachOrder();
+        }
     });
-    // Add a new event to the prioritiesData object.
+
+    // Function to update the hidden input with the current order of coach IDs
+    function updateCoachOrder() {
+        const coachItems = document.querySelectorAll('#coachContainer .coach-item');
+        const order = [];
+        coachItems.forEach(item => {
+            order.push(item.getAttribute('data-coach-id'));
+        });
+        document.getElementById('coach_order').value = JSON.stringify(order);
+        console.log("Current order:", order);
+    }
+    
+    // Update order initially
+    updateCoachOrder();
+});
+
     function addEventToPriorities(priorityChoice, date, eventId, startTime, endTime) {
     var priorityKey = "priority " + priorityChoice;
     if (!prioritiesData[priorityKey]) {
@@ -334,7 +545,6 @@
     });
     console.log("After update:", prioritiesData);
     }
-
     function deleteEventFromPriorities(event) {
     var parts = event.title.split(" ");
     var priorityChoice = parts[1];
@@ -347,6 +557,7 @@
         var arr = prioritiesData[priorityKey][date];
         for (var i = 0; i < arr.length; i++) {
             if (arr[i].id === event.id) {
+                arr.splice(i, 1);
                 if (arr.length === 0) {
                     delete prioritiesData[priorityKey][date];
                 }
@@ -359,8 +570,6 @@
         }
     }
 }
-
-
     document.addEventListener("DOMContentLoaded", function() {
     var calendarEl = document.getElementById("calendar");
     var colors = { "1": "red", "2": "orange", "3": "green" };
@@ -370,6 +579,13 @@
         initialView: "timeGridWeek",
         selectable: true,
         editable: true,
+        firstDay: 1, 
+        hiddenDays: [0], 
+        slotMinTime: '12:00:00',
+        slotMaxTime: '20:00:00',
+        allDaySlot: false,
+        nowIndicator: true,
+        expandRows: true,
         select: function(info) {
 
         var startDateTime = info.startStr; 
@@ -380,10 +596,11 @@
         var endTime = endDateTime ? (endDateTime.split("T")[1] ? endDateTime.split("T")[1].substring(0,5) : "23:59") : "23:59";
         
         // Prompt user to choose a priority.
-        var priorityChoice = prompt("Enter priority (1=High, 2=Medium, 3=Low):");
+        // var priorityChoice = prompt("Enter priority (1=High, 2=Medium, 3=Low):");
+        var priorityChoice = document.querySelector('#priorityChoice').value;
         
         if (!priorityChoice || !["1","2","3"].includes(priorityChoice)) {
-            alert("Invalid priority selected.");
+            alert("Priorité sélectionnée invalide.");
             calendar.unselect();
             return;
         }
@@ -410,7 +627,7 @@
         updateEventInPriorities(info.event);
         },
         eventClick: function(info) {
-        if (confirm("Do you want to delete this event?")) {
+        if (confirm("Voulez-vous supprimer cet événement ?")) {
             deleteEventFromPriorities(info.event);
             info.event.remove();
         }
@@ -423,6 +640,95 @@
     document.getElementById("prioritiesInput").value = JSON.stringify(prioritiesData);
     return true;
 }
+    // function fetchCoachesBySpeciality(specialityId) {
+    //     fetch("{{ route('getCoachesBySpeciality') }}",{
+    //         method: 'POST',
+    //         headers: {
+    //             'Content-Type': 'application/json',
+    //             'X-CSRF-TOKEN': "{{ csrf_token() }}"
+    //         },
+    //         body: JSON.stringify({ specialityId })
+    //     })
+    //         .then(response => response.json())
+    //         .then(data => {
+    //             const coaches = data.coaches || [];
+
+    //             const coachSection = document.querySelector('.coach-section');
+    //             coachSection.innerHTML = ''; 
+                
+    
+    //                 if (coaches.length === 0) {
+    //                     document.getElementById('caochesSectionWarning').classList.remove('d-none');
+    //                     return; 
+    //                 }else{
+    //                     document.getElementById('caochesSectionWarning').classList.add('d-none');
+    //                 }
+    //             coaches.forEach(coach => {
+    //                 const coachDiv = document.createElement('div');
+    //                 coachDiv.classList.add('form-check');
+
+    //                 const checkbox = document.createElement('input');
+    //                 checkbox.type = 'checkbox';
+    //                 checkbox.classList.add('form-check-input');
+    //                 checkbox.id = `coachCheckbox${coach.id}`;
+    //                 checkbox.name = 'coaches[]';
+    //                 checkbox.value = coach.id;
+    //                 checkbox.setAttribute('onchange', `maxCountDisplay('${coach.id}', this)`);
+
+    //                 const label = document.createElement('label');
+    //                 label.classList.add('form-check-label');
+    //                 label.setAttribute('for', `coachCheckbox${coach.id}`);
+    //                 label.textContent = coach.full_name;
+
+    //                 const inputNumber = document.createElement('input');
+    //                 inputNumber.type = 'number';
+    //                 inputNumber.id = `coach${coach.id}`;
+    //                 inputNumber.name = `coach${coach.id}`;
+    //                 inputNumber.classList.add('d-none');
+    //                 inputNumber.min = '1';
+    //                 inputNumber.style.width = '100px';
+
+    //                 coachDiv.appendChild(checkbox);
+    //                 coachDiv.appendChild(label);
+    //                 coachDiv.appendChild(inputNumber);
+
+    //                 coachSection.appendChild(coachDiv);
+    //             });
+                
+    //         })
+    //         .catch(error => console.error('Error fetching coaches:', error));
+    // }
+    
+    // document.getElementById('specialtySelect').addEventListener('change', function() {
+    //     const selectedSpeciality = this.value;
+
+    //     console.log(selectedSpeciality);
+        
+    //     if (selectedSpeciality) {
+    //         fetchCoachesBySpeciality(selectedSpeciality);
+    //         document.getElementById('caochesSectionAlert').classList.add('d-none');
+    //     }else{
+    //         document.getElementById('caochesSectionAlert').classList.remove('d-none');
+    //         const coachSection = document.querySelector('.coach-section');
+    //         coachSection.innerHTML = ''; 
+    //     }
+    // });
+
+    function previewImage(event) {
+        const input = event.target;
+        const previewContainer = document.getElementById("image-preview");
+        const previewImage = document.getElementById("image-preview-img");
+
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                previewImage.src = e.target.result;
+                previewContainer.classList.remove("d-none"); // Show preview
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+ 
 
 </script>
 @endsection

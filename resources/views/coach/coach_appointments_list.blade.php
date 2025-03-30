@@ -1,167 +1,176 @@
 @extends('layouts.coach_app')
 @section('content')
     <div>
-        <h1 class="text-center w-100 fs-1 fw-bold mb-4 mt-4"> Appointments List</h1>
+        <h1 class="text-center w-100 fs-1 fw-bold mb-4 mt-4">Liste des Rendez-vous</h1>
     </div>
-    <form action="{{ route('appointments_list', Auth::user()->id) }}" method="GET" class="mb-4 p-4">
-            <div class="row g-2">
-                <div class="col-md-3">
-                    <input type="text" name="q" value="{{ request('q') }}" placeholder="Search by Coach or Patient" class="form-control">
-                </div>
-                <div class="col-md-3">
-                    <select name="speciality" class="form-select">
-                        <option value="">All Specialities</option>
-                        @foreach($specilaities as $speciality)
-                        <option value="{{ $speciality->id }}" {{ request('speciality') == $speciality->id ? 'selected' : '' }}>{{ $speciality->name }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                <div class="col-md-2">
-                    <select name="status" class="form-select">
-                        <option value="">All Status</option>
-                        <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>pending</option>
-                        <option value="passed" {{ request('status') == 'passed' ? 'selected' : '' }}>passed</option>
-                        <option value="cancel" {{ request('status') == 'cancel' ? 'selected' : '' }}>cancel</option>
-                    </select>
-                </div>
-                <div class="col-md-2">
-                    <input type="date" name="date" value="{{ request('date') }}" placeholder="Search by Coach or Patient" class="form-control">
-                </div>
-      
-                <div class="col-md-2">
-                    <button type="submit" class="btn btn-primary w-100">
-                        <i class="fas fa-search me-2"></i>Search
-                    </button>
-                </div>
+    <form action="{{ route('appointments_list', Auth::user()->id) }}" method="GET" class="mb-4 glass-card p-4">
+        <div class="row g-2">
+            <div class="col-md-3">
+                <input type="text" name="q" value="{{ request('q') }}" placeholder="Rechercher par Patient" title="Rechercher par nom" class="form-control">
             </div>
-    </form>
-        <!-- Appointment Table -->
-        <div class="glass-card p-2 mb-4">
-            <table class="table table-hover align-middle">
-                <thead class="thead-light">
-                    <tr>
-                        <th><i class="fas fa-id-badge text-center"></i> ID</th>
-                        <th><i class="fas fa-user text-center"></i> Patient Name</th>
-                        <th><i class="fas fa-date text-center"></i> Date </th>
-                        <th><i class="fas fa-user text-center"></i> Coach</th>
-                        <th><i class="fas fa-star text-center"></i> Specialty</th>
-                        <th><i class="fas fa-clock text-center"></i> Status</th>
-                        <th><i class="fas fa-cogs text-center"></i> Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-              
-                    @foreach($coachAppointments as $appointment)
-                                               
-                    <tr class="coach-card">
-                        <td>{{ $appointment->id }}</td>
-                        <td>
-                            {{ 
-                                $fullName = ($appointment->patient->patyient_type == 'Kid'||$appointment->patient->patyient_type =='young')?
-                                $appointment->patient->first_name.' '.$appointment->patient->last_name :
-                                $appointment->patient->parent_first_name.' '.$appointment->patient->parent_last_name
-                             }}
-                        </td>
-                        <td>
-                        
-                            @php
-                                $schedule = json_decode($appointment->appointment_planning, true);
-                            @endphp
-                        
-                            @if (is_array($schedule))
-                                @foreach ($schedule as $day => $time)
-                                    <ul class="list-unstyled mb-0">
-                                        <li class="fw-bold">{{ $day }}</li>
-                                        @foreach ($time as $slot)
-                                            <li>{{ $slot }}</li>
-                                        @endforeach
-                                    </ul>
-                                @endforeach
-                            @else
-                                <div class="schedule-item">No schedule available</div>
-                            @endif
-                        </td>
-                        <td>
-                           
-                            <span class="status-badge">
-                                {{ $appointment->coach->full_name }}
-                            </span>
-                        </td>
-                        <td class="text-center">
-                            <span class="badge text-black">
-                                {{ $appointment->Speciality->name }}
-                            </span>
-                        </td>
-                        <td>
-                            @php
-                                $color = ''; // Default color
-                                if ($appointment->status == 'pending') {
-                                    $color = 'badge bg-warning';
-                                } elseif ($appointment->status == 'passed') {
-                                    $color = 'badge bg-success';
-                                } elseif ($appointment->status == 'cancel') {
-                                    $color = 'badge bg-danger';
-                                }
-                            @endphp
-                            <span class="{{ $color }}">
-                                {{ $appointment->status }}
-                            </span>
-                        </td>
-                        <td>
-                            <div class="row row-cols-2 g-2 text-center">
-                                @if ($appointment->report_path)
-                                    <div class="col">
-                                        <form action="{{ route('coach-appointments.downloadReport', $appointment->id) }}" method="GET">
-                                            @csrf
-                                            <button class="btn btn-outline-primary btn-sm w-100">
-                                                <i class="fas fa-cloud-download-alt"></i>
-                                            </button>
-                                        </form>
-                                    </div>
-                                @endif
-                                <div class="col">
-                                    <form action="{{ route('appointment_details', $appointment->id) }}" method="GET">
-                                        
-                                        @csrf
-                                        <button type="submit" class="btn btn-outline-secondary btn-sm w-100">
-                                            <i class="fas fa-eye"></i>
-                                        </button>
-                                    </form>
-                                </div>
-                                @if ($appointment->status == "pending")
-                                    <div class="col">
-                                        <form action="{{ route('appointment_edit',$appointment->id) }}">
-                                            @csrf
-                                            @method('PATCH')
-                                            <button type="submit" class="btn btn-outline-danger btn-sm w-100">
-                                                <i class="fas fa-archive"></i>
-                                            </button>
-                                        </form>
-                                    </div>
-                                    <div class="col">
-                                        <form action="{{ route('appointments.update-appointment-status', [$appointment->id, 'passed']) }}" method="POST">
-                                            @csrf
-                                            @method('PATCH')
-                                            <button type="submit" class="btn btn-outline-success btn-sm w-100">
-                                                <i class="bi bi-check-circle-fill"></i>
-                                            </button>
-                                        </form>
-                                    </div>
-                                @endif
-                            </div>
-                        </td>
-                    </tr>
-                    @endforeach
-                </tbody>
-            </table>
+            <div class="col-md-3">
+                <select name="status" class="form-select" title="Rechercher par statut">
+                    <option value="">Tous les Statuts</option>
+                    <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>En attente</option>
+                    <option value="passed" {{ request('status') == 'passed' ? 'selected' : '' }}>Passé</option>
+                    <option value="cancel" {{ request('status') == 'cancel' ? 'selected' : '' }}>Annulé</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <input type="date" name="date" value="{{ request('date') }}" placeholder="Rechercher par date" title="Rechercher par date" class="form-control">
+            </div>
+            <div class="col-md-3">
+                <button type="submit" class="btn btn-primary w-100">
+                    <i class="fas fa-search me-2"></i>Rechercher
+                </button>
+            </div>
         </div>
+    </form>
+    <!-- Appointments Table -->
+    <div id="appointments-table" class="data-table-container">
+        <div>
+            <div class="table-responsive">   
+                <table class="appointments-table">
+                    <thead>
+                        <tr>
+                            <th>Patient</th>
+                            <th>Date &amp; Heure</th>
+                            <th>Statut</th>
+                            <th>Rapport</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if ($coachAppointments!=null)
+                            @foreach ($coachAppointments as $appointment)
+                                <tr>
+                                    <td>
+                                        @if ($appointment->patient->first_name==null)
+                                        {{ $appointment->patient->parent_first_name}} {{ $appointment->patient->parent_last_name }}
+                                        @else
+                                            {{ $appointment->patient->first_name}} {{ $appointment->patient->last_name }}
+                                        @endif
+                                    </td>
+                                
+                                    @php
+                                    $appointmentDate = json_decode($appointment->appointment_planning, true);
+                                    @endphp
+                                    <td>
+                                        @if(is_array($appointmentDate))
+                                            @foreach ($appointmentDate as $date => $time)
+                                                <span>{{ $date }} - </span>
+                                                @foreach ($time as $slot)
+                                                    <span>{{ $slot }} </span>
+                                                @endforeach
+                                            @endforeach
+                                        @endif
+                                    </td>
+                                    @php
+                                        $color = '';
+                                        if ($appointment->status == 'pending') {
+                                            $color = 'pending';
+                                        } elseif ($appointment->status == 'passed') {
+                                            $color = 'passed';
+                                        } elseif ($appointment->status == 'cancel') {
+                                            $color = 'cancel';
+                                        }
+                                    @endphp
+                                    <td><span class="status-badge {{$color}}">{{ $appointment->status }}</span></td>
 
-        <style>
-                .glass-card {
-                    background-color: #fff;
-                    border-radius: 8px;
-                    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-                    border: none;
-                }
-        </style>
+                                    @if ($appointment->report_path)
+                                    <td>
+                                        <a href="{{ route('appointments.viewReport', $appointment->id) }}" target="_blank" class="action-btn">
+                                            <i class="fas fa-file-alt"></i>
+                                        </a>
+                                        <a href="{{ route('coach-appointments.downloadReport', $appointment->id)}}" class="action-btn">
+                                            <i class="fas fa-cloud-download-alt"></i>
+                                        </a>
+                                    </td>
+                                    @else
+                                    <td>Pas de Rapport</td>
+                                    @endif
+                                        
+                                    
+                                    <td class="text-center">
+                                    <div class="row table-row row-cols-3 text-center">
+                                        @if ($appointment->status == "pending")
+                                            <div class="col">
+                                                <form action="{{ route('appointment_edit',$appointment->id) }}">
+                                                    @csrf
+                                                    @method('PATCH')
+                                                    <button type="submit" class="btn btn-outline-danger btn-sm ">
+                                                        <i class="fas fa-archive"></i>
+                                                    </button>
+                                                </form>
+
+                                            </div>
+                                            <div class="col">
+                                                <form action="{{ route('coach-update-appointment-status', [$appointment->id, 'passed']) }}" method="POST">
+                                                    @csrf
+                                                    @method('PATCH')
+                                                    <button type="submit" class="btn btn-outline-success btn-sm">
+                                                        <i class="bi bi-check-circle-fill"></i>
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        @endif
+                                        <div class="col">
+                                            <a href="{{route('appointment_details', $appointment->id)  }}" class="btn btn-sm btn-outline-secondary ">
+                                                <i class="fas fa-eye"></i>
+                                            </a> 
+
+                                        </div>
+                                    </div>
+
+                                    </td>
+                                </tr>
+                            @endforeach
+                        @endif
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <style>
+            .table-row {
+                --bs-gutter-x: 0;
+            }
+            .glass-card {
+                background-color: #fff;
+                border-radius: 8px;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                border: none;
+            }
+            .data-table-container {
+                background: white;
+                border-radius: 1rem;
+                /* overflow: hidden; */
+                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            }
+            .appointments-table {
+                width: 100%;
+                border-collapse: collapse;
+            }
+
+            .table-responsive {
+                border-radius: 12px;
+                max-height: 70vh;
+            }
+
+            thead th {
+                background: linear-gradient(195deg, var(--primary-color), var(--secondary-color));
+                color: white;
+                padding: 1rem;
+                font-weight: 500;
+                position: sticky;
+                top: 0;
+                z-index: 2;
+            }
+
+            tbody td {
+                padding: 0.75rem;
+                border-bottom: 1px solid #e2e8f0;
+                vertical-align: middle;
+            }
+    </style>
 @endsection

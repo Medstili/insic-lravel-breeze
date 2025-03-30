@@ -1,155 +1,195 @@
-
 @extends('layouts.coach_app')
 
 @section('content')
 
     <div>
-        <h1 class="text-center w-100 fs-1 fw-bold mb-4 mt-4"> Patients List</h1>
+        <h1 class="text-center w-100 fs-1 fw-bold mb-4 mt-4">Liste des Patients</h1>
     </div>
     <!-- search form -->
-    <form action="{{ route('patients_list', auth()->user()->id) }}" method="GET" class="mb-4 p-4">
+    <form action="{{ route('patients_list', auth()->user()->id) }}" method="GET" class="mb-4 glass-card p-4">
         <div class="row g-2">
             <div class="col-md-6">
-                <input type="text" name="q" value="{{ request('q') }}" placeholder="Search by patient" class="form-control bg-transparent">
+                <input type="text" name="q" value="{{ request('q') }}" placeholder="Rechercher par patient" class="form-control bg-transparent">
             </div>
             <div class="col-md-2">
                 <select name="gender" class="form-select bg-transparent">
-                    <option value="">All Gender</option>
-                    <option value="M" {{ request('gender') == 'Male' ? 'selected' : '' }}>Male</option>
-                    <option value="F" {{ request('gender') == 'Female' ? 'selected' : '' }}>Female</option>
+                    <option value="">Tous les Genres</option>
+                    <option value="M" {{ request('gender') == 'Male' ? 'selected' : '' }}>Homme</option>
+                    <option value="F" {{ request('gender') == 'Female' ? 'selected' : '' }}>Femme</option>
                 </select>
             </div>
             <div class="col-md-2">
                 <select name="patient_type" class="form-select bg-transparent">
-                    <option value="">All Type</option>
-                    <option value="kid" {{ request('patient_type') == 'kid' ? 'selected' : '' }}>kid</option>
-                    <option value="young" {{ request('patient_type') == 'young' ? 'selected' : '' }}>young</option>
-                    <option value="adult" {{ request('patient_type') == 'adult' ? 'selected' : '' }}>adult</option>
+                    <option value="">Tous les Types</option>
+                    <option value="kid" {{ request('patient_type') == 'kid' ? 'selected' : '' }}>Enfant</option>
+                    <option value="young" {{ request('patient_type') == 'young' ? 'selected' : '' }}>Jeune</option>
+                    <option value="adult" {{ request('patient_type') == 'adult' ? 'selected' : '' }}>Adulte</option>
                 </select>
             </div>
             <div class="col-md-2">
                 <button type="submit" class="btn btn-primary w-100">
-                    <i class="fas fa-search me-2"></i>Search
+                    <i class="fas fa-search me-2"></i>Rechercher
                 </button>
             </div>
         </div>
     </form>
-   <!-- patients Table -->
-   <div class="glass-card p-4 table_container">
-        <div class="table-responsive">
-            <table class="table table-hover align-middle">
-                <thead>
-                    <tr class="bg-primary text-white">
-                        <th><i class="fas fa-id-badge me-2"></i> ID</th>
-                        <th><i class="fas fa-user me-2"></i> Kid/Young Full Name</th>
-                        <th><i class="fas fa-phone me-2"></i> Phone</th>
-                        <th>Age</th>
-                        <th><i class="fas fa-venus-mars me-2"></i> Gender</th>
-                        <th><i class="fa-solid fa-school-flag"></i> Ecole</th>
-                        <th><i class="fa-solid fa-sitemap"></i> System</th>
-                        <th><i class="fas fa-user me-2"></i> Parent/adult Full Name</th>
-                        <th><i class="fa-solid fa-briefcase"></i> Profession</th>
-                        <th><i class="fa-solid fa-building"></i> Etablissment</th>
-                        <th><i class="bi bi-envelope-at-fill"></i> Email</th>
-                        <th><i class="bi bi-geo-alt-fill"></i> Adress</th>
-                        <th><i class="fa-solid fa-people-arrows"></i> Mode</th>
-                        <th>Subscription</th>
-                        <th><i class="fas fa-cogs me-2"></i>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($patients as $patient)
-                    <tr class="hover-shadow">
-                        <!-- id -->
-                        <td>{{ $patient->id }}</td>
-                        <!-- full name kid/young -->
-                        <td>
-                            @if ($patient->first_name==null)
-                            <mark><i>vide</i></mark>
-                            @else
-                            <div class="">
-                                <!-- <div class="symbol symbol-40 me-3">
-                                    <img src="https://i.pravatar.cc/150" class="rounded-circle" width="40" alt="patient Avatar">
-                                </div> -->
-                                <div>
-                                    <div class="fw-bold">{{ $patient->first_name}} {{ $patient->last_name }}</div>
-                                </div>
-                            </div>
-                            @endif
-
-
-                        </td>
-                        <!-- phone -->
-                        <td>{{ $patient->phone }}</td>
-                        <!-- age -->
-                        <td>{{ $patient->age }}</td>
-                        <!-- gender -->
-                        <td>
-                            @if ($patient->gender == 'M')
-                                <span class="badge bg-primary">Male <i class="bi bi-gender-male"></i></span>
-                            @else
-                                <span class="badge bg-danger">Female <i class="bi bi-gender-female"></i></span>
-                            @endif
-                        </td>
-                        <!-- ecole -->
-                        <td>
-                            @if ( $patient->ecole  == null)
-                            <mark><i>vide</i></mark>
-                            @else
-                            {{ $patient->ecole }}
-                            @endif
-                            </td>
-                        <!-- system -->
-                        <td>
-                        @if ( $patient->system  == null)
-                                <mark><i>vide</i></mark>
-                            @else
-                            {{ $patient->system }}
-                            @endif
-                            </td>
-                        <!-- parent patient full name -->
-                        <td>{{ $patient->parent_first_name }}  {{ $patient->parent_last_name  }}</td>
-                        <!-- profession -->
-                        <td>{{ $patient->profession }}</td>
-                        <!-- etablissment -->
-                        <td>{{ $patient->etablissment }}</td>
-                        <!-- email -->
-                        <td>{{ $patient->email }}</td>
-                        <!-- adress -->
-                        <td>{{ $patient->address }}</td>
-                        <!-- mode -->
-                        <td>{{ $patient->mode }}</td>
-                        <!-- subscription -->
-                        <td>{{  $patient->subscription }}</td>
-
-
-                        <td>
-                            <a href="{{ route('patient.show', $patient->id) }}" class="btn btn-sm btn-outline-secondary me-2">
-                                <i class="fas fa-eye"></i>
-                            </a>
-                            <form action="{{ route('patient.destroy', $patient->id) }}" method="POST" class="d-inline">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="btn btn-sm btn-outline-danger">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </form>
-                        </td>
-                    </tr>
-                    @endforeach
-                </tbody>
-            </table>
-        </div>
-    </div>
+    <!-- Patients Table -->
+    <div id="patients-table" class="data-table-container">
+         <div>
+             <div class="table-responsive">
+                 <table class="patient-table">
+                         <thead>
+                             <tr>
+                                 <th>ID</th>
+                                 <th>Nom Complet Enfant/Jeune</th>
+                                 <th>Nom Complet Parent/Adulte</th>
+                                 <th>Âge</th>
+                                 <th>Contact</th>
+                                 <th>Adresse</th>
+                                 <th>Genre</th>
+                                 <th>École/Système</th>
+                                 <th>Profession/Établissement</th>
+                                 <th>Mode</th>
+                                 <th>Abonnement</th>
+                                 <th>Actions</th>
+                             </tr>
+                         </thead>
+                         <tbody>
+                             @foreach($patients as $patient)
+                                 <tr class="hover-shadow">
+                                     <td class="fw-bold">#{{ $patient->id }}</td>
+                                     <!-- kidd full name -->
+                                     <td>
+                                         <div class="d-flex align-items-center">
+                                             <div class="avatar-sm me-3">
+                                                 <div class="avatar-title bg-light rounded-circle">
+                                                     <i class="fas fa-user text-primary"></i>
+                                                 </div>
+                                             </div>
+                                         
+                                         @if ($patient->first_name==null)
+                                         &ndash;
+                                         @else
+                                         <div >
+                                             <div>
+                                                 <div class="fw-bold">{{ $patient->first_name}} {{ $patient->last_name }}</div>
+                                             </div>
+                                             <small class="text-muted">{{ $patient->mode }}</small>
+                                         </div>
+                                         @endif
+                                         </div>
+                                     </td>
+                                     <!--  parent/adult full name -->
+                                     <td>
+                                     <div class="fw-bold">{{ $patient->parent_first_name }} {{ $patient->parent_last_name }}</div>
+                                 
+                                 </td>
+                                 <!-- age -->
+                                 <td>{{ $patient->age }}</td>
+                                 <!-- contact -->
+                                     <td>
+                                         <div>{{ $patient->phone }}</div>
+                                         <small class="text-muted">{{ $patient->email }}</small>
+                                     </td>
+                                     <!-- adresse -->
+                                     <td class="text-muted small">{{ $patient->address }}</td>
+                                     <!-- gender -->
+                                     <td>
+                                         @if($patient->gender == 'M')
+                                         <span class="badge bg-primary">
+                                             <i class="fas fa-mars me-1"></i>Homme
+                                         </span>
+                                         @else
+                                         <span class="badge bg-danger">
+                                             <i class="fas fa-venus me-1"></i>Femme
+                                         </span>
+                                         @endif
+                                     </td>
+                                     <!-- school/system -->
+                                     <td>
+                                         @if ($patient->ecole)
+                                             {{ $patient->ecole }}
+                                             <div class="text-muted small">{{ $patient->system }}</div>
+                                         @else
+                                             &ndash;
+                                         @endif
+                                         
+                                         
+                                     </td>
+                                     <!-- profession/etablissment -->
+                                     <td>
+                                     {{ $patient->profession }}
+                                     <div class="text-muted small">{{ $patient->etablissment }}</div>
+                                     </td>
+                                     <!-- Mode -->
+                                     <td>{{ $patient->mode }}</td>
+                                     <!-- subscription -->
+                                     <td>{{  $patient->subscription }}</td>
+                                     <!-- actions -->
+                                     <td class="action-buttons">
+                                         <a href="{{ route('patient_profile', $patient->id) }}" 
+                                         class="btn btn-outline-secondary btn-sm me-1"
+                                         data-bs-toggle="tooltip" title="Voir les Détails">
+                                             <i class="fas fa-eye"></i>
+                                         </a>
+                                     </td>
+                                 </tr>
+                             @endforeach
+                         </tbody>
+                 </table>
+             </div>
+         </div>
+     </div>
     <style>
-        .table {
-            width:200%;
+        .patient-table {
+        width: 200%;
+        overflow: scroll;
+        border-collapse: collapse;
+        background: var(--glass-bg);
         }
         .glass-card {
         background-color: #fff;
         border-radius: 8px;
         box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         border: none;
+        }
+
+        .data-table-container {
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+          
+        }
+        .table-responsive {
+        border-radius: 12px;
+        max-height: 70vh;
+        }
+
+        thead th {
+            background: linear-gradient(195deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 1rem;
+            font-weight: 500;
+            position: sticky;
+            top: 0;
+            z-index: 2;
+        }
+
+        tbody td {
+            padding: 0.75rem;
+            border-bottom: 1px solid #e2e8f0;
+            vertical-align: middle;
+        }
+        .hover-shadow:hover {
+        background: rgba(99, 102, 241, 0.05);
+        transform: translateY(-2px);
+        transition: all 0.3s ease;
     }
+    .badge {
+        padding: 0.5em 0.75em;
+        border-radius: 8px;
+        font-weight: 500;
+    }
+
     </style>
 @endsection

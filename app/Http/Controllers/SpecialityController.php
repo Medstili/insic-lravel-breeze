@@ -62,4 +62,6 @@ class SpecialityController extends Controller
     {
         //
     }
+
+  
 }

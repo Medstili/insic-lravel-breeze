@@ -7,14 +7,19 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use \App\Models\Speciality;
 use App\Models\User;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Storage;
+
 
 class PatientController extends Controller
 {
    /**
      * Display a listing of the resource.
      */
-    public function index(Request $request)
+    
+     public function index(Request $request)
     {
   
 
@@ -41,35 +46,52 @@ class PatientController extends Controller
                 $query->where('gender', $request->gender);
             }
         
+            if ($request->filled('specialities')) {
+                $specialityId = $request->specialities; 
+                $query->where('speciality_id', $specialityId);
+            }
             // Optionally, order by date or other column
             $patients = $query->get();
-            return view('patient/patients', compact('patients'));
+            $specialities = Speciality::all();
+            return view('patient/patients', compact('patients', 'specialities')) ;
     }
 
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    
+     public function create()
     {
         $specialities= Speciality::all();
-        return view('patient\add_patient',compact('specialities'));
+        $coaches = User::select('id', 'full_name',)->with('speciality')->get();
+
+        return view('patient\add_patient',compact('specialities','coaches'));
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(Request $request)   
     {
+
+
+    //    try {
+       
+        $coachAssignments = [];
+        foreach ($request->coaches as $index => $value) {
+            $coachAssignments[] = [$value, $request['coach' . $value]];
+        }
+
 
         request()->validate([
             'patient_type'        => 'required',
             'PatientGender'       => 'required',
             'age'                 => 'required',
             'kid_last_name'       => 'nullable',
-            'kid_first_name'      => 'nullable',
+            'kid_first_name'      => 'nullable|unique:patients,first_name',
             'kid_ecole'           => 'nullable',
             'kid_system'          => 'nullable',
-            'parent_first_name'   => 'required',
+            'parent_first_name'   => 'nullable|unique:patients,parent_first_name',
             'parent_last_name'    => 'required',
             'parent_profession'   => 'required',
             'parent_phone'        => 'required',
@@ -78,18 +100,24 @@ class PatientController extends Controller
             'parent_adresse'      => 'required',
             'mode'                => 'required',
             'abonnement'          => 'required',
-            'specialty_id'        => 'required',
+            'speciality_id'       => 'required',
+            'max_appointments'    => 'required',
             'priorities'          => 'required',
+            'image'               => 'nullable|image|mimes:jpeg,png,jpg|max:2048'
         ],[
-            "parent_email.unique"=>"this email already in use"
+            "parent_email.unique" => "cet email est déjà utilisé",
+            'kid_first_name.unique' => "Ce prénom d'enfant est déjà utilisé",
+            'parent_first_name.unique' => "Ce prénom de parent est déjà utilisé",
+
         ]);
+
+        
+
         
         if($request->priorities === "{}"){
-            // dd( $request->all());    
             return redirect()->back()->withErrors(['priorities' => 'priorities is required']);
         }
 
-        
         $patient = new Patient();
         $patient->patient_type = $request->patient_type;
         $patient->gender = $request->PatientGender;
@@ -107,13 +135,60 @@ class PatientController extends Controller
         $patient->address = $request->parent_adresse;
         $patient->mode = $request->mode;
         $patient->subscription = $request->abonnement;
-        $patient->speciality_id = $request->specialty_id;
+        $patient->speciality_id = $request->speciality_id;
         $patient->priorities = $request->priorities;
-    
+        $patient->weekly_quota = (int) $request->max_appointments;
+
+        if ($request->hasFile('image')) {
+            if ($patient->image) {
+                Storage::delete('public/' . $patient->image);
+            }
+            $image = $request->file('image');
+            $imageName = time() . '_' . $image->getClientOriginalName();
+            $imagePath = $image->storeAs('patientImages', $imageName, 'public');
+            $patient->image_path = $imagePath;
+        };
+      
+        $patient->save();
+
+        $coachOrder = json_decode($request->coach_order, true); 
       
 
-        $patient->save();
+        // Attach coaches in the order specified:
+        
+            foreach ($coachOrder as $position => $coachId) {
+            // Find the capacity value from your $coachAssignments (you might want to index them by coachId)
+            // dd($position, $coachId);
+            $capacity = null;
+            foreach ($coachAssignments as $assignment) {
+                // dd($coachAssignments);
+                if ($assignment[0] == $coachId) {
+                    $capacity = $assignment[1];
+                    break;
+                }
+            }
+            // If capacity is found, attach with the position:
+            if ($capacity !== null) {
+                $patient->coaches()->attach($coachId, [
+                    'max_appointments' => $capacity,
+                    'position' => $position+1  // position is 0-based; adjust if needed
+                ]);
+            };
+        };
+
+
+
+        $SuggestedAppointments = new SuggestedAppointments();
+        $currentWeekStart = Carbon::now()->startOfWeek(); // Monday
+        $weekEnd = Carbon::now()->endOfWeek(); // Sunday
+        $SuggestedAppointments->storeSuggestedAppointmentsForOnePatient($patient->id,$currentWeekStart->format('Y-m-d'), $weekEnd);
+        
         return redirect()->route('patient.index')->with('success', 'patient added successfully');
+
+        // } catch (\Exception $e) {
+        //     Log::error('Exception in store(): ' . $e->getMessage());
+        //     // dd($e->getMessage());
+        // }
     }
 
     /**
@@ -124,9 +199,11 @@ class PatientController extends Controller
         
         $patient = Patient::with('speciality')->findOrFail($id);
         $specialities= Speciality::all();
+        $appointments = $patient->appointments()->with('coach')->orderBy('created_at', 'asc')->get();
+        // dd($appointments);
         if (Auth::check() && Auth::user()->role == 'admin') {
             # code...
-            return view('patient/patient_profile', compact('patient', 'specialities'));
+            return view('patient/patient_profile', compact('patient', 'specialities', 'appointments'));	
         }else {
             return view('caoch/coach_patient_profile', compact('patient','specialities'));
         }
@@ -135,50 +212,89 @@ class PatientController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
+    // In PatientController@edit:
+        
     public function edit(string $id)
     {
-        $patient = Patient::findOrFail($id);
-        $specialities=Speciality::all();
-        return view('patient/edit_patient', compact('patient','specialities'));
+        $patient = Patient::with('coaches')->findOrFail($id);
+        $specialities = Speciality::all();
+
+        // Get all coaches from the database.
+        $allCoaches = User::select('id', 'full_name')->with('speciality')->get();
+
+        // Retrieve the assigned coaches from the patient (this collection is already ordered by pivot->position because of your relationship)
+        $assignedCoaches = $patient->coaches;
         
+        // Determine unassigned coaches
+        $unassignedCoaches = $allCoaches->diff($assignedCoaches);
+        
+        // Merge assigned coaches (in order) first, then unassigned coaches.
+        $orderedCoaches = $assignedCoaches->merge($unassignedCoaches);
+
+        return view('patient.edit_patient', compact('patient', 'specialities', 'orderedCoaches'));
     }
+
+    // public function edit(string $id)
+    // {
+    //     $patient = Patient::with('coaches')->findOrFail($id);
+    //     $specialities=Speciality::all();
+    //     // $allCoaches = User::select('id', 'full_name',)->with('speciality')->get();
+    //     // $coachesBySpeciality = User::select('id', 'full_name',)->with('speciality')->where('speciality_id', $patient
+    //     // ->speciality_id)->get();
+    //     $coaches = User::select('id', 'full_name',)->with('speciality')->get();
+    //     return view('patient/edit_patient', compact('patient','specialities','coaches'));
+    // }
+
 
     /**
      * Update the specified resource in storage.
      */
     public function update(Request $request, string $id)
     {
-        // dd($request->all());
+        // Retrieve the selected coach IDs from the form
+        $newCoachIds = $request->coaches; 
+        if (empty($newCoachIds)) {
+            return redirect()->back()->withErrors(['coaches' => 'At least one coach is required']);
+        }
+
+        // Prepare pivot data for each new coach (capacity) first
+        $syncData = [];
+        foreach ($newCoachIds as $coachId) {
+            $syncData[$coachId] = ['max_appointments' => $request->input('coach' . $coachId)];
+        }
         
-        request()->validate([
+        // Validate request fields
+
+        $request->validate([
             'patient_type'        => 'required',
             'PatientGender'       => 'required',
             'age'                 => 'required',
-            'kid_last_name'       => 'nullable',// nullable
-            'kid_first_name'      => 'nullable',// nullable
-            'kid_ecole'           => 'nullable',// nullable
-            'kid_system'          => 'nullable',// nullable
-            'parent_first_name'   => 'required',
+            'kid_last_name'       => 'nullable',
+            'kid_first_name'      => ['nullable', Rule::unique('patients', 'first_name')->ignore($id)],
+            'kid_ecole'           => 'nullable',
+            'kid_system'          => 'nullable',
+            'parent_first_name'   => ['required', Rule::unique('patients', 'parent_first_name')->ignore($id)],
             'parent_last_name'    => 'required',
             'parent_profession'   => 'required',
             'parent_phone'        => 'required',
             'parent_etablissement'=> 'required',
-            'parent_email'        => ['required','email',Rule::unique('patients', 'email')->ignore($id)],
+            'parent_email'        => ['required', 'email', Rule::unique('patients', 'email')->ignore($id)],
             'parent_adresse'      => 'required',
             'mode'                => 'required',
             'abonnement'          => 'required',
-            'specialty_id'        => 'required',
+            'speciality_id'       => 'required',
+            'max_appointments'    => 'required',
             'priorities'          => 'required',
-        ],[
-            'parent_email.unique','this email already in use'
+            'image'               => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+        ], [
+            'parent_email.unique' => 'this email already in use'
         ]);
-
-        if($request->priorities === "{}"){
-            // dd( $request->all());    
+        
+        if ($request->priorities === "{}") {
             return redirect()->back()->withErrors(['priorities' => 'priorities is required']);
         }
-
         
+        // Retrieve and update the patient record
         $patient = Patient::findOrFail($id);
         $patient->patient_type = $request->patient_type;
         $patient->gender = $request->PatientGender;
@@ -196,13 +312,125 @@ class PatientController extends Controller
         $patient->address = $request->parent_adresse;
         $patient->mode = $request->mode;
         $patient->subscription = $request->abonnement;
-        $patient->speciality_id = $request->specialty_id;
+        $patient->speciality_id = $request->speciality_id;
         $patient->priorities = $request->priorities;
-    
-
+        $patient->weekly_quota = (int)$request->max_appointments;
+        
+        // Handle image upload if provided
+        if ($request->hasFile('image')) {
+            if ($patient->image_path) {
+                // Storage::delete('public/' . $patient->image_path);
+                Storage::disk('public')->delete($patient->image_path);
+            }
+            $image = $request->file('image');
+            $imageName = time() . '_' . $image->getClientOriginalName();
+            $imagePath = $image->storeAs('patientImages', $imageName, 'public');
+            $patient->image_path = $imagePath;
+        }
+        
         $patient->save();
-        return redirect()->route('patient.show',$id)->with('updated', 'updated successfully');
+        
+        // **NEW CODE:** If a coach order is provided, add the order to the pivot data.
+        if ($request->filled('coach_order')) {
+            $order = json_decode($request->coach_order, true); // e.g. [4, 10, 2, ...]
+            foreach ($order as $position => $coachId) {
+                // Only add order for coaches that are selected in the form.
+                if (in_array($coachId, $newCoachIds)) {
+                    $syncData[$coachId]['position'] = $position+1; // positions are 0-based
+                }
+            }
+        }
+        
+        // Sync the pivot data with the patient record.
+        $patient->coaches()->sync($syncData);
+        
+        // Store suggested appointments for this patient (if needed)
+        $SuggestedAppointments = new SuggestedAppointments();
+        $currentWeekStart = Carbon::now()->startOfWeek(); // Monday
+        $weekEnd = Carbon::now()->endOfWeek(); // Sunday
+        $SuggestedAppointments->storeSuggestedAppointmentsForOnePatient($patient->id, $currentWeekStart->format('Y-m-d'), $weekEnd);
+        
+        return redirect()->route('patient.show', $id)->with('updated', 'updated successfully');
     }
+
+    // public function update(Request $request, string $id)
+    // {
+    //     // dd($request->all());
+        
+    //     $newCoachIds = $request->coaches; 
+
+    //     // Prepare pivot data for each new coach:
+    //     if (empty($newCoachIds)) {
+    //         return redirect()->back()->withErrors(['coaches' => 'At least one coach is required']);
+    //     }
+    
+    //     $syncData = [];
+    //     foreach ($newCoachIds as $coachId) {
+    //         $syncData[$coachId] = ['max_appointments' => $request['coach' . $coachId]];
+    //     }
+
+
+    //     request()->validate([
+    //         'patient_type'        => 'required',
+    //         'PatientGender'       => 'required',
+    //         'age'                 => 'required',
+    //         'kid_last_name'       => 'nullable',// nullable
+    //         'kid_first_name'      => 'nullable',// nullable
+    //         'kid_ecole'           => 'nullable',// nullable
+    //         'kid_system'          => 'nullable',// nullable
+    //         'parent_first_name'   => 'required',
+    //         'parent_last_name'    => 'required',
+    //         'parent_profession'   => 'required',
+    //         'parent_phone'        => 'required',
+    //         'parent_etablissement'=> 'required',
+    //         'parent_email'        => ['required','email',Rule::unique('patients', 'email')->ignore($id)],
+    //         'parent_adresse'      => 'required',
+    //         'mode'                => 'required',
+    //         'abonnement'          => 'required',
+    //         'speciality_id'        => 'required',
+    //         'max_appointments'    => 'required',
+    //         'priorities'          => 'required',
+    //     ],[
+    //         'parent_email.unique','this email already in use'
+    //     ]);
+
+    //     if($request->priorities === "{}"){
+    //         // dd( $request->all());    
+    //         return redirect()->back()->withErrors(['priorities' => 'priorities is required']);
+    //     }
+    
+        
+    //     $patient = Patient::findOrFail($id);
+    //     $patient->patient_type = $request->patient_type;
+    //     $patient->gender = $request->PatientGender;
+    //     $patient->age = $request->age;
+    //     $patient->last_name = $request->kid_last_name;
+    //     $patient->first_name = $request->kid_first_name;
+    //     $patient->ecole = $request->kid_ecole;
+    //     $patient->system = $request->kid_system;
+    //     $patient->parent_first_name = $request->parent_first_name;
+    //     $patient->parent_last_name = $request->parent_last_name;
+    //     $patient->profession = $request->parent_profession;
+    //     $patient->phone = $request->parent_phone;
+    //     $patient->etablissment = $request->parent_etablissement;
+    //     $patient->email = $request->parent_email;
+    //     $patient->address = $request->parent_adresse;
+    //     $patient->mode = $request->mode;
+    //     $patient->subscription = $request->abonnement;
+    //     $patient->speciality_id = $request->speciality_id;
+    //     $patient->priorities = $request->priorities;
+    //     $patient->weekly_quota = (int) $request->max_appointments;
+
+    //     $patient->save();
+    //     $patient->coaches()->sync($syncData);
+    //     $SuggestedAppointments = new SuggestedAppointments();
+    //     $currentWeekStart = Carbon::now()->startOfWeek(); // Monday
+    //     $weekEnd = Carbon::now()->endOfWeek(); // Sunday
+    //     $SuggestedAppointments->storeSuggestedAppointmentsForOnePatient($patient->id,$currentWeekStart->format('Y-m-d'), $weekEnd);
+        
+
+    //     return redirect()->route('patient.show',$id)->with('updated', 'updated successfully');
+    // }
 
     /**
      * Remove the specified resource from storage.
@@ -217,8 +445,8 @@ class PatientController extends Controller
 
      // coach functions 
     public function coach_patient_profile($id){
-        $patient = Patient::with('coach')->findOrFail($id);  
-        return view('coach_patient_profile', compact('patient')) ;     
+        $patient = Patient::with('coaches')->findOrFail($id);  
+        return view('coach/coach_patient_profile', compact('patient')) ;     
     }
 
     public function coach_patinets_list(Request $request,$coachId){
@@ -249,6 +477,135 @@ class PatientController extends Controller
         $specialities = Speciality::all();
         return view('coach/coach_patients_list', compact('patients', 'specialities')) ;
     }
+
+    public function availablePatients(Request $request)
+    {
+        $request->validate([
+            'speciality_id' => 'required|integer',
+            'date' => 'required|date',
+            'startTime' => 'required',
+            'endTime' => 'required',
+            'patient_id'=>'required'
+        ]);
+        $sugg_Speciality_id = $request->speciality_id;
+        $sugg_date = $request->date;
+        $sugg_startTime = $request->startTime;
+        $sugg_endTime = $request->endTime;
+
+        $patients = Patient::where('speciality_id', $sugg_Speciality_id)
+            ->whereNot('id', $request->patient_id)
+            ->get();
+
+        $available_patients = [];
+
+        $sugg_start = strtotime($sugg_startTime);
+        $sugg_end = strtotime($sugg_endTime);
+        // Log::debug('sugg_start',[$sugg_start]);
+        // Log::debug('sugg_end',[$sugg_end]);
+
+        foreach ($patients as $patient) {
+            // all patient 
+
+            $full_name = in_array($patient->patient_type, ['kid', 'young']) ?
+            $patient->first_name . ' ' . $patient->last_name :
+            $patient->parent_first_name . ' ' . $patient->parent_last_name;
+
+            // available patient 
+            $priorities = json_decode($patient->priorities, true);
+
+            foreach($priorities as $priorityLevel => $priorityData){
+
+                foreach ($priorityData as $day => $intervals) {
+                    $transformedSuggDay =  date('l',strtotime($sugg_date));
+                    $transformedPriorityDay =  date('l',strtotime($day));
+  
+                
+                    if ($transformedSuggDay == $transformedPriorityDay) {
+                        foreach ($intervals as $interval) {
+                            $startTime = strtotime($interval['startTime']);
+                            $endTime = strtotime($interval['endTime']);
+        
+                            if ($startTime <=  $sugg_start && $endTime >= $sugg_end) {
+                                $patientApp = $patient->appointments()
+                                ->whereRaw("JSON_UNQUOTE(JSON_EXTRACT(appointment_planning, '$.\"$sugg_date\".startTime')) = ?", [$sugg_startTime])
+                                ->whereRaw("JSON_UNQUOTE(JSON_EXTRACT(appointment_planning, '$.\"$sugg_date\".endTime')) = ?", [$sugg_endTime])
+                                ->exists();
+                            
+                            
+                                if (!$patientApp) {
+                                    $patient_full_name = in_array($patient->patient_type, ['kid', 'young']) ?
+                                        $patient->first_name . ' ' . $patient->last_name :
+                                        $patient->parent_first_name . ' ' . $patient->parent_last_name;
+        
+                                    $available_patients[] = [
+                                        'id' => $patient->id,
+                                        'full_name' => $patient_full_name
+                                    ];
+                                    break 2;
+                                }
+                            }
+                        }
+                        Log::debug('available_patients',[$available_patients]);
+                    }
+                }
+            }
+
+     
+        }
+        
+
+        if (empty($available_patients)) {
+            return response()->json(
+                ['success' => false,
+                        'msg'=>'No available patients found',
+                        // 'all_patients'=>$all_patient,
+                        $available_patients
+
+                    ]);
+        }else{
+            return response()->json(
+                ['success' => true,
+                        'msg'=>'available patients found',
+                        // 'all_patients'=>$all_patient,
+                        'available_patients'=>$available_patients
+                    ]);
+        }
+
+    }
+
+    public function who_can_See(Request $request, string $id)
+    {
+        // Validate input: ensure the 'coaches' field is present and is an array.
+        $request->validate([
+            'coaches' => 'nullable|array',
+        ]);
+    
+        $selectedCoachIds = $request->coaches ?? []; 
+
+        $coaches = User::all();
+    
+        foreach ($coaches as $coach) {
+            $canSee = (array) $coach->can_see;
+    
+            if (in_array($coach->id, $selectedCoachIds)) {
+
+                if (!in_array($id, $canSee)) {
+                    $canSee[] = $id;
+                }
+            } else { 
+                if (($key = array_search($id, $canSee)) !== false) {
+                    unset($canSee[$key]);
+                }
+            }
+            // Reindex the array and save.
+            $coach->can_see = array_values($canSee);
+            $coach->save();
+        }
+    
+        return redirect()->back()->with('success', 'Access permissions updated successfully.');
+    }
+    
+    
 
 
 }
