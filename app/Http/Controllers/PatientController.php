@@ -65,7 +65,7 @@ class PatientController extends Controller
         $specialities= Speciality::all();
         $coaches = User::select('id', 'full_name',)->with('speciality')->get();
 
-        return view('patient\add_patient',compact('specialities','coaches'));
+        return view('patient.add_patient',compact('specialities','coaches'));
     }
 
     /**
