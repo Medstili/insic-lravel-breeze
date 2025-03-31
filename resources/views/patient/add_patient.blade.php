@@ -386,7 +386,8 @@
 </div>
 
 <script>
-    function  maxCountDisplay(id,event) {
+   
+   function  maxCountDisplay(id,event) {
         if (event.checked) {
             document.querySelector(`#coach${id}`).classList.remove('d-none'); 
             document.querySelector(`#coach-order${id}`).classList.remove('d-none');
@@ -583,6 +584,8 @@
         hiddenDays: [0], 
         slotMinTime: '12:00:00',
         slotMaxTime: '20:00:00',
+        slotDuration: '01:00:00', // Set the slot duration to 1 hour
+        slotLabelInterval: '01:00:00', // Set the interval for slot labels to 1 hour
         allDaySlot: false,
         nowIndicator: true,
         expandRows: true,
