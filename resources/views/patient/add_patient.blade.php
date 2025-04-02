@@ -145,6 +145,9 @@
         <form action="{{ route('patient.store') }}" method="POST" enctype="multipart/form-data" onsubmit="storePriorities()" class="row g-3">
             @csrf
 
+            @error('patient_exists')
+                <div class="alert alert-danger">{{ $message }}</div>
+            @enderror
             <!-- Patient Type Selection -->
             <div class="col-12">
                 <div class="form-floating">
@@ -200,11 +203,11 @@
                     </div>
                     <div class="col-md-6">
                         <div class="form-floating">
-                            <input type="text" id="kidFirstName" name="kid_first_name" class="form-control @error('parent_email') is-invalid @enderror" placeholder="First Name">
+                            <input type="text" id="kidFirstName" name="kid_first_name" class="form-control" placeholder="First Name">
                             <label>Prénom</label>
-                            @error('kid_first_name')
+                            <!-- @error('kid_first_name')
                                 <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
+                            @enderror -->
                         </div>
                     </div>
                     <div class="col-md-6">
@@ -238,11 +241,11 @@
                     </div>
                     <div class="col-md-6">
                         <div class="form-floating">
-                            <input type="text" name="parent_first_name" class="form-control @error('parent_email') is-invalid @enderror" placeholder="First Name" required>
+                            <input type="text" name="parent_first_name" class="form-control" placeholder="First Name" required>
                             <label>Prénom</label>
-                            @error('parent_first_name')
+                            <!-- @error('parent_first_name')
                                 <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
+                            @enderror -->
                         </div>
                     </div>
                     <div class="col-md-6">
@@ -304,6 +307,9 @@
             <!-- Coaches Section -->
             <div class="col-12">
                 <h4 class="section-title">Sélectionner les Coachs</h4>
+                @error('no_coaches')
+                <div class="alert alert-danger">{{$message}}</div>
+                @enderror
                 <div class="coach-section" id="coachContainer">
                     @foreach ($coaches as $coach)
                         <div class="form-check coach-item" data-coach-id="{{ $coach->id }}">
@@ -322,6 +328,9 @@
             <!-- max appointments on a week -->
             <div class="col-md-4">
             <h4 class="section-title" >Rendez-vous par Semaine</h4>
+            @error('max_appointments')
+            <div class="alert alert-danger">{{ $message }}</div>
+            @enderror
                 <div class="form-floating">
                     <input type="number" min="1" max="3" name="max_appointments" class="form-control" required>
                     <label >Nombre maximum de rendez-vous par semaine</label>

@@ -211,14 +211,13 @@ class UserController extends Controller
         
         $user = User::find($id);
         $user->delete();
-        return redirect()->route('user.index');
+        return redirect()->route('user.index');   
     }
-
-    // coach functions 
-    public function coach_edit(string $id)
-    {  
+    
+    
+   
+    public function coach_edit(string $id){  
         $user = User::find($id);
-        // $specialities = User::select('speciality')->distinct()->pluck('speciality'); 
         $specialities = Speciality::all();
         return view('coach/edit_profile', compact('user','specialities'));
     }

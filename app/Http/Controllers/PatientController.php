@@ -73,25 +73,19 @@ class PatientController extends Controller
      */
     public function store(Request $request)   
     {
-
-
-    //    try {
-       
-        $coachAssignments = [];
-        foreach ($request->coaches as $index => $value) {
-            $coachAssignments[] = [$value, $request['coach' . $value]];
+        if(is_null($request->coaches)){
+            return redirect()->back()->withErrors(['no_coaches' => 'Aucun coach n\'a été sélectionné.']);
         }
-
 
         request()->validate([
             'patient_type'        => 'required',
             'PatientGender'       => 'required',
             'age'                 => 'required',
             'kid_last_name'       => 'nullable',
-            'kid_first_name'      => 'nullable|unique:patients,first_name',
+            'kid_first_name'      => 'nullable',
             'kid_ecole'           => 'nullable',
             'kid_system'          => 'nullable',
-            'parent_first_name'   => 'nullable|unique:patients,parent_first_name',
+            'parent_first_name'   => 'nullable',
             'parent_last_name'    => 'required',
             'parent_profession'   => 'required',
             'parent_phone'        => 'required',
@@ -105,15 +99,38 @@ class PatientController extends Controller
             'priorities'          => 'required',
             'image'               => 'nullable|image|mimes:jpeg,png,jpg|max:2048'
         ],[
-            "parent_email.unique" => "cet email est déjà utilisé",
-            'kid_first_name.unique' => "Ce prénom d'enfant est déjà utilisé",
-            'parent_first_name.unique' => "Ce prénom de parent est déjà utilisé",
-
+            "parent_email.unique" => "cet email est déjà utilisé"
         ]);
 
-        
+        $existingPatient = null;
 
-        
+        if ($request->patient_type !== 'adult') {
+            // Check if kid's first and last name exist by comparing with parent's first and last name
+            $existingPatient = Patient::where('first_name', $request->kid_first_name)
+                ->where('last_name', $request->kid_last_name)
+                ->orWhere(function ($query) use ($request) {
+                    $query->where('parent_first_name', $request->kid_first_name)
+                          ->where('parent_last_name', $request->kid_last_name);
+                })
+                ->first();
+        } else {
+            // Check if parent's first and last name exist by comparing with kid's first and last name
+            $existingPatient = Patient::where('parent_first_name', $request->parent_first_name)
+                ->where('parent_last_name', $request->parent_last_name)
+                ->orWhere(function ($query) use ($request) {
+                    $query->where('first_name', $request->parent_first_name)
+                          ->where('last_name', $request->parent_last_name);
+                })
+                ->first();
+        }
+
+        Log::debug('existingPatient is null?', ['is_null' => is_null($existingPatient)]);
+        Log::debug('existingPatient', [$existingPatient]);
+
+        if (!is_null($existingPatient)) {
+            return redirect()->back()->withErrors(['patient_exists' => 'Ce patient existe déjà.']);
+        }
+         
         if($request->priorities === "{}"){
             return redirect()->back()->withErrors(['priorities' => 'priorities is required']);
         }
@@ -151,30 +168,33 @@ class PatientController extends Controller
       
         $patient->save();
 
-        $coachOrder = json_decode($request->coach_order, true); 
-      
+        $coachAssignments = [];
+            foreach ($request->coaches as $index => $value) {
+                $coachAssignments[] = [$value, $request['coach' . $value]];
+            }
+            $coachOrder = json_decode($request->coach_order, true); 
 
-        // Attach coaches in the order specified:
         
             foreach ($coachOrder as $position => $coachId) {
-            // Find the capacity value from your $coachAssignments (you might want to index them by coachId)
-            // dd($position, $coachId);
-            $capacity = null;
-            foreach ($coachAssignments as $assignment) {
-                // dd($coachAssignments);
-                if ($assignment[0] == $coachId) {
-                    $capacity = $assignment[1];
-                    break;
+    
+                $capacity = null;
+                foreach ($coachAssignments as $assignment) {
+                    if ($assignment[0] == $coachId) {
+                        $capacity = $assignment[1];
+                        break;
+                    }
                 }
-            }
-            // If capacity is found, attach with the position:
-            if ($capacity !== null) {
-                $patient->coaches()->attach($coachId, [
-                    'max_appointments' => $capacity,
-                    'position' => $position+1  // position is 0-based; adjust if needed
-                ]);
+    
+                if ($capacity !== null) {
+                    $patient->coaches()->attach($coachId, [
+                        'max_appointments' => $capacity,
+                        'position' => $position+1  
+                    ]);
+                };
             };
-        };
+
+
+      
 
 
 
@@ -185,10 +205,6 @@ class PatientController extends Controller
         
         return redirect()->route('patient.index')->with('success', 'patient added successfully');
 
-        // } catch (\Exception $e) {
-        //     Log::error('Exception in store(): ' . $e->getMessage());
-        //     // dd($e->getMessage());
-        // }
     }
 
     /**
@@ -234,16 +250,6 @@ class PatientController extends Controller
         return view('patient.edit_patient', compact('patient', 'specialities', 'orderedCoaches'));
     }
 
-    // public function edit(string $id)
-    // {
-    //     $patient = Patient::with('coaches')->findOrFail($id);
-    //     $specialities=Speciality::all();
-    //     // $allCoaches = User::select('id', 'full_name',)->with('speciality')->get();
-    //     // $coachesBySpeciality = User::select('id', 'full_name',)->with('speciality')->where('speciality_id', $patient
-    //     // ->speciality_id)->get();
-    //     $coaches = User::select('id', 'full_name',)->with('speciality')->get();
-    //     return view('patient/edit_patient', compact('patient','specialities','coaches'));
-    // }
 
 
     /**
@@ -254,9 +260,38 @@ class PatientController extends Controller
         // Retrieve the selected coach IDs from the form
         $newCoachIds = $request->coaches; 
         if (empty($newCoachIds)) {
-            return redirect()->back()->withErrors(['coaches' => 'At least one coach is required']);
+            return redirect()->back()->withErrors(['coaches' => 'Au moins un coach est requis']);
         }
 
+                $existingPatient = null;
+
+                if ($request->patient_type !== 'adult') {
+                    // Check if kid's first and last name exist by comparing with parent's first and last name
+                    $existingPatient = Patient::where('first_name', $request->kid_first_name)
+                    ->where('last_name', $request->kid_last_name)
+                    ->orWhere(function ($query) use ($request) {
+                        $query->where('parent_first_name', $request->kid_first_name)
+                          ->where('parent_last_name', $request->kid_last_name);
+                    })
+                    ->where('id', '!=', $id) // Ignore the current patient
+                    ->first();
+                } else {
+                    // Check if parent's first and last name exist by comparing with kid's first and last name
+                    $existingPatient = Patient::where('parent_first_name', $request->parent_first_name)
+                    ->where('parent_last_name', $request->parent_last_name)
+                    ->orWhere(function ($query) use ($request) {
+                        $query->where('first_name', $request->parent_first_name)
+                          ->where('last_name', $request->parent_last_name);
+                    })
+                    ->where('id', '!=', $id) // Ignore the current patient
+                    ->first();
+                }
+
+
+                $existingPatientId= $existingPatient->id;
+        if (!is_null($existingPatient) && $existingPatientId !=$id ) {
+            return redirect()->back()->withErrors(['patient_exists' => 'Ce patient existe déjà.']);
+        }
         // Prepare pivot data for each new coach (capacity) first
         $syncData = [];
         foreach ($newCoachIds as $coachId) {
@@ -270,10 +305,10 @@ class PatientController extends Controller
             'PatientGender'       => 'required',
             'age'                 => 'required',
             'kid_last_name'       => 'nullable',
-            'kid_first_name'      => ['nullable', Rule::unique('patients', 'first_name')->ignore($id)],
+            'kid_first_name'      => 'nullable',
             'kid_ecole'           => 'nullable',
             'kid_system'          => 'nullable',
-            'parent_first_name'   => ['required', Rule::unique('patients', 'parent_first_name')->ignore($id)],
+            'parent_first_name'   => 'required',
             'parent_last_name'    => 'required',
             'parent_profession'   => 'required',
             'parent_phone'        => 'required',
@@ -353,88 +388,7 @@ class PatientController extends Controller
         return redirect()->route('patient.show', $id)->with('updated', 'updated successfully');
     }
 
-    // public function update(Request $request, string $id)
-    // {
-    //     // dd($request->all());
-        
-    //     $newCoachIds = $request->coaches; 
 
-    //     // Prepare pivot data for each new coach:
-    //     if (empty($newCoachIds)) {
-    //         return redirect()->back()->withErrors(['coaches' => 'At least one coach is required']);
-    //     }
-    
-    //     $syncData = [];
-    //     foreach ($newCoachIds as $coachId) {
-    //         $syncData[$coachId] = ['max_appointments' => $request['coach' . $coachId]];
-    //     }
-
-
-    //     request()->validate([
-    //         'patient_type'        => 'required',
-    //         'PatientGender'       => 'required',
-    //         'age'                 => 'required',
-    //         'kid_last_name'       => 'nullable',// nullable
-    //         'kid_first_name'      => 'nullable',// nullable
-    //         'kid_ecole'           => 'nullable',// nullable
-    //         'kid_system'          => 'nullable',// nullable
-    //         'parent_first_name'   => 'required',
-    //         'parent_last_name'    => 'required',
-    //         'parent_profession'   => 'required',
-    //         'parent_phone'        => 'required',
-    //         'parent_etablissement'=> 'required',
-    //         'parent_email'        => ['required','email',Rule::unique('patients', 'email')->ignore($id)],
-    //         'parent_adresse'      => 'required',
-    //         'mode'                => 'required',
-    //         'abonnement'          => 'required',
-    //         'speciality_id'        => 'required',
-    //         'max_appointments'    => 'required',
-    //         'priorities'          => 'required',
-    //     ],[
-    //         'parent_email.unique','this email already in use'
-    //     ]);
-
-    //     if($request->priorities === "{}"){
-    //         // dd( $request->all());    
-    //         return redirect()->back()->withErrors(['priorities' => 'priorities is required']);
-    //     }
-    
-        
-    //     $patient = Patient::findOrFail($id);
-    //     $patient->patient_type = $request->patient_type;
-    //     $patient->gender = $request->PatientGender;
-    //     $patient->age = $request->age;
-    //     $patient->last_name = $request->kid_last_name;
-    //     $patient->first_name = $request->kid_first_name;
-    //     $patient->ecole = $request->kid_ecole;
-    //     $patient->system = $request->kid_system;
-    //     $patient->parent_first_name = $request->parent_first_name;
-    //     $patient->parent_last_name = $request->parent_last_name;
-    //     $patient->profession = $request->parent_profession;
-    //     $patient->phone = $request->parent_phone;
-    //     $patient->etablissment = $request->parent_etablissement;
-    //     $patient->email = $request->parent_email;
-    //     $patient->address = $request->parent_adresse;
-    //     $patient->mode = $request->mode;
-    //     $patient->subscription = $request->abonnement;
-    //     $patient->speciality_id = $request->speciality_id;
-    //     $patient->priorities = $request->priorities;
-    //     $patient->weekly_quota = (int) $request->max_appointments;
-
-    //     $patient->save();
-    //     $patient->coaches()->sync($syncData);
-    //     $SuggestedAppointments = new SuggestedAppointments();
-    //     $currentWeekStart = Carbon::now()->startOfWeek(); // Monday
-    //     $weekEnd = Carbon::now()->endOfWeek(); // Sunday
-    //     $SuggestedAppointments->storeSuggestedAppointmentsForOnePatient($patient->id,$currentWeekStart->format('Y-m-d'), $weekEnd);
-        
-
-    //     return redirect()->route('patient.show',$id)->with('updated', 'updated successfully');
-    // }
-
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(string $id)
     {
         $patient = Patient::findOrFail($id);

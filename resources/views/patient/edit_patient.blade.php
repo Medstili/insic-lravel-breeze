@@ -162,6 +162,11 @@
             @csrf
             @method('PUT')
 
+            @error('patient_exists')
+                <div class="alert alert-danger">
+                    {{ $message }}
+            </div>
+            @enderror
             <!-- Patient Type Selection -->
             <div class="col-12">
                 <div class="form-floating">
@@ -207,7 +212,9 @@
             </div>
             <!-- Kid/Young Section -->
             <div id="kidSection" class="d-none">
-                <h4 class="section-title kid-title ">Informations sur l'Enfant</h4>
+                <h4 class="section-title kid-title ">Informations sur l'Enfant</h4>                  
+
+
                 <div class="row g-3">
                     <div class="col-md-6">
                         <div class="form-floating">
@@ -279,6 +286,7 @@
                         <div class="form-floating">
                             <input type="text" name="parent_profession" class="form-control" id="parentProfession"
                             value = '{{ $patient->profession }}'  placeholder="Profession" required>
+
                             <label>Profession</label>
                         </div>
                     </div>
@@ -319,11 +327,6 @@
                 </div>
             </div>
 
-            <!-- @error('coaches')
-                <div class="alert alert-danger">
-                    {{ $message }}
-                </div>
-            @enderror -->
             <!-- Coaches Section -->
             <div class="col-12">
                 <h4 class="section-title">Sélectionner les Coachs</h4>
