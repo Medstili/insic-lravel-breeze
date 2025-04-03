@@ -1,4 +1,4 @@
-@extends('layouts.app') {{-- Extend your main layout --}}
+@extends('layouts.app') {{-- Étendre votre mise en page principale --}}
 
 @section('content')
 <style>
@@ -156,7 +156,7 @@
 
 <div class="creation-container">
     <div class="glass-card">
-        <h3 class="form-header">✨ Mettre à Jour le Profil du Patient</h3>
+        <h3 class="form-header">✨ Mettre à jour le profil du patient</h3>Patient</h3>
         
         <form action=" {{ route('patient.update', $patient->id) }}" onsubmit=" storePriorities()" enctype="multipart/form-data"  method="post"  class="row g-3">
             @csrf
@@ -167,116 +167,116 @@
                     {{ $message }}
             </div>
             @enderror
-            <!-- Patient Type Selection -->
+            <!-- Sélection du type de patient -->
             <div class="col-12">
                 <div class="form-floating">
                     <select id="patientType" name="patient_type" class="form-select bg-transparent" required>
-                        <option value="" selected disabled>Sélectionner le Type de Patient</option>
-                        <option value="kid" {{  $patient->patient_type == 'kid' ? 'selected' : '' }}>Enfant</option>
+                        <option value="" selected disabled>Sélectionner le type de patient</option>ent</option>
+                        <option value="kid" {{  $patient->patient_type == 'kid' ? 'selected' : '' }}>Enfant</option>>
                         <option value="young" {{ $patient->patient_type == 'young' ? 'selected' : '' }}>Jeune</option>
-                        <option value="adult" {{ $patient->patient_type == 'adult' ? 'selected' : '' }}>Adulte</option>
+                        <option value="adult" {{ $patient->patient_type == 'adult' ? 'selected' : '' }}>Adulte</option>>
                     </select>
-                    <label for="patientType">Type de Patient</label>
+                    <label for="patientType">Type de patient</label>el>
                 </div>
             </div>
 
-            <!-- Age & Gender -->
+            <!-- Âge et sexe -->
             <div class="col-md-4">
                 <div class="form-floating">
-                    <input type="number" name="age" id="kidAge" class="form-control" value="{{ $patient->age}}" placeholder="Age" required>
+                    <input type="number" name="age" id="kidAge" class="form-control" value="{{ $patient->age}}" placeholder="Âge" required>
                     <label for="kidAge">Âge</label>
                 </div>
             </div>
-            <!-- gender -->
+            <!-- sexe -->
             <div class="col-md-4">
                 <div class="form-floating">
                     <select name="PatientGender" id="PatientGender" class="form-select " required>
-                            <option value="M" {{ $patient->gender == 'M' ? 'selected' : '' }}>Homme</option>
-                            <option value="F" {{ $patient->gender == 'F' ? 'selected' : ''}}>Femme</option>
+                            <option value="M" {{ $patient->gender == 'M' ? 'selected' : '' }}>Masculin</option>>
+                            <option value="F" {{ $patient->gender == 'F' ? 'selected' : ''}}>Féminin</option>
                         </select>
-                        <label for="PatientGender">Genre du Patient</label>
+                        <label for="PatientGender">Sexe du patient</label>l>
                 </div>
             </div>
-            <!-- speciality -->
+            <!-- spécialité -->
             <div class="col-md-4">
                 <div class="form-floating">
                     <select class="form-select" id="specialtySelect" name="speciality_id" required>
-                        <option value="">Toutes les Spécialités</option>
+                        <option value="">Toutes les spécialités</option>option>
                     @foreach($specialities as $speciality)
                         <option value="{{ $speciality->id }}"  {{ $patient->speciality_id ==$speciality->id ? 'selected' :''}}>{{ $speciality->name }}</option>
                     @endforeach
                     </select>
-                    <label>Sélectionner la Spécialité</label>
+                    <label>Sélectionner une spécialité</label>té</label>
                 </div>
 
             </div>
-            <!-- Kid/Young Section -->
+            <!-- Section Enfant/Jeune -->
             <div id="kidSection" class="d-none">
-                <h4 class="section-title kid-title ">Informations sur l'Enfant</h4>                  
+                <h4 class="section-title kid-title ">Informations sur l'enfant</h4>                          
 
 
                 <div class="row g-3">
                     <div class="col-md-6">
                         <div class="form-floating">
-                            <input type="text" id="kidLastName" name="kid_last_name" class="form-control"  value="{{ ($patient->patient_type=='kid'||$patient->patient_type=='young') ? $patient->last_name : ''}}" placeholder="Last Name">
-                            <label>Nom</label>
+                            <input type="text" id="kidLastName" name="kid_last_name" class="form-control"  value="{{ ($patient->patient_type=='kid'||$patient->patient_type=='young') ? $patient->last_name : ''}}" placeholder="Nom de famille">
+                            <label>Nom de famille</label>
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="form-floating">
-                            <input type="text" id="kidFirstName" name="kid_first_name" class="form-control"  value="{{ ($patient->patient_type=='kid'||$patient->patient_type=='young') ? $patient->first_name : ''}}" placeholder="First Name">
+                            <input type="text" id="kidFirstName" name="kid_first_name" class="form-control"  value="{{ ($patient->patient_type=='kid'||$patient->patient_type=='young') ? $patient->first_name : ''}}" placeholder="Prénom">
                             <label>Prénom</label>
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="form-floating">
-                            <input type="text" id="kidEcole" name="kid_ecole" class="form-control" value="{{ ($patient->patient_type=='kid'||$patient->patient_type=='young') ? $patient->ecole : ''}}"placeholder="School">
+                            <input type="text" id="kidEcole" name="kid_ecole" class="form-control" value="{{ ($patient->patient_type=='kid'||$patient->patient_type=='young') ? $patient->ecole : ''}}"placeholder="École">
                             <label>École</label>
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="form-floating">
                             <select id="kidSystem" name="kid_system" class="form-select">
-                                <option value="" selected disabled>Sélectionner un Système</option>
-                                <option value="moroccan" {{ $patient->system == 'moroccan' ? 'selected' :'' }}>Système Marocain</option>
-                                <option value="mission" {{ $patient->system == 'mission' ? 'selected' :'' }}>Système Mission</option>
+                                <option value="" selected disabled>Sélectionner le système</option>e</option>
+                                <option value="moroccan" {{ $patient->system == 'moroccan' ? 'selected' :'' }}>Système marocain</option>>
+                                <option value="mission" {{ $patient->system == 'mission' ? 'selected' :'' }}>Système mission</option>>
                             </select>
-                            <label>Education System</label>
+                            <label>Système éducatif</label>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Guardian Section -->
+            <!-- Section Parent -->
             <div id="parentSection" class="d-none">
-                <h4 class="section-title parent-title">Informations sur le Tuteur</h4>
+                <h4 class="section-title parent-title">Informations sur le parent</h4>r</h4>
                 <div class="row g-3">
                     <div class="col-md-6">
                         <div class="form-floating">
-                            <input type="text" name="parent_last_name" class="form-control" id="parentLastName" placeholder="Last Name" 
+                            <input type="text" name="parent_last_name" class="form-control" id="parentLastName" placeholder="Nom de famille" 
                             value = '{{ $patient->parent_last_name }}' required>
-                            <label>Nom</label>
+                            <label>Nom de famille</label>
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="form-floating">
-                            <input type="text" name="parent_first_name" class="form-control" id="parentFirstName" placeholder="First Name" 
+                            <input type="text" name="parent_first_name" class="form-control" id="parentFirstName" placeholder="Prénom" 
                             value = '{{ $patient->parent_first_name }}' required>
                             <label>Prénom</label>
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="form-floating">
-                            <input type="tel" name="parent_phone" class="form-control" id="parentPhone"  placeholder="Phone" 
+                            <input type="tel" name="parent_phone" class="form-control" id="parentPhone"  placeholder="Téléphone" 
                             value = '{{ $patient->phone }}' required>
-                            <label>Numéro de Téléphone</label>
+                            <label>Numéro de téléphone</label>/label>
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="form-floating">
                             <input type="email" id="parentEmail" name="parent_email" class="form-control @error('parent_email') is-invalid @enderror" 
                             value = '{{ $patient->email }}'  placeholder="Email">
-                            <label>Adresse Email</label>
+                            <label>Adresse e-mail</label>
                             @error('parent_email')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -293,49 +293,49 @@
                     <div class="col-md-6">
                         <div class="form-floating">
                             <input type="text" name="parent_etablissement" id="parentEtablissement" class="form-control bg-transparent" 
-                            value = '{{ $patient->etablissment }} '  placeholder="Etablissement" required>
-                            <label for="parentEtablissement">Établissement</label>
+                            value = '{{ $patient->etablissment }} '  placeholder="Établissement" required>d>
+                            <label for="parentEtablissement">Établissement</label>l>
                         </div>
                     </div>
             
                     <div class="col-12">
                         <div class="form-floating">
                             <input type="text" name="parent_adresse" class="form-control" id="parentAdresse"
-                            value = '{{ $patient->address }}'  placeholder="Address" required>
+                            value = '{{ $patient->address }}'  placeholder="Adresse" required>
                             <label>Adresse</label>
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="form-floating">
                             <select name="mode" class="form-select" required>
-                            <option value="A Distance" {{ $patient->mode =='A Distance' ? 'selected' :''}}>À Distance</option>
-                            <option value="Presentiel" {{ $patient->mode =='Presentiel' ? 'selected' :''}}>Présentiel</option>
+                            <option value="A Distance" {{ $patient->mode =='A Distance' ? 'selected' :''}}>À distance</option>ion>
+                            <option value="Presentiel" {{ $patient->mode =='Presentiel' ? 'selected' :''}}>En présentiel</option>>
                             </select>
-                            <label>Mode de Consultation</label>
+                            <label>Mode de consultation</label>el>
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="form-floating">
                             <select name="abonnement" class="form-select" required>
-                                <option value="seance" {{ $patient->subscription =='seance' ? 'selected' :''}}>Par Séance</option>
+                                <option value="seance" {{ $patient->subscription =='seance' ? 'selected' :''}}>Par séance</option>
                                 <option value="mois"  {{ $patient->subscription =='mois' ? 'selected' :''}}>Mensuel</option>
                                 <option value="pack"  {{ $patient->subscription =='pack' ? 'selected' :''}}>Pack</option>
                             </select>
-                            <label>Type d'Abonnement</label>
+                            <label>Type d'abonnement</label>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Coaches Section -->
+            <!-- Section des coachs -->
             <div class="col-12">
-                <h4 class="section-title">Sélectionner les Coachs</h4>
+                <h4 class="section-title">Sélectionner les coachs</h4>achs</h4>
                 @error('coaches')
                     <div class="alert alert-danger">
                         <i class="fas fa-exclamation-circle me-2"></i>{{ $message }}
                     </div>	
                 @enderror
-                <!-- Scrollable container for coaches -->
+                <!-- Conteneur défilant pour les coachs -->
                 <div class="coach-section" id="coachContainer" style="max-height: 300px; overflow-y: auto;">
                     @foreach ($orderedCoaches as $coach)
                         @php
@@ -364,34 +364,34 @@
 
             <!-- max appointments on a week -->
             <div class="col-md-4">
-            <h4 class="section-title" >Rendez-vous par Semaine</h4>
+            <h4 class="section-title" >Rendez-vous par semaine</h4>4>
                 <div class="form-floating">
                     <input type="number" min="1" max="3" name="max_appointments" class="form-control" value="{{ $patient->weekly_quota}}" required >
-                    <label>Nombre maximum de rendez-vous par semaine</label>
+                    <label>Nombre maximum de rendez-vous par semaine</label>l>
                 </div>
             </div>
 
             
             <div class="form-group text-center mt-4">
-                    <label class="form-label fw-bold mb-2">Choose an Image:</label>
+                    <label class="form-label fw-bold mb-2">Choisir une image :</label>
 
                     <!-- Hidden File Input -->
                     <input type="file" name="image" id="image-input" accept="image/*" hidden onchange="previewImage(event)">
 
                     <!-- Custom Button -->
                     <label for="image-input" class="btn btn-primary">
-                      <i class="fas fa-upload me-2"></i> Upload Image
+                      <i class="fas fa-upload me-2"></i> Télécharger l'image
                     </label>
 
                     <!-- Image Preview (Circle or Square) -->
                     <div id="image-preview" class="mt-3 {{  $patient->image_path ==null ? 'd-none': ''}} ">
-                      <img src="{{ asset('storage/' . $patient->image_path) }}" alt="Image Preview" id="image-preview-img" class="rounded-circle shadow img-thumbnail" style="width: 80px; height: 80px; object-fit: cover;">
+                      <img src="{{ asset('storage/' . $patient->image_path) }}" alt="Aperçu de l'image" id="image-preview-img" class="rounded-circle shadow img-thumbnail" style="width: 80px; height: 80px; object-fit: cover;">
                     </div>
                 </div>
 
-            <!-- Calendar Section -->
+            <!-- Section Calendrier -->
             <div class="col-12">
-                <h4 class="section-title mt-4">Planifier les Priorités</h4>
+                <h4 class="section-title mt-4">Priorités de l'emploi du temps</h4>/h4>
                 <div class="col-md-6">
                     <div class="form-floating">
                         <select id="priorityChoice" name="priority_choice" class="form-select">
@@ -399,7 +399,7 @@
                             <option value="2" >Priorité 2</option>
                             <option value="3" >Priorité 3</option>
                         </select>
-                        <label>Choisir une Priorité</label>
+                        <label>Choisir une priorité</label>el>
                     </div>
                 </div>
                 @error('priorities')
@@ -417,7 +417,7 @@
             <div class="col-12 text-center mt-4">
                 <input type="hidden" name="priorities" id="prioritiesInput">
                 <button type="submit" class="btn btn-primary px-5 py-2">
-                    <i class="fas fa-save me-2"></i>Mettre à Jour le Profil du Patient
+                    <i class="fas fa-save me-2"></i>Mettre à jour le profil du patientl du Patient
                 </button>
             </div>
         </form>
@@ -471,7 +471,7 @@
      if (patientTypeSelect.value == 'kid'|| patientTypeSelect.value=='young') {
             kidSection.classList.remove('d-none');
             parentSection.classList.remove('d-none');
-            parentSectionTitle.textContent = 'Parent Details';
+            parentSectionTitle.textContent = 'Détails du parent';
 
             kidFirstName.setAttribute("required", "");
             kidLastName.setAttribute("required", "");
@@ -481,7 +481,7 @@
         else{
             kidSection.classList.add('d-none');
             parentSection.classList.remove('d-none');
-            parentSectionTitle.textContent = 'Patient Details';
+            parentSectionTitle.textContent = 'Détails du patient';
 
             kidFirstName.removeAttribute('required');
             kidLastName.removeAttribute('required');
@@ -492,10 +492,10 @@
     patientTypeSelect.addEventListener('change', function() {
         const selectedType = this.value;
         if (selectedType === 'young') {
-            kidYoungDetailsTitle.textContent = 'Young Details';
+            kidYoungDetailsTitle.textContent = 'Détails du jeune';
         } 
         else {
-            kidYoungDetailsTitle.textContent = 'Kid Details';
+            kidYoungDetailsTitle.textContent = 'Détails de l\'enfant';
         }
         if (selectedType === 'kid' || selectedType === 'young') {
             kidFirstName.setAttribute("required", "");
@@ -505,7 +505,7 @@
 
             kidSection.classList.remove('d-none');
             parentSection.classList.remove('d-none');
-            parentSectionTitle.textContent = 'Parent Details';
+            parentSectionTitle.textContent = 'Détails du parent';
         } 
         else  {
             kidFirstName.removeAttribute('required');
@@ -515,7 +515,7 @@
 
             kidSection.classList.add('d-none');
             parentSection.classList.remove('d-none');
-            parentSectionTitle.textContent = 'Patient Details';
+            parentSectionTitle.textContent = 'Détails du patient';
         } 
         });
     
@@ -539,7 +539,7 @@
             order.push(item.getAttribute('data-coach-id'));
         });
         document.getElementById('coach_order').value = JSON.stringify(order);
-        console.log("Current coach order:", order);
+        console.log("Ordre actuel des coachs :", order);
     }
     
     // Update the order initially
@@ -553,10 +553,10 @@
             prioritiesData[key] = storedPriorities[key];
         }
     }
-    console.log("Initial prioritiesData:", prioritiesData);
+    console.log("Priorités initiales :", prioritiesData);
    
     function addEventToPriorities(priorityChoice, date, eventId, startTime, endTime) {
-    var priorityKey = "priority " + priorityChoice;    
+    var priorityKey = "priorité " + priorityChoice;    
     if (!prioritiesData[priorityKey]) {
         prioritiesData[priorityKey] = {};
     }
@@ -570,13 +570,13 @@
     };
 
     prioritiesData[priorityKey][date].push(eventData);
-    console.log("After addition:", prioritiesData);
+    console.log("Après ajout :", prioritiesData);
     }
     function updateEventInPriorities(event) {
     // Extract the priority from the event title ("Priority 1", etc.)
     var parts = event.title.split(" ");
     var priorityChoice = parts[1]; // e.g., "1"
-    var priorityKey = "priority " + priorityChoice;
+    var priorityKey = "priorité " + priorityChoice;
     // New date and time (use ISO string, then extract needed parts)
     var newStart = event.start;
     var newEnd = event.end ? event.end : event.start;
@@ -608,12 +608,12 @@
         startTime: newStartTime,
         endTime: newEndTime
     });
-    console.log("After update:", prioritiesData);
+    console.log("Après mise à jour :", prioritiesData);
     }
     function deleteEventFromPriorities(event) {
     var parts = event.title.split(" ");
     var priorityChoice = parts[1];
-    var priorityKey = "priority " + priorityChoice;
+    var priorityKey = "priorité " + priorityChoice;
     for (var date in prioritiesData[priorityKey]) {
         var arr = prioritiesData[priorityKey][date];
         for (var i = 0; i < arr.length; i++) {
@@ -625,7 +625,7 @@
             if (Object.keys(prioritiesData[priorityKey]).length === 0) {
                     delete prioritiesData[priorityKey];
                 }
-            console.log("After deletion:", prioritiesData);
+            console.log("Après suppression :", prioritiesData);
             return;
         }
         }
@@ -685,7 +685,7 @@
                 
                     var eventObj = {
                         id: eventId,
-                        title: "Priority " + priorityChoice,
+                        title: "Priorité " + priorityChoice,
                         start: startDateTime,
                         end: endDateTime,
                         backgroundColor: colors[priorityChoice]
@@ -696,13 +696,7 @@
                     addEventToPriorities(priorityChoice, date, eventId, startTime, endTime);
                     calendar.unselect();
                 },
-                // eventContent: function(arg) {
-                //     return {
-                //         html: `<div class="fc-event-inner">
-                //                 <p class="fc-event-time">${arg.timeText}</p>
-                //             </div>`
-                //     };
-                // },
+
                 eventDidMount: function(arg) {
                     arg.el.addEventListener('mouseenter', function() {
                         arg.el.style.zIndex = '999';
@@ -718,13 +712,14 @@
                     updateEventInPriorities(info.event);
                 },
                 eventClick: function(info) {
-                    if (confirm("Voulez-vous supprimer cet événement ?")) {
+                    if (confirm("Voulez-vous supprimer cet événement ?"))  {
                         deleteEventFromPriorities(info.event);
                         info.event.remove();
-                    }
-                }
-            });
-        
+                    };
+                
+            }
+        });
+
         calendar.render();        
         var allEvents = 
             <?php
@@ -764,9 +759,8 @@
 
                     }
                 }
-                // dd($allPriorities)
                 echo json_encode($allPriorities);
-                ?>;
+            ?>;
 
         calendar.addEventSource(allEvents);
 

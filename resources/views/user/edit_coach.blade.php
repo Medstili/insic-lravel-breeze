@@ -80,7 +80,7 @@
     }
     .fc-button-primary {
         background-color: var(--primary-color) !important;
-        border-color: var(--primary-color) !important;
+        border-color: var (--primary-color) !important;
     }
     .btn-submit {
         background: var(--primary);
@@ -120,7 +120,7 @@
 </style>
 
 <div class="coach-form-container">
-    <h1 class="form-header">Mettre à jour le profil de l'entraîneur</h1>
+    <h1 class="form-header">Mettre à jour le profil de l'entraîneur</h1>e l'entraîneur</h1>
     
  
 
@@ -129,11 +129,11 @@
       @method('PUT')
 
         <div class="form-grid">
-            <!-- Left Column -->
+            <!-- Colonne gauche -->
             <div class="form-card">
                 <div class="form-floating">
                     <input type="text" class="form-control" id="fullName" name="full_name" value='{{ $user->full_name }}' required>
-                    <label for="fullName">Nom complet</label>
+                    <label for="fullName">Nom complet</label>l>
                     @error('full_name')
                         <div class="feedback">{{ $message }}</div>
                     @enderror
@@ -141,13 +141,13 @@
                 
                 <div class="form-floating">
                     <input type="number" class="form-control" id="tel" name="tel" value='{{ $user->phone }}' required>
-                    <label for="tel">Numéro de téléphone</label>
+                    <label for="tel">Numéro de téléphone</label>/label>
                 </div>
                 
                 <div class="form-floating">
                     <input type="email" class="form-control @error('email') is-invalid @enderror" 
                            id="email" name="email"  value='{{ $user->email}}' required>
-                    <label for="email">Adresse e-mail</label>
+                    <label for="email">Adresse e-mail</label>>
                     @error('email')
                         <div class="feedback">{{ $message }}</div>
                     @enderror
@@ -155,11 +155,11 @@
 
             </div>
 
-            <!-- Right Column -->
+            <!-- Colonne droite -->
             <div class="form-card">
                 <div class="form-floating">
                     <select class="form-control" id="specialist" name="speciality_id" required>
-                        <option value="" selected disabled>Sélectionnez une spécialisation</option>
+                        <option value="" selected disabled>Choisir une spécialisation</option>/option>
                         @foreach ($specialities as $speciality)
                           <option value="{{ $speciality->id }}" {{ $user->speciality_id == $speciality->id ? 'selected':''}}>{{ $speciality->name }}</option>
                         @endforeach
@@ -169,41 +169,41 @@
 
                 <div class="form-floating">
                     <select class="form-control" name="is_available">
-                      <option value="1" {{ $user->is_available == 1 ? 'selected':''}}>Disponible</option>
-                      <option value="0" {{ $user->is_available == 0 ? 'selected':''}}>Indisponible</option>
+                      <option value="1" {{ $user->is_available == 1 ? 'selected':''}}>Disponible</option>>
+                      <option value="0" {{ $user->is_available == 0 ? 'selected':''}}>Indisponible</option>>
                     </select>
-                    <label>Statut de disponibilité</label>
+                    <label>Statut de disponibilité</label>bel>
                 </div>
 
                 <div class="form-floating">
                     <select class="form-control" name="role">
-                      <option value="coach" {{ $user->role == 'coach' ?'selected' : '' }}>Entraîneur</option>
-                      <option value="admin" {{ $user->role == 'admin' ?'selected' : '' }}>Administrateur</option>
+                      <option value="coach" {{ $user->role == 'coach' ?'selected' : '' }}>Entraîneur</option>tion>
+                      <option value="admin" {{ $user->role == 'admin' ?'selected' : '' }}>Administrateur</option>>
                     </select>
-                    <label>Rôle dans le system</label>
+                    <label>Rôle dans le système</label></label>
                 </div>
 
                 <div class="form-group text-center mt-4">
-                    <label class="form-label fw-bold mb-2">Choose an Image:</label>
+                    <label class="form-label fw-bold mb-2">Choisir une image :</label>
 
-                    <!-- Hidden File Input -->
+                    <!-- Champ de fichier caché -->
                     <input type="file" name="image" id="image-input" accept="image/*" hidden onchange="previewImage(event)">
 
-                    <!-- Custom Button -->
+                    <!-- Bouton personnalisé -->
                     <label for="image-input" class="btn btn-primary">
-                      <i class="fas fa-upload me-2"></i> Upload Image
+                      <i class="fas fa-upload me-2"></i> Télécharger une image
                     </label>
 
-                    <!-- Image Preview (Circle or Square) -->
+                    <!-- Aperçu de l'image -->
                     <div id="image-preview" class="mt-3 {{  $user->image_path ==null ? 'd-none': ''}} ">
-                      <img src="{{ asset('storage/' . $user->image_path) }}" alt="Image Preview" id="image-preview-img" class="rounded-circle shadow img-thumbnail" style="width: 80px; height: 80px; object-fit: cover;">
+                      <img src="{{ asset('storage/' . $user->image_path) }}" alt="Aperçu de l'image" id="image-preview-img" class="rounded-circle shadow img-thumbnail" style="width: 80px; height: 80px; object-fit: cover;">
                     </div>
                 </div>
 
             </div>
         </div>
 
-                <!-- Error Messages -->
+                <!-- Messages d'erreur -->
                 @error('planning')
                   <div class="alert-danger">
                       <i class="fas fa-exclamation-circle mr-2"></i>
@@ -211,17 +211,17 @@
                   </div>
                 @enderror
 
-        <!-- Calendar Section -->
+        <!-- Section du calendrier -->
         <div class="calendar-container">
             <div id="calendar"></div>
         </div>
 
 
 
-        <!-- Hidden Input & Submit -->
+        <!-- Entrée cachée et soumission -->
         <input type="hidden" id="planning" name="planning">
         <button type="submit" class="btn-submit">
-            <i class="fas fa-save mr-2"></i>Mettre à jour le profil de l'entraîneur
+            <i class="fas fa-save mr-2"></i>Mettre à jour le profil de l'entraîneurfil de l'entraîneur
         </button>
     </form>
 </div>
@@ -335,7 +335,7 @@
         // Add event to the calendar.
         var eventObj = {
           id: eventId,
-          title: "Availability",
+          title: "Disponibilité",
           start: startDateTime,
           end: endDateTime,
           backgroundColor: defaultColor
@@ -370,7 +370,7 @@
           foreach ($dayData as $data) {
               // dd($data);
               $id = $data['id'];
-              $title = "Availability";
+              $title = "Disponibilité";
               $date = $day;
               $start=$day.'T'.$data['startTime'].":"."00";
               $end = $day.'T'.$data['endTime'].":"."00";
@@ -398,7 +398,7 @@
     initialDate = initialDate.split('T')[0];
     calendar.gotoDate(initialDate);
     calendar.addEventSource(oldPlanningEvents);
-  });
+    });
   function coachUpdatePlanning() {
       document.getElementById("planning").value = JSON.stringify(availabilityData);
       console.log("Planification mise à jour :", document.getElementById("planning").value);
@@ -421,3 +421,4 @@
  
 </script>
 @endsection
+  
