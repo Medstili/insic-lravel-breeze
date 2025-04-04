@@ -171,12 +171,12 @@
             <div class="col-12">
                 <div class="form-floating">
                     <select id="patientType" name="patient_type" class="form-select bg-transparent" required>
-                        <option value="" selected disabled>Sélectionner le type de patient</option>ent</option>
-                        <option value="kid" {{  $patient->patient_type == 'kid' ? 'selected' : '' }}>Enfant</option>>
+                        <option value="" selected disabled>Sélectionner le type de patient</option>
+                        <option value="kid" {{  $patient->patient_type == 'kid' ? 'selected' : '' }}>Enfant</option>
                         <option value="young" {{ $patient->patient_type == 'young' ? 'selected' : '' }}>Jeune</option>
-                        <option value="adult" {{ $patient->patient_type == 'adult' ? 'selected' : '' }}>Adulte</option>>
+                        <option value="adult" {{ $patient->patient_type == 'adult' ? 'selected' : '' }}>Adulte</option>
                     </select>
-                    <label for="patientType">Type de patient</label>el>
+                    <label for="patientType">Type de patient</label>
                 </div>
             </div>
 
@@ -191,22 +191,22 @@
             <div class="col-md-4">
                 <div class="form-floating">
                     <select name="PatientGender" id="PatientGender" class="form-select " required>
-                            <option value="M" {{ $patient->gender == 'M' ? 'selected' : '' }}>Masculin</option>>
+                            <option value="M" {{ $patient->gender == 'M' ? 'selected' : '' }}>Masculin</option>
                             <option value="F" {{ $patient->gender == 'F' ? 'selected' : ''}}>Féminin</option>
                         </select>
-                        <label for="PatientGender">Sexe du patient</label>l>
+                        <label for="PatientGender">Sexe du patient</label>
                 </div>
             </div>
             <!-- spécialité -->
             <div class="col-md-4">
                 <div class="form-floating">
                     <select class="form-select" id="specialtySelect" name="speciality_id" required>
-                        <option value="">Toutes les spécialités</option>option>
+                        <option value="">Toutes les spécialités</option>
                     @foreach($specialities as $speciality)
                         <option value="{{ $speciality->id }}"  {{ $patient->speciality_id ==$speciality->id ? 'selected' :''}}>{{ $speciality->name }}</option>
                     @endforeach
                     </select>
-                    <label>Sélectionner une spécialité</label>té</label>
+                    <label>Sélectionner une spécialité</label>
                 </div>
 
             </div>
@@ -237,9 +237,9 @@
                     <div class="col-md-6">
                         <div class="form-floating">
                             <select id="kidSystem" name="kid_system" class="form-select">
-                                <option value="" selected disabled>Sélectionner le système</option>e</option>
-                                <option value="moroccan" {{ $patient->system == 'moroccan' ? 'selected' :'' }}>Système marocain</option>>
-                                <option value="mission" {{ $patient->system == 'mission' ? 'selected' :'' }}>Système mission</option>>
+                                <option value="" selected disabled>Sélectionner le système</option>
+                                <option value="moroccan" {{ $patient->system == 'moroccan' ? 'selected' :'' }}>Système marocain</option>
+                                <option value="mission" {{ $patient->system == 'mission' ? 'selected' :'' }}>Système mission</option>
                             </select>
                             <label>Système éducatif</label>
                         </div>
@@ -249,7 +249,7 @@
 
             <!-- Section Parent -->
             <div id="parentSection" class="d-none">
-                <h4 class="section-title parent-title">Informations sur le parent</h4>r</h4>
+                <h4 class="section-title parent-title">Informations sur le parent</h4>
                 <div class="row g-3">
                     <div class="col-md-6">
                         <div class="form-floating">
@@ -269,7 +269,7 @@
                         <div class="form-floating">
                             <input type="tel" name="parent_phone" class="form-control" id="parentPhone"  placeholder="Téléphone" 
                             value = '{{ $patient->phone }}' required>
-                            <label>Numéro de téléphone</label>/label>
+                            <label>Numéro de téléphone</label>
                         </div>
                     </div>
                     <div class="col-md-6">
@@ -293,7 +293,7 @@
                     <div class="col-md-6">
                         <div class="form-floating">
                             <input type="text" name="parent_etablissement" id="parentEtablissement" class="form-control bg-transparent" 
-                            value = '{{ $patient->etablissment }} '  placeholder="Établissement" required>d>
+                            value = '{{ $patient->etablissment }} '  placeholder="Établissement" required>
                             <label for="parentEtablissement">Établissement</label>l>
                         </div>
                     </div>
@@ -308,10 +308,10 @@
                     <div class="col-md-6">
                         <div class="form-floating">
                             <select name="mode" class="form-select" required>
-                            <option value="A Distance" {{ $patient->mode =='A Distance' ? 'selected' :''}}>À distance</option>ion>
-                            <option value="Presentiel" {{ $patient->mode =='Presentiel' ? 'selected' :''}}>En présentiel</option>>
+                            <option value="A Distance" {{ $patient->mode =='A Distance' ? 'selected' :''}}>À distance</option>
+                            <option value="Presentiel" {{ $patient->mode =='Presentiel' ? 'selected' :''}}>En présentiel</option>
                             </select>
-                            <label>Mode de consultation</label>el>
+                            <label>Mode de consultation</label>
                         </div>
                     </div>
                     <div class="col-md-6">
@@ -329,7 +329,7 @@
 
             <!-- Section des coachs -->
             <div class="col-12">
-                <h4 class="section-title">Sélectionner les coachs</h4>achs</h4>
+                <h4 class="section-title">Sélectionner les coachs</h4>
                 @error('coaches')
                     <div class="alert alert-danger">
                         <i class="fas fa-exclamation-circle me-2"></i>{{ $message }}
@@ -364,10 +364,10 @@
 
             <!-- max appointments on a week -->
             <div class="col-md-4">
-            <h4 class="section-title" >Rendez-vous par semaine</h4>4>
+            <h4 class="section-title" >Rendez-vous par semaine</h4>
                 <div class="form-floating">
                     <input type="number" min="1" max="3" name="max_appointments" class="form-control" value="{{ $patient->weekly_quota}}" required >
-                    <label>Nombre maximum de rendez-vous par semaine</label>l>
+                    <label>Nombre maximum de rendez-vous par semaine</label>
                 </div>
             </div>
 
@@ -391,7 +391,7 @@
 
             <!-- Section Calendrier -->
             <div class="col-12">
-                <h4 class="section-title mt-4">Priorités de l'emploi du temps</h4>/h4>
+                <h4 class="section-title mt-4">Priorités de l'emploi du temps</h4>
                 <div class="col-md-6">
                     <div class="form-floating">
                         <select id="priorityChoice" name="priority_choice" class="form-select">
@@ -399,7 +399,7 @@
                             <option value="2" >Priorité 2</option>
                             <option value="3" >Priorité 3</option>
                         </select>
-                        <label>Choisir une priorité</label>el>
+                        <label>Choisir une priorité</label>
                     </div>
                 </div>
                 @error('priorities')
