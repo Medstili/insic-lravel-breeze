@@ -163,6 +163,7 @@ class PatientController extends Controller
             $image = $request->file('image');
             $imageName = time() . '_' . $image->getClientOriginalName();
             $imagePath = $image->storeAs('patientImages', $imageName, 'public');
+                      
             $patient->image_path = $imagePath;
         };
       
