@@ -20,7 +20,6 @@ $app = Application::configure(basePath: dirname(__DIR__))
             'admin' => AdminMiddleware::class,
         ]);
 
-        $middleware->prepend(HandleCors::class);
 
     })
     ->withExceptions(function (Exceptions $exceptions) {
