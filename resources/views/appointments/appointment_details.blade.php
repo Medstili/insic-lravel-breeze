@@ -189,6 +189,10 @@
             <div class="card-header">
                 <i class="fas fa-file-medical"></i>
                 <h2>Session Report</h2>
+                <!-- Error Messages -->
+                @if($errors->has('report'))
+                    <div class="error-msg">{{ $errors->first('report') }}</div>
+                @endif
             </div>
             <div class="card-body">
                 @if($appointment->report_path)
@@ -237,7 +241,7 @@
                                 <div class="upload-content">
                                     <i class="fas fa-cloud-upload-alt"></i>
                                     <p>Drag & drop files or <span class="browse-link">Browse</span></p>
-                                    <small>Supported formats: PDF, DOC, DOCX (Max 1MB)</small>
+                                    <small>Supported formats: PDF, DOC, DOCX (Max 2MB)</small>
                                 </div>
                             </label>
 
@@ -247,10 +251,7 @@
                             </button>
                         </div>
 
-                        <!-- Error Messages -->
-                        @if($errors->has('report'))
-                            <div class="error-msg">{{ $errors->first('report') }}</div>
-                        @endif
+          
                     </form>
                 @endif
             </div>

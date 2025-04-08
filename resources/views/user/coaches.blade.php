@@ -276,7 +276,7 @@
                                <i class="fas fa-eye"></i>
                             </a>
                             <form action="{{ route('user.destroy', $user->id) }}" method="POST" 
-                                  onsubmit="return cancellationConfirmation()">
+                                  onsubmit="return deleteConfirmation()">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" class="btn btn-danger">
@@ -293,7 +293,7 @@
 </div>
 
 <script>
-    function cancellationConfirmation() {
+    function deleteConfirmation() {
         return confirm('Êtes-vous sûr de vouloir supprimer cet entraîneur ?');
     }
 </script>

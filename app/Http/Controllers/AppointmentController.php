@@ -277,12 +277,18 @@ class AppointmentController extends Controller
     {
         $request->validate([
             'report' => 'required|file|mimes:pdf,doc,docx,txt|max:2048', // Max 2MB
+        ], [
+            'report.max' => 'La taille du fichier du rapport ne doit pas dépasser 2 Mb.',
         ]);
+    
 
         $appointment = Appointment::findOrFail($id);
 
         // Store the file in the 'reports' folder under 'storage/app/public/reports/'
         $filename = time() . '_' . $request->file('report')->getClientOriginalName();
+ 
+
+        // Store the file in the 'reports' folder
         $filePath = $request->file('report')->storeAs('reports', $filename, 'public');
 
         // Save the file path in the database

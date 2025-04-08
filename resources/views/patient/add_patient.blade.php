@@ -65,6 +65,7 @@
         background: white;
         border-radius: 12px;
         padding: 1rem;
+        height: 500px;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
     }
 
@@ -585,7 +586,6 @@
     var colors = { "1": "red", "2": "orange", "3": "green" };
 
     var calendar = new FullCalendar.Calendar(calendarEl, {
-        // Set the initial view to week (timeGridWeek for a time-based week view)
         initialView: "timeGridWeek",
         selectable: true,
         editable: true,
@@ -593,8 +593,8 @@
         hiddenDays: [0], 
         slotMinTime: '12:00:00',
         slotMaxTime: '20:00:00',
-        slotDuration: '01:00:00', // Set the slot duration to 1 hour
-        slotLabelInterval: '01:00:00', // Set the interval for slot labels to 1 hour
+        slotDuration: '01:00:00',
+        slotLabelInterval: '01:00:00', 
         allDaySlot: false,
         nowIndicator: true,
         expandRows: true,
@@ -652,79 +652,6 @@
     document.getElementById("prioritiesInput").value = JSON.stringify(prioritiesData);
     return true;
 }
-    // function fetchCoachesBySpeciality(specialityId) {
-    //     fetch("{{ route('getCoachesBySpeciality') }}",{
-    //         method: 'POST',
-    //         headers: {
-    //             'Content-Type': 'application/json',
-    //             'X-CSRF-TOKEN': "{{ csrf_token() }}"
-    //         },
-    //         body: JSON.stringify({ specialityId })
-    //     })
-    //         .then(response => response.json())
-    //         .then(data => {
-    //             const coaches = data.coaches || [];
-
-    //             const coachSection = document.querySelector('.coach-section');
-    //             coachSection.innerHTML = ''; 
-                
-    
-    //                 if (coaches.length === 0) {
-    //                     document.getElementById('caochesSectionWarning').classList.remove('d-none');
-    //                     return; 
-    //                 }else{
-    //                     document.getElementById('caochesSectionWarning').classList.add('d-none');
-    //                 }
-    //             coaches.forEach(coach => {
-    //                 const coachDiv = document.createElement('div');
-    //                 coachDiv.classList.add('form-check');
-
-    //                 const checkbox = document.createElement('input');
-    //                 checkbox.type = 'checkbox';
-    //                 checkbox.classList.add('form-check-input');
-    //                 checkbox.id = `coachCheckbox${coach.id}`;
-    //                 checkbox.name = 'coaches[]';
-    //                 checkbox.value = coach.id;
-    //                 checkbox.setAttribute('onchange', `maxCountDisplay('${coach.id}', this)`);
-
-    //                 const label = document.createElement('label');
-    //                 label.classList.add('form-check-label');
-    //                 label.setAttribute('for', `coachCheckbox${coach.id}`);
-    //                 label.textContent = coach.full_name;
-
-    //                 const inputNumber = document.createElement('input');
-    //                 inputNumber.type = 'number';
-    //                 inputNumber.id = `coach${coach.id}`;
-    //                 inputNumber.name = `coach${coach.id}`;
-    //                 inputNumber.classList.add('d-none');
-    //                 inputNumber.min = '1';
-    //                 inputNumber.style.width = '100px';
-
-    //                 coachDiv.appendChild(checkbox);
-    //                 coachDiv.appendChild(label);
-    //                 coachDiv.appendChild(inputNumber);
-
-    //                 coachSection.appendChild(coachDiv);
-    //             });
-                
-    //         })
-    //         .catch(error => console.error('Error fetching coaches:', error));
-    // }
-    
-    // document.getElementById('specialtySelect').addEventListener('change', function() {
-    //     const selectedSpeciality = this.value;
-
-    //     console.log(selectedSpeciality);
-        
-    //     if (selectedSpeciality) {
-    //         fetchCoachesBySpeciality(selectedSpeciality);
-    //         document.getElementById('caochesSectionAlert').classList.add('d-none');
-    //     }else{
-    //         document.getElementById('caochesSectionAlert').classList.remove('d-none');
-    //         const coachSection = document.querySelector('.coach-section');
-    //         coachSection.innerHTML = ''; 
-    //     }
-    // });
 
     function previewImage(event) {
         const input = event.target;

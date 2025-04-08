@@ -120,7 +120,7 @@
 </style>
 
 <div class="coach-form-container">
-    <h1 class="form-header">Mettre à jour le profil de l'entraîneur</h1>e l'entraîneur</h1>
+    <h1 class="form-header">Mettre à jour le profil de l'entraîneur</h1>
     
  
 
@@ -133,7 +133,7 @@
             <div class="form-card">
                 <div class="form-floating">
                     <input type="text" class="form-control" id="fullName" name="full_name" value='{{ $user->full_name }}' required>
-                    <label for="fullName">Nom complet</label>l>
+                    <label for="fullName">Nom complet</label>
                     @error('full_name')
                         <div class="feedback">{{ $message }}</div>
                     @enderror
@@ -141,13 +141,13 @@
                 
                 <div class="form-floating">
                     <input type="number" class="form-control" id="tel" name="tel" value='{{ $user->phone }}' required>
-                    <label for="tel">Numéro de téléphone</label>/label>
+                    <label for="tel">Numéro de téléphone</label>
                 </div>
                 
                 <div class="form-floating">
                     <input type="email" class="form-control @error('email') is-invalid @enderror" 
                            id="email" name="email"  value='{{ $user->email}}' required>
-                    <label for="email">Adresse e-mail</label>>
+                    <label for="email">Adresse e-mail</label>
                     @error('email')
                         <div class="feedback">{{ $message }}</div>
                     @enderror
@@ -159,7 +159,7 @@
             <div class="form-card">
                 <div class="form-floating">
                     <select class="form-control" id="specialist" name="speciality_id" required>
-                        <option value="" selected disabled>Choisir une spécialisation</option>/option>
+                        <option value="" selected disabled>Choisir une spécialisation</option>
                         @foreach ($specialities as $speciality)
                           <option value="{{ $speciality->id }}" {{ $user->speciality_id == $speciality->id ? 'selected':''}}>{{ $speciality->name }}</option>
                         @endforeach
@@ -169,18 +169,18 @@
 
                 <div class="form-floating">
                     <select class="form-control" name="is_available">
-                      <option value="1" {{ $user->is_available == 1 ? 'selected':''}}>Disponible</option>>
-                      <option value="0" {{ $user->is_available == 0 ? 'selected':''}}>Indisponible</option>>
+                      <option value="1" {{ $user->is_available == 1 ? 'selected':''}}>Disponible</option>
+                      <option value="0" {{ $user->is_available == 0 ? 'selected':''}}>Indisponible</option>
                     </select>
-                    <label>Statut de disponibilité</label>bel>
+                    <label>Statut de disponibilité</label>
                 </div>
 
                 <div class="form-floating">
                     <select class="form-control" name="role">
-                      <option value="coach" {{ $user->role == 'coach' ?'selected' : '' }}>Entraîneur</option>tion>
-                      <option value="admin" {{ $user->role == 'admin' ?'selected' : '' }}>Administrateur</option>>
+                      <option value="coach" {{ $user->role == 'coach' ?'selected' : '' }}>Entraîneur</option>
+                      <option value="admin" {{ $user->role == 'admin' ?'selected' : '' }}>Administrateur</option>
                     </select>
-                    <label>Rôle dans le système</label></label>
+                    <label>Rôle dans le système</label>
                 </div>
 
                 <div class="form-group text-center mt-4">
@@ -241,7 +241,6 @@
   console.log("Disponibilités initiales :", availabilityData);
 
   }
-  // console.log("Initial availabilityData:", availabilityData);
 
    
   function addAvailabilityEvent(date, eventId, startTime, endTime) {

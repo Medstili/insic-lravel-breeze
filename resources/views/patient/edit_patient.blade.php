@@ -66,7 +66,7 @@
         border-radius: 12px;
         padding: 1rem;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-        height: 700px;
+        height: 500px;
     }
     
     .priority1 .fc-event-title,
@@ -260,8 +260,7 @@
                     </div>
                     <div class="col-md-6">
                         <div class="form-floating">
-                            <input type="text" name="parent_first_name" class="form-control" id="parentFirstName" placeholder="Prénom" 
-                            value = '{{ $patient->parent_first_name }}' required>
+                            <input type="text" name="parent_first_name" class="form-control" id="parentFirstName" placeholder="Prénom" value = '{{$patient->parent_first_name }}' required>
                             <label>Prénom</label>
                         </div>
                     </div>
@@ -294,7 +293,7 @@
                         <div class="form-floating">
                             <input type="text" name="parent_etablissement" id="parentEtablissement" class="form-control bg-transparent" 
                             value = '{{ $patient->etablissment }} '  placeholder="Établissement" required>
-                            <label for="parentEtablissement">Établissement</label>l>
+                            <label for="parentEtablissement">Établissement</label>
                         </div>
                     </div>
             
@@ -351,7 +350,6 @@
                             @if($assigned)
                                 <!-- Show the capacity input with the value from pivot -->
                                 <input type="number" id="coach{{ $coach->id }}" name="coach{{ $coach->id }}" class="coach-capacity" min="1" max="3" style="width: 100px;" value="{{ $assigned->pivot->max_appointments }}">
-                                <small>Position: {{ $assigned->pivot->position }}</small>
                             @else
                                 <input type="number" id="coach{{ $coach->id }}" name="coach{{ $coach->id }}" class="d-none coach-capacity" min="1" max="3" style="width: 100px;">
                             @endif
@@ -831,20 +829,20 @@
             .catch(error => console.error('Error fetching coaches:', error));
     }
 
-    document.getElementById('specialtySelect').addEventListener('change', function() {
-        const selectedSpeciality = this.value;
+    // document.getElementById('specialtySelect').addEventListener('change', function() {
+    //     const selectedSpeciality = this.value;
 
-        console.log(selectedSpeciality);
+    //     console.log(selectedSpeciality);
         
-        if (selectedSpeciality) {
-            fetchCoachesBySpeciality(selectedSpeciality);
-            document.getElementById('caochesSectionAlert').classList.add('d-none');
-        }else{
-            document.getElementById('caochesSectionAlert').classList.remove('d-none');
-            const coachSection = document.querySelector('.coach-section');
-            coachSection.innerHTML = ''; 
-        }
-    });
+    //     if (selectedSpeciality) {
+    //         fetchCoachesBySpeciality(selectedSpeciality);
+    //         document.getElementById('caochesSectionAlert').classList.add('d-none');
+    //     }else{
+    //         document.getElementById('caochesSectionAlert').classList.remove('d-none');
+    //         const coachSection = document.querySelector('.coach-section');
+    //         coachSection.innerHTML = ''; 
+    //     }
+    // });
     function previewImage(event) {
         const input = event.target;
         const previewContainer = document.getElementById("image-preview");

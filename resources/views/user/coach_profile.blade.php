@@ -52,6 +52,7 @@
     </div>
 
     <!-- Data Tables Section -->
+    
     <div class="dashboard-section">
         <div class="section-table-switcher mt-4 mb-2 ">
             <button class="table-switch-btn me-2 active" data-target="appointments-table">
@@ -269,72 +270,67 @@
             </div>
         </div>
 
-    <!-- Patients Report -->
+        <!-- Patients Report -->
 
-    <div id="reports-table" class="data-table-container">
-
-        <div>
-            <div class="table-responsive">   
-                <table class="reports-table">
-                    <thead>
-                        <tr>
-                            <th colspan="5">Patient</th>
-                            <th colspan="3">Rapport</th>
-                            <th colspan="4">Actions</th>
-                        </tr>
-                    </thead>
-                    
-                    <tbody>
-                        @foreach($reports as $report => $reportData)
-                            @php $reportCount = count($reportData['report']); @endphp
-                            @if($reportCount > 0)
-                                @php 
-                                    $firstReport = array_shift($reportData['report']);
-                                @endphp
-                                <tr>
-                                    <td rowspan="{{ $reportCount + 1 }}" colspan="5">{{ $reportData['patient_name'] }}</td>
-                                    <td colspan="3">{{ basename($firstReport['content']) }}</td>
-                                    <td colspan="4">
-                                        <div class="file-actions">
-                                            <a href="{{ route('appointments.downloadReport', $firstReport['app_id']) }}" class="btn-download">
-                                                <i class="fas fa-download"></i>
-                                            </a>
-                                            <a href="{{ route('appointments.viewReport', $firstReport['app_id']) }}" target="_blank" class="btn-view">
-                                                <i class="fas fa-eye"></i>
-                                            </a>
-                                        </div>
-                                    </td>
-                                </tr>
-                                @foreach($reportData['report'] as $rp)
-                                            
-                                    @if (!is_null($rp['content']))
-                                        <tr>
-                                            <td colspan="3">{{ basename($rp['content']) }}</td>
-                                            <td colspan="4">
-                                                <div class="file-actions">
-                                                    <a href="{{ route('appointments.downloadReport', $rp['app_id']) }}" class="btn-download">
-                                                        <i class="fas fa-download"></i>
-                                                    </a>
-                                                    <a href="{{ route('appointments.viewReport', $rp['app_id']) }}" target="_blank" class="btn-view">
-                                                        <i class="fas fa-eye"></i>
-                                                    </a>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    @endif
-                                
-                                @endforeach
-                            @endif
-                        @endforeach
-                    </tbody>
-                </table>
+        <div id="reports-table" class="data-table-container">
+            <div>
+                <div class="table-responsive">   
+                    <table class="reports-table">
+                        <thead>
+                            <tr>
+                                <th colspan="5">Patient</th>
+                                <th colspan="3">Rapport</th>
+                                <th colspan="4">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($reports as $report => $reportData)
+                                @php $reportCount = count($reportData['report']); @endphp
+                                @if($reportCount > 0)
+                                    @php 
+                                        $firstReport = array_shift($reportData['report']);
+                                    @endphp
+                                    <tr>
+                                        <td rowspan="{{ $reportCount + 1 }}" colspan="5">{{ $reportData['patient_name'] }}</td>
+                                        <td colspan="3">{{ basename($firstReport['content']) }}</td>
+                                        <td colspan="4">
+                                            <div class="file-actions">
+                                                <a href="{{ route('appointments.downloadReport', $firstReport['app_id']) }}" class="btn-download">
+                                                    <i class="fas fa-download"></i>
+                                                </a>
+                                                <a href="{{ route('appointments.viewReport', $firstReport['app_id']) }}" target="_blank" class="btn-view">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    @foreach($reportData['report'] as $rp)
+                                                
+                                        @if (!is_null($rp['content']))
+                                            <tr>
+                                                <td colspan="3">{{ basename($rp['content']) }}</td>
+                                                <td colspan="4">
+                                                    <div class="file-actions">
+                                                        <a href="{{ route('appointments.downloadReport', $rp['app_id']) }}" class="btn-download">
+                                                            <i class="fas fa-download"></i>
+                                                        </a>
+                                                        <a href="{{ route('appointments.viewReport', $rp['app_id']) }}" target="_blank" class="btn-view">
+                                                            <i class="fas fa-eye"></i>
+                                                        </a>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        @endif
+                                    
+                                    @endforeach
+                                @endif
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
-
-
-    </div>
-
 </div>
 
 <style>
@@ -549,7 +545,7 @@
         color: white;
         box-shadow: 0 2px 4px rgba(99, 102, 241, 0.2);
     }
-
+    
     /* Calendar Views */
     .calendar-view {
         background: white;

@@ -339,11 +339,11 @@ $patient_full_name = $patient_first_name . ' ' . $patient_last_name;
     <div class="patient-main">
         <!-- Navigation Tabs -->
         <div class="nav-tabs">
-            <div class="nav-item active" onclick="showTab('personal', this)">Informations personnelles</div>
+            <div class="nav-item active" id="personal" onclick="showTab('personal', this)">Informations personnelles</div>
             <div class="nav-item" onclick="showTab('medical', this)">Informations médicales</div>
             <div class="nav-item" onclick="showTab('coaches', this)">Informations des coachs</div>
             <div class="nav-item" onclick="showTab('appointmentsHistory', this)">Rendez vous</div>
-            <div class="nav-item" onclick="showTab('calendar', this)">Calendrier</div>
+            <div class="nav-item" onclick="showTab('calendar', this)">Priorités</div>
         </div>
 
 
@@ -524,9 +524,7 @@ $patient_full_name = $patient_first_name . ' ' . $patient_last_name;
 </div>
 
 <script>
-
-      // Global calendar instance variables
-
+    // Global calendar instance variables
     let availabilitiesCalendarInstance;
     // Tab navigation
     function showTab(tabName, element) {
@@ -552,50 +550,17 @@ $patient_full_name = $patient_first_name . ' ' . $patient_last_name;
     }
     // Initialize default tab
     document.addEventListener('DOMContentLoaded', () => {
-        showTab('personal');
+
+        // Remove active class and hide all sections
+        document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+        document.querySelectorAll('.detail-section, .calendar-container').forEach(el => el.style.display = 'none');
+        document.querySelector('#personal').classList.add('active')
+        // Show the target tab
+        document.getElementById('personalTab').style.display = 'block';
+    
         availabilitiesCalendarInstance = initAvailabilitiesCalendar();
     });
-
-    function bookAppointment(coachId, appointmentDate, startTime, endTime, patientId, specialityId) {
-        const planning = {};
-        planning[appointmentDate] = {
-            startTime: startTime,
-            endTime: endTime
-        };
-        const data = {
-            coach_id: coachId,
-            planning: planning,
-            patient_id: patientId,
-            specialityId: specialityId
-        };
-
-        const bookingAppointmentsUrl = " {{ route('appointment.store') }}";
-        // Send the POST request to your Laravel store route.
-        fetch( bookingAppointmentsUrl, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-            },
-            body: JSON.stringify(data)
-        })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error("Network response was not ok");
-            }
-            return response.json();
-        })
-        .then(result => {
-            console.log('Appointment stored successfully:', result);
-            alert('Rendez-vous réservé avec succès!');
-        })
-        .catch(error => {
-            console.error('Erreur lors de l\'enregistrement du rendez-vous:', error);
-            alert('Une erreur s\'est produite lors de la réservation du rendez-vous.');
-        });
-        
-    }    
-    // Function to initialize the availabilities calendar
+ // Function to initialize the availabilities calendar
     function initAvailabilitiesCalendar() {
         let initialDate;
         var calendarEl = document.getElementById("availabilities-calendar");

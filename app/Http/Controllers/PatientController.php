@@ -229,7 +229,6 @@ class PatientController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    // In PatientController@edit:
         
     public function edit(string $id)
     {
@@ -237,7 +236,7 @@ class PatientController extends Controller
         $specialities = Speciality::all();
 
         // Get all coaches from the database.
-        $allCoaches = User::select('id', 'full_name')->with('speciality')->get();
+        $allCoaches = User::select('id', 'full_name')->get();
 
         // Retrieve the assigned coaches from the patient (this collection is already ordered by pivot->position because of your relationship)
         $assignedCoaches = $patient->coaches;
@@ -393,6 +392,16 @@ class PatientController extends Controller
     public function destroy(string $id)
     {
         $patient = Patient::findOrFail($id);
+        $patient->coaches->each(function ($coach) use ($id) {
+            $canSee = (array) $coach->can_see;
+
+            if (($key = array_search($id, $canSee)) !== false) {
+            unset($canSee[$key]);
+            $coach->can_see = array_values($canSee); // Reindex the array
+            $coach->save();
+            }
+        });
+
         $patient->delete();
         return redirect()->route('patient.index');
 
