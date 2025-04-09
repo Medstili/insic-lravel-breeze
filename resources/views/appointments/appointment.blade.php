@@ -120,10 +120,15 @@
                                     class="action-btn download-btn" title="Télécharger le rapport">
                                         <i class="fas fa-file-download"></i>
                                     </a>
+                    
+
+                                    <a href="{{ route('appointments.viewReport', $appointment->id) }}" target="_blank" class="action-btn view-btn" title="Voir le rapport">
+                                                <i class="fas fa-file-alt"></i>
+                                            </a>
                                     @endif
                                     
                                     <a href="{{ route('appointment.show', $appointment->id) }}" 
-                                    class="action-btn view-btn" title="Voir les détails">
+                                    class="action-btn show-btn" title="Voir les détails">
                                         <i class="fas fa-eye"></i>
                                     </a>
 
@@ -327,7 +332,7 @@
 
 .action-buttons {
     display: flex;
-    gap: 0.5rem;
+    gap: 0.2rem;
 }
 
 .action-btn {
@@ -349,6 +354,15 @@
 
 .view-btn:hover {
     background: #3b82f6;
+    color: white;
+}
+.show-btn {
+    background: rgba(59, 130, 246, 0.1);
+    color: grey;
+}
+
+.show-btn:hover {
+    background:grey;
     color: white;
 }
 
