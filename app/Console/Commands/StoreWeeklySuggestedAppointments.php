@@ -32,8 +32,7 @@ class StoreWeeklySuggestedAppointments extends Command
      */
     public function handle()
     {
-        Log::debug('potatooooooo',[]);
-        //
+
          // Determine current week's boundaries (Monday to Sunday)
          $currentWeekStart = Carbon::now()->startOfWeek();
          $weekEnd = Carbon::now()->endOfWeek();

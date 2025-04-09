@@ -10,7 +10,5 @@ Artisan::command('inspire', function () {
     
 })->purpose('Display an inspiring quote');
 
-// Schedule::command('app:notify-incomplete-weekly-quota')->weeklyOn(1,'00:05');
-// Schedule::command('app:store-suggestions')->weeklyOn(5,'10:00');
-Schedule::command('app:notify-incomplete-weekly-quota')->everyMinute();
-Schedule::command('app:store-suggestions')->everyMinute();
+Schedule::command('app:store-suggestions')->weeklyOn(1,'00:05');
+Schedule::command('app:notify-incomplete-weekly-quota')->weeklyOn(5,'10:00');

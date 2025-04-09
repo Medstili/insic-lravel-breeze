@@ -5,7 +5,7 @@ use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use App\Http\Middleware\CoachMiddleware;
 use App\Http\Middleware\AdminMiddleware;
-use \Illuminate\Http\Middleware\HandleCors;
+
 
 
 $app = Application::configure(basePath: dirname(__DIR__))
@@ -25,6 +25,7 @@ $app = Application::configure(basePath: dirname(__DIR__))
     ->withExceptions(function (Exceptions $exceptions) {
 
     })->create();
+
 
 return $app;
 

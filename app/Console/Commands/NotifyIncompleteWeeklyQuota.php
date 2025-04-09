@@ -32,7 +32,7 @@ class NotifyIncompleteWeeklyQuota extends Command
      */
     public function handle()
     {
-        Log::debug('notification',[]);
+ 
         // Define the current week (assuming Monday as start and Sunday as end)
         $weekStart = Carbon::now()->startOfWeek(); // Monday
         $weekEnd = Carbon::now()->endOfWeek(); // Sunday
