@@ -2,82 +2,101 @@
 
 @section('content')
 <style>
+    :root {
+        --primary-color: #6366f1;
+        --secondary-color: #4f46e5;
+        --light-bg: #f8fafc;
+        --border-color: #e2e8f0;
+        --text-dark: #1e293b;
+        --text-muted: #64748b;
+        --shadow-sm: 0 4px 6px rgba(0, 0, 0, 0.05);
+        --shadow-md: 0 3px 6px rgba(0, 0, 0, 0.1);
+        --radius-sm: 6px;
+        --radius-md: 8px;
+        --radius-lg: 12px;
+    }
+
+    /* Base styles */
     .calendar-wrapper {
-        /* margin-top: 80px; */
-        padding: 2rem;
+        padding: 1rem;
         min-height: calc(100vh - 80px);
-        background: #f8fafc;
+        background: var(--light-bg);
     }
 
     .calendar-container {
         background: white;
-        border-radius: 12px;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-        padding: 2rem;
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-sm);
+        padding: 1rem;
+        overflow: hidden;
     }
 
     .calendar-header {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        margin-bottom: 2rem;
+        margin-bottom: 1.5rem;
         padding-bottom: 1rem;
-        border-bottom: 1px solid #e2e8f0;
+        border-bottom: 1px solid var(--border-color);
     }
 
     .calendar-title {
-        font-size: 1.60rem;
+        font-size: 1.4rem;
         font-weight: 600;
-        color: #1e293b;
+        color: var(--text-dark);
+        margin: 0;
     }
 
     .week-navigation {
         display: flex;
         align-items: center;
-        gap: 1rem;
+        gap: 0.75rem;
+        flex-wrap: wrap;
     }
 
     .nav-button {
         padding: 0.5rem 1rem;
-        border-radius: 8px;
-        background: #3b82f6;
+        border-radius: var(--radius-md);
+        background: var(--primary-color);
         color: white;
         transition: all 0.2s ease;
         display: flex;
         align-items: center;
         gap: 0.5rem;
         text-decoration: none;
+        font-size: 0.9rem;
     }
 
     .nav-button:hover {
-        background: #2563eb;
+        background: var(--secondary-color);
         transform: translateY(-1px);
         color: white;
     }
 
     .current-week {
         font-weight: 500;
-        color: #64748b;
+        color: var(--text-muted);
+        text-align: center;
     }
 
+    /* Responsive table container */
     .table-container {
-        border: 1px solid #e2e8f0;
-        border-radius: 8px;
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-md);
         position: relative;
-        max-height: 70vh;
-        overflow-y: auto;
+        overflow: hidden;
     }
 
+    /* Desktop view */
     .calendar-table {
         width: 100%;
         border-collapse: collapse;
-        min-width: 1200px;
     }
 
     .calendar-table th {
         background: linear-gradient(195deg, var(--primary-color), var(--secondary-color));
         color: white;
-        padding: 1rem;
+        padding: 0.75rem;
         font-weight: 500;
         position: sticky;
         top: 0;
@@ -86,31 +105,32 @@
 
     .calendar-table td {
         padding: 0.2rem;
-        border: 1px solid #e2e8f0;
+        border: 1px solid var(--border-color);
         vertical-align: top;
-        min-width: 155px;
     }
 
-    .day-header , .date-day-header{
-        background: #f8fafc;
+    .day-header, .date-day-header {
+        background: var(--light-bg);
         font-weight: 600;
-        color: #1e293b;
+        color: var(--text-dark);
         position: sticky;
         top: 55px;
         left: 0;
+    }
     
+    .day-header {
+        z-index: 4;
     }
-    .day-header{
-        z-index:4 ;
+    
+    .date-day-header {
+        height: 50px;
+        text-align: center;
+        z-index: 2;
     }
-    .date-day-header{
-      height: 50px;
-      text-align: center;
-      z-index: 2;
-    }
+    
     .coach-name {
         font-weight: 500;
-        color: #1e293b;
+        color: var(--text-dark);
         text-align: center;
         white-space: nowrap;
         position: sticky;
@@ -121,7 +141,7 @@
 
     .appointment-card {
         padding: 0.2em;
-        border-radius: 6px;
+        border-radius: var(--radius-sm);
         margin: 1px 0;
         cursor: pointer;
         transition: all 0.2s ease;
@@ -130,7 +150,7 @@
 
     .appointment-card:hover {
         transform: translateY(-2px);
-        box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+        box-shadow: var(--shadow-md);
     }
 
     .appointment-card::before {
@@ -177,32 +197,266 @@
         transform: scale(1.1);
     }
 
+    /* Mobile calendar view */
+    .mobile-calendar {
+        display: none;
+    }
+
+    .mobile-day-section {
+        margin-bottom: 1.5rem;
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-md);
+        overflow: hidden;
+    }
+
+    .mobile-day-header {
+        background: linear-gradient(195deg, var(--primary-color), var(--secondary-color));
+        color: white;
+        padding: 0.75rem;
+        font-weight: 500;
+        text-align: center;
+    }
+
+    .mobile-coach-section {
+        border-top: 1px solid var(--border-color);
+    }
+
+    .mobile-coach-header {
+        background: var(--light-bg);
+        padding: 0.5rem;
+        font-weight: 600;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .mobile-coach-header .toggle-btn {
+        background: none;
+        border: none;
+        color: var(--text-dark);
+        font-size: 1.2rem;
+    }
+
+    .mobile-timeslots {
+        padding: 0.5rem;
+    }
+
+    .mobile-timeslot {
+        margin-bottom: 0.5rem;
+        border-bottom: 1px solid var(--border-color);
+        padding-bottom: 0.5rem;
+    }
+
+    .mobile-timeslot:last-child {
+        margin-bottom: 0;
+        border-bottom: none;
+        padding-bottom: 0;
+    }
+
+    .mobile-timeslot-header {
+        font-weight: 500;
+        margin-bottom: 0.25rem;
+    }
+
+    .mobile-appointments {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    /* Modal styles */
+    .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 1000;
+    }
+
+    .modal-dialog {
+        margin: 10% auto;
+        max-width: 500px;
+        width: 90%;
+    }
+
     .modal-content {
-        border-radius: 12px;
+        border-radius: var(--radius-lg);
         border: none;
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        background: white;
     }
 
     .modal-header {
-        background: #f8fafc;
-        border-bottom: 1px solid #e2e8f0;
+        background: var(--light-bg);
+        border-bottom: 1px solid var(--border-color);
         padding: 1rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
     }
 
     .modal-title {
         font-weight: 600;
-        color: #1e293b;
+        color: var(--text-dark);
+        margin: 0;
+    }
+
+    .modal-body {
+        padding: 1rem;
+    }
+
+    .modal-footer {
+        padding: 1rem;
+        border-top: 1px solid var(--border-color);
+        display: flex;
+        justify-content: flex-end;
+        gap: 0.5rem;
+    }
+
+    .close {
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        cursor: pointer;
+    }
+
+    .btn {
+        padding: 0.5rem 1rem;
+        border-radius: var(--radius-md);
+        font-weight: 500;
+        cursor: pointer;
+    }
+
+    .btn-primary {
+        background: var(--primary-color);
+        color: white;
+        border: none;
+    }
+
+    .btn-secondary {
+        background: #e2e8f0;
+        color: var(--text-dark);
+        border: none;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 0.5rem;
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-md);
+        margin-bottom: 1rem;
+    }
+
+    .form-label {
+        display: block;
+        margin-bottom: 0.25rem;
+        font-weight: 500;
+    }
+
+    .d-none {
+        display: none !important;
+    }
+
+    .mt-4 {
+        margin-top: 1rem;
+    }
+
+    .alert {
+        padding: 0.75rem 1rem;
+        border-radius: var(--radius-md);
+        margin-bottom: 1rem;
+    }
+
+    .alert-warning {
+        background: #fef3c7;
+        color: #92400e;
+        border: 1px solid #f59e0b;
+    }
+
+    .text-muted {
+        color: var(--text-muted);
+    }
+
+    .buttons {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    /* Responsive styles */
+    @media (max-width: 1200px) {
+        .calendar-table {
+            min-width: 1000px;
+        }
+        
+        .table-container {
+            overflow-x: auto;
+        }
+    }
+
+    @media (max-width: 991px) {
+        .calendar-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+        
+        .week-navigation {
+            width: 100%;
+            justify-content: space-between;
+        }
     }
 
     @media (max-width: 768px) {
         .calendar-wrapper {
-            margin-left: 0;
-            padding: 1rem;
+            padding: 0.5rem;
         }
         
-        .calendar-header {
+        .calendar-container {
+            padding: 0.75rem;
+        }
+        
+        .calendar-title {
+            font-size: 1.2rem;
+        }
+        
+        .nav-button {
+            padding: 0.4rem 0.8rem;
+            font-size: 0.85rem;
+        }
+        
+        /* Hide desktop table on mobile */
+        .table-container {
+            display: none;
+        }
+        
+        /* Show mobile calendar */
+        .mobile-calendar {
+            display: block;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .calendar-title {
+            font-size: 1.1rem;
+        }
+        
+        .week-navigation {
             flex-direction: column;
-            gap: 1rem;
+            align-items: stretch;
+            width: 100%;
+        }
+        
+        .nav-button {
+            text-align: center;
+            justify-content: center;
+        }
+        
+        .modal-dialog {
+            margin: 5% auto;
+            width: 95%;
         }
     }
 </style>
@@ -225,6 +479,7 @@
             </div>
         </div>
 
+        <!-- Desktop Table View -->
         <div class="table-container">
             <table class="calendar-table">
                 <thead>
@@ -265,28 +520,24 @@
                                     
                                     <td>
                                         @foreach ($cellAppointments as $appointment)
-
-                                    
                                             <div class="appointment-card {{ $appointment['status'] }}" data-app-id="{{ $appointment['id'] }}" >
                                                 <div class="font-medium text-sm">{{ $appointment['patient'] }}</div>
                                                 <div class="appointment-actions">
-
-                                                <a href="{{ route('appointment.edit', $appointment['id']) }}" class="action-btn" title="Annuler le Rendez-vous">
-                                                    <i class="fa-regular fa-rectangle-xmark"></i>
-                                                </a>
-                                                    <button type="button" onclick="openEditModal(this)"  class="action-btn">
+                                                    <a href="{{ route('appointment.edit', $appointment['id']) }}" class="action-btn" title="Annuler le Rendez-vous">
+                                                        <i class="fa-regular fa-rectangle-xmark"></i>
+                                                    </a>
+                                                    <button type="button" onclick="openEditModal(this)" class="action-btn">
                                                         <i class="fa-solid fa-pen-to-square"></i>
                                                     </button>
                                                     <button type="button" class="action-btn" 
-                                                  
-                                                    onclick="openChangeModal(
-                                                            <?php echo $appointment['speciality_id']?>,
-                                                            '<?php echo $day ?>',
-                                                            '<?php echo $appointment['startTime']?>',
-                                                            '<?php echo $appointment['endTime'] ?>',
-                                                            <?php echo $appointment['patient_id']; ?>,
-                                                             this
-                                                    )">
+                                                        onclick="openChangeModal(
+                                                                <?php echo $appointment['speciality_id']?>,
+                                                                '<?php echo $day ?>',
+                                                                '<?php echo $appointment['startTime']?>',
+                                                                '<?php echo $appointment['endTime'] ?>',
+                                                                <?php echo $appointment['patient_id']; ?>,
+                                                                this
+                                                        )">
                                                         <i class="fa-solid fa-arrows-rotate"></i>
                                                     </button>
                                                     <button type="button" onclick="window.location.href='appointment/<?php echo $appointment['id'] ?>'" class="action-btn">
@@ -303,88 +554,163 @@
                 </tbody>
             </table>
         </div>
+
+        <!-- Mobile Calendar View -->
+        <div class="mobile-calendar">
+            @foreach ($days as $day)
+                <div class="mobile-day-section">
+                    <div class="mobile-day-header">
+                        {{ \Carbon\Carbon::parse($day)->format('l, d M, Y') }}
+                    </div>
+                    
+                    @foreach ($coaches as $coach)
+                        <div class="mobile-coach-section">
+                            <div class="mobile-coach-header">
+                                <span>{{ $coach->full_name }}</span>
+                                <button type="button" class="toggle-btn" onclick="toggleCoachTimeslots(this)">
+                                    <i class="fa-solid fa-chevron-down"></i>
+                                </button>
+                            </div>
+                            <div class="mobile-timeslots">
+                                @foreach ($timeSlots as $slot)
+                                    @php
+                                        $slotStart = strtotime($day . ' ' . $slot['start']);
+                                        $slotEnd = strtotime($day . ' ' . $slot['end']);
+                                        $slotAppointments = [];
+                                        
+                                        if(isset($organizedAppointments[$day][$coach->id])) {
+                                            foreach ($organizedAppointments[$day][$coach->id] as $appointment) {
+                                                $apptStart = strtotime($day . ' ' . $appointment['startTime']);
+                                                if ($apptStart >= $slotStart && $apptStart < $slotEnd) {
+                                                    $slotAppointments[] = $appointment;
+                                                }
+                                            }
+                                        }
+                                    @endphp
+                                    
+                                    @if(count($slotAppointments) > 0)
+                                        <div class="mobile-timeslot">
+                                            <div class="mobile-timeslot-header">
+                                                {{ $slot['start'] }} - {{ $slot['end'] }}
+                                            </div>
+                                            <div class="mobile-appointments">
+                                                @foreach ($slotAppointments as $appointment)
+                                                    <div class="appointment-card {{ $appointment['status'] }}" data-app-id="{{ $appointment['id'] }}">
+                                                        <div class="font-medium text-sm">{{ $appointment['patient'] }}</div>
+                                                        <div class="appointment-actions">
+                                                            <a href="{{ route('appointment.edit', $appointment['id']) }}" class="action-btn" title="Annuler le Rendez-vous">
+                                                                <i class="fa-regular fa-rectangle-xmark"></i>
+                                                            </a>
+                                                            <button type="button" onclick="openEditModal(this)" class="action-btn">
+                                                                <i class="fa-solid fa-pen-to-square"></i>
+                                                            </button>
+                                                            <button type="button" class="action-btn" 
+                                                                onclick="openChangeModal(
+                                                                        <?php echo $appointment['speciality_id']?>,
+                                                                        '<?php echo $day ?>',
+                                                                        '<?php echo $appointment['startTime']?>',
+                                                                        '<?php echo $appointment['endTime'] ?>',
+                                                                        <?php echo $appointment['patient_id']; ?>,
+                                                                        this
+                                                                )">
+                                                                <i class="fa-solid fa-arrows-rotate"></i>
+                                                            </button>
+                                                            <button type="button" onclick="window.location.href='appointment/<?php echo $appointment['id'] ?>'" class="action-btn">
+                                                                <i class="fa-solid fa-circle-info"></i>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                @endforeach
+                                            </div>
+                                        </div>
+                                    @endif
+                                @endforeach
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            @endforeach
+        </div>
     </div>
 </div>
 
-            <!--  Change Patient Modal -->
-            <div id="changePatientModal" class="modal" tabindex="-1" role="dialog" style="display:none; position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.5);">
-                <div class="modal-dialog" role="document" style="margin: 10% auto; max-width: 500px;">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title">Changer de Patient</h5>
-                            <button type="button" class="close" onclick="closeChangeModal()">×</button>
-                        </div>
-                        <div id="errorMsg"class="alert alert-warning d-none"></div>
-                        <div class="modal-body">
-                            <div class="buttons">
-                                <button class="btn btn-primary" 
-                                    onclick="selectRandomAutoPatient()">
-                                    Automatique
-                                </button>
-                                <button class="btn btn-primary" 
-                                    onclick="manualPatient()">
-                                    Manuel
-                                </button>
-                            </div>
-                            <div class="mt-4 d-none" id="autoGeneratedPatientContainer">
-                                <h6>Patients Disponibles</h6>
-                                <small class="text-muted">Patient généré automatiquement en fonction de la date et du créneau</small>
-                                <label class="autoGeneratedPatientLabel form-control text-black"></label>
-                                <input type="hidden" id="autoGeneratedPatient" name="autoGeneratedPatient" readonly>
-                            </div>
+<!-- Change Patient Modal -->
+<div id="changePatientModal" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Changer de Patient</h5>
+                <button type="button" class="close" onclick="closeChangeModal()">×</button>
+            </div>
+            <div id="errorMsg" class="alert alert-warning d-none"></div>
+            <div class="modal-body">
+                <div class="buttons">
+                    <button class="btn btn-primary" 
+                        onclick="selectRandomAutoPatient()">
+                        Automatique
+                    </button>
+                    <button class="btn btn-primary" 
+                        onclick="manualPatient()">
+                        Manuel
+                    </button>
+                </div>
+                <div class="mt-4 d-none" id="autoGeneratedPatientContainer">
+                    <h6>Patients Disponibles</h6>
+                    <small class="text-muted">Patient généré automatiquement en fonction de la date et du créneau</small>
+                    <label class="autoGeneratedPatientLabel form-control text-black"></label>
+                    <input type="hidden" id="autoGeneratedPatient" name="autoGeneratedPatient" readonly>
+                </div>
 
-                            <div class="mt-4 d-none" id="manualPatient">
-                                <h6 >Nom De Patient</h6>
-                                <input type="text" name="manualPatientName" id="manualPatientName">
-                            </div>
-                        </div>
-
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-primary" onclick="updateSuggestedAppointment()">Mettre à Jour</button>
-                            <button type="button" class="btn btn-secondary" onclick="closeChangeModal()">Fermer</button>
-                        </div>
-                    </div>
+                <div class="mt-4 d-none" id="manualPatient">
+                    <h6>Nom De Patient</h6>
+                    <input type="text" name="manualPatientName" id="manualPatientName" class="form-control">
                 </div>
             </div>
 
-        <!-- Modal de modification du rendez-vous -->
-        <div class="modal" id="editAppointmentModal" tabindex="-1" role="dialog" style="display:none; position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.5);">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="editAppointmentModalLabel">Modifier le Rendez-vous</h5>
-                        <button type="button" class="btn-close" onclick="closeEditModal()"></button>
-                    </div>
-                    <div class="modal-body">
-                        <form action="{{ route('update_app_planning')}}" method="post" onsubmit="storeNewPlanning()" id="editAppointmentForm">
-                            @csrf
-                            @method("Patch")
-
-                            <div class="mb-3">
-                                <label for="appointmentDate" class="form-label">Date</label>
-                                <input type="date" class="form-control" id="appointmentDate" name="date" required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="startTime" class="form-label">Heure de Début</label>
-                                <input type="time" class="form-control" id="startTime" name="start_time" required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="endTime" class="form-label">Heure de Fin</label>
-                                <input type="time" class="form-control" id="endTime" name="end_time" required>
-                            </div>
-                            <input type="hidden" id="new_planning" name="new_planning" >
-                            <input type="hidden" id="app_id" name="app_id">
-                            <button type="submit" class="btn btn-primary">Enregistrer les Modifications</button>
-                        </form>
-                    </div>
-                </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" onclick="updateSuggestedAppointment()">Mettre à Jour</button>
+                <button type="button" class="btn btn-secondary" onclick="closeChangeModal()">Fermer</button>
             </div>
         </div>
+    </div>
+</div>
 
+<!-- Modal de modification du rendez-vous -->
+<div class="modal" id="editAppointmentModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editAppointmentModalLabel">Modifier le Rendez-vous</h5>
+                <button type="button" class="btn-close" onclick="closeEditModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <form action="{{ route('update_app_planning')}}" method="post" onsubmit="storeNewPlanning()" id="editAppointmentForm">
+                    @csrf
+                    @method("Patch")
+
+                    <div class="mb-3">
+                        <label for="appointmentDate" class="form-label">Date</label>
+                        <input type="date" class="form-control" id="appointmentDate" name="date" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="startTime" class="form-label">Heure de Début</label>
+                        <input type="time" class="form-control" id="startTime" name="start_time" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="endTime" class="form-label">Heure de Fin</label>
+                        <input type="time" class="form-control" id="endTime" name="end_time" required>
+                    </div>
+                    <input type="hidden" id="new_planning" name="new_planning">
+                    <input type="hidden" id="app_id" name="app_id">
+                    <button type="submit" class="btn btn-primary">Enregistrer les Modifications</button>
+                </form>
+            </div>
+        </div>
+    </div>
 </div>
 
 <script>
-    let currentAppointmentElement = null; 
+   let currentAppointmentElement = null; 
     let autoGeneratedPatients = [];
     // let all_patients = [];
     let warningMsg = '';    
@@ -503,6 +829,7 @@
         });
         closeChangeModal();
     }
+   
     function selectRandomAutoPatient() {
         document.querySelector('#manualPatient').classList.add('d-none');
         document.querySelector('#errorMsg').classList.add('d-none');
@@ -527,6 +854,7 @@
         autoGeneratedPatientLabel.textContent = randomPatient.full_name;
 
     }
+    
     function manualPatient() {
         document.querySelector('#manualPatient').classList.remove('d-none');
         document.querySelector('#autoGeneratedPatientContainer').classList.add('d-none');
@@ -542,6 +870,7 @@
         document.getElementById('app_id').value= currentAppointmentId.dataset.appId;
         console.log( document.getElementById('app_id').value,currentAppointmentId.dataset.appId);
     }  
+   
     function closeEditModal() {
         document.getElementById('editAppointmentModal').style.display = 'none';
         document.getElementById('appointmentDate').value = null;
@@ -569,5 +898,31 @@
         closeEditModal();
         return true;
     }
+
+    // Toggle coach timeslots in mobile view
+    function toggleCoachTimeslots(button) {
+        const timeslotsContainer = button.closest('.mobile-coach-section').querySelector('.mobile-timeslots');
+        const icon = button.querySelector('i');
+        
+        if (timeslotsContainer.style.display === 'none') {
+            timeslotsContainer.style.display = 'block';
+            icon.classList.remove('fa-chevron-down');
+            icon.classList.add('fa-chevron-up');
+        } else {
+            timeslotsContainer.style.display = 'none';
+            icon.classList.remove('fa-chevron-up');
+            icon.classList.add('fa-chevron-down');
+        }
+    }
+    // Initialize mobile view
+    document.addEventListener('DOMContentLoaded', function() {
+        const coachSections = document.querySelectorAll('.mobile-coach-section');
+        coachSections.forEach(section => {
+            const timeslots = section.querySelector('.mobile-timeslots');
+            if (timeslots) {
+                timeslots.style.display = 'none';
+            }
+        });
+    });
 </script>
 @endsection

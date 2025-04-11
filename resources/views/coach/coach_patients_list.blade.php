@@ -190,6 +190,110 @@
         border-radius: 8px;
         font-weight: 500;
     }
+/* Responsive styles only - to be added at the end of existing CSS */
+
+/* Mobile devices (phones, less than 768px) */
+@media (max-width: 767.98px) {
+    /* Header adjustments */
+    h1.text-center {
+        font-size: 1.5rem !important;
+        margin: 1rem 0 !important;
+    }
+    
+    /* Search form adjustments */
+    .glass-card.p-4 {
+        padding: 1rem !important;
+    }
+    
+    .row.g-2 > div {
+        margin-bottom: 0.5rem;
+    }
+    
+    /* Table adjustments */
+    .table-responsive {
+        max-height: 60vh;
+    }
+    
+    .patient-table {
+        width: 300%; /* Extra wide for horizontal scrolling */
+    }
+    
+    thead th, tbody td {
+        padding: 0.5rem;
+        font-size: 0.9rem;
+    }
+    
+    /* Improve touch targets */
+    .btn, .form-control, .form-select {
+        min-height: 44px;
+    }
+    
+    .action-buttons .btn {
+        width: 44px;
+        height: 44px;
+    }
+    
+    /* Avatar adjustments */
+    .avatar-sm {
+        width: 30px;
+        height: 30px;
+    }
+    
+    .badge {
+        font-size: 0.7rem;
+        padding: 0.4em 0.6em;
+    }
+}
+
+/* Small devices (landscape phones) */
+@media (min-width: 576px) and (max-width: 767.98px) {
+    .glass-card.p-4 {
+        padding: 1.25rem !important;
+    }
+    
+    h1.text-center {
+        font-size: 1.75rem !important;
+    }
+}
+
+/* Medium devices (tablets) */
+@media (min-width: 768px) and (max-width: 991.98px) {
+    .patient-table {
+        width: 250%; /* Less wide for tablets */
+    }
+    
+    /* Search form adjustments for tablets */
+    .row.g-2 {
+        display: flex;
+        flex-wrap: wrap;
+    }
+    
+    .row.g-2 > div:first-child {
+        flex: 0 0 100%;
+        max-width: 100%;
+        margin-bottom: 0.5rem;
+    }
+    
+    .row.g-2 > div:not(:first-child) {
+        flex: 1;
+    }
+}
+
+/* Large devices (desktops) */
+@media (min-width: 992px) and (max-width: 1199.98px) {
+    .patient-table {
+        width: 200%;
+    }
+}
+
+/* Extra large devices (large desktops) */
+@media (min-width: 1200px) {
+    .patient-table {
+        width: 200%;
+    }
+}
+
+
 
     </style>
 @endsection

@@ -140,6 +140,130 @@
         object-fit: cover;
         border: 3px solid var(--primary-color);
     }
+
+    /* Responsive styles only - to be added at the end of existing CSS */
+
+/* Mobile devices (phones, less than 768px) */
+@media (max-width: 767.98px) {
+    .container-py-5 {
+        padding: 1rem;
+        margin-top: 60px;
+    }
+    
+    .dashboard-header {
+        padding: 1rem;
+        margin-bottom: 1rem;
+    }
+    
+    .dashboard-header .d-flex {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: flex-start !important;
+    }
+    
+    .dashboard-header .btn-secondary {
+        width: 100%;
+    }
+    
+    /* Search form adjustments */
+    .glass-card.p-4 {
+        padding: 1rem !important;
+    }
+    
+    .row.g-3 > div {
+        margin-bottom: 0.5rem;
+    }
+    
+    /* Table adjustments */
+    .table-responsive {
+        max-height: 60vh;
+    }
+    
+    .patient-table {
+        width: 300%; /* Extra wide for horizontal scrolling */
+    }
+    
+    thead th, tbody td {
+        padding: 0.5rem;
+        font-size: 0.9rem;
+    }
+    
+    /* Improve touch targets */
+    .btn, .form-control, .form-select {
+        min-height: 44px;
+    }
+    
+    .action-buttons .btn {
+        width: 44px;
+        height: 44px;
+    }
+    
+    /* Patient avatar adjustments */
+    .patient-avatar, .patient-img-avatar {
+        width: 40px;
+        height: 40px;
+        font-size: 1.5rem;
+    }
+}
+
+/* Small devices (landscape phones) */
+@media (min-width: 576px) and (max-width: 767.98px) {
+    .container-py-5 {
+        padding: 1.25rem;
+    }
+    
+    .dashboard-header {
+        padding: 1.25rem;
+    }
+    
+    .glass-card.p-4 {
+        padding: 1.25rem !important;
+    }
+}
+
+/* Medium devices (tablets) */
+@media (min-width: 768px) and (max-width: 991.98px) {
+    .container-py-5 {
+        padding: 1.5rem;
+    }
+    
+    .patient-table {
+        width: 250%; /* Less wide for tablets */
+    }
+    
+    /* Search form adjustments for tablets */
+    .row.g-3 {
+        display: flex;
+        flex-wrap: wrap;
+    }
+    
+    .row.g-3 > div {
+        flex: 0 0 50%;
+        max-width: 50%;
+    }
+    
+    .row.g-3 > div:last-child {
+        flex: 0 0 100%;
+        max-width: 100%;
+        margin-top: 0.5rem;
+    }
+}
+
+/* Large devices (desktops) */
+@media (min-width: 992px) and (max-width: 1199.98px) {
+    .patient-table {
+        width: 200%;
+    }
+}
+
+/* Extra large devices (large desktops) */
+@media (min-width: 1200px) {
+    .patient-table {
+        width: 200%;
+    }
+}
+
+
 </style>
 
 <div class="container-py-5">

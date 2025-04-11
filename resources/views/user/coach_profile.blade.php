@@ -1,6 +1,6 @@
+
 @extends('layouts.app')
 @section('content')
-
 <div class="coach-profile-container">
     <!-- Coach Header Card -->
     <div class="coach-header-card">
@@ -334,7 +334,8 @@
 </div>
 
 <style>
-    :root {
+
+:root {
         --primary-color: #6366f1;
         --secondary-color: #4f46e5;
         --success-color: #22c55e;
@@ -343,11 +344,120 @@
         --light-bg: #f8fafc;
         --dark-text: #1e293b;
     }
-    
-    .table-responsive {
-        border-radius: 12px;
-        max-height: 70vh;
-    }
+/* Global responsive container */
+.coach-profile-container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 15px;
+}
+
+/* Coach Header Card - Responsive Layout */
+/* .coach-header-card {
+  position: relative;
+} */
+
+.coach-profile-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.coach-avatar-initials {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+.coach-avatar {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 3px solid var(--primary-color);
+}
+
+
+.coach-info-wrapper {
+  text-align: center;
+  flex: 1;
+}
+
+
+
+.coach-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+
+.coach-contact-info {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+
+.edit-profile-button {
+    display: inline-block;
+    margin-top: 15px;
+    width: 100%;
+    text-align: center;
+    background: var(--primary-color);
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.75rem;
+    text-decoration: none;
+    align-items: center;
+    gap: 0.5rem;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+
+/* Section Switchers */
+.section-switcher,
+.section-table-switcher {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.switch-btn,
+.table-switch-btn {
+    background: none;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.75rem;
+    color: #64748b;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;    
+    flex: 1;
+    justify-content: center;
+    min-height: 44px; /* Better touch target size */
+}
+
+/* Table responsiveness */
+.table-responsive {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  max-width: 100%;
+  border-radius: 12px;
+}
+
+
+
+
+    /*  */
+
 
     thead th {
         background: linear-gradient(195deg, var(--primary-color), var(--secondary-color));
@@ -409,13 +519,6 @@
     }
 
   
-
-    .coach-profile-container {
-        max-width: 1400px;
-        margin: 2rem auto;
-        padding: 0 1.5rem;
-    }
-
     /* Coach Header Card */
     .coach-header-card {
         background: white;
@@ -427,32 +530,15 @@
         justify-content: space-between;
         align-items: flex-start;
         gap: 2rem;
+        position: relative;
     }
 
-    .coach-profile-header {
-        display: flex;
-        gap: 1.5rem;
-        align-items: center;
-    }
-
-   
-
-    .coach-info-wrapper {
-        flex-grow: 1;
-    }
 
     .coach-name {
         font-size: 1.875rem;
         color: var(--dark-text);
         margin: 0 0 0.5rem;
     }
-
-    .coach-meta {
-        display: flex;
-        gap: 0.75rem;
-        margin-bottom: 1rem;
-    }
-
     .coach-badge {
         padding: 0.5rem 1rem;
         border-radius: 2rem;
@@ -480,11 +566,6 @@
         border-color: #fecaca;
     }
 
-    .coach-contact-info {
-        display: flex;
-        gap: 1.5rem;
-    }
-
     .contact-item {
         color: var(--dark-text);
         text-decoration: none;
@@ -496,18 +577,6 @@
 
     .contact-item:hover {
         color: var(--primary-color);
-    }
-
-    .edit-profile-button {
-        background: var(--primary-color);
-        color: white;
-        padding: 0.75rem 1.5rem;
-        border-radius: 0.75rem;
-        text-decoration: none;
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-        transition: transform 0.2s, box-shadow 0.2s;
     }
 
     .edit-profile-button:hover {
@@ -522,18 +591,6 @@
         margin-bottom: 1.5rem;
     }
 
-    .switch-btn , .table-switch-btn{
-        background: none;
-        border: none;
-        padding: 0.75rem 1.5rem;
-        border-radius: 0.75rem;
-        color: #64748b;
-        cursor: pointer;
-        transition: all 0.2s;
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-    }
 
     .switch-btn.active {
         background: var(--primary-color);
@@ -670,27 +727,6 @@
         opacity: 0.8;
         margin-right: 8px;
     }
-   
-
-
-
-    @media (max-width: 768px) {
-        .coach-header-card {
-            flex-direction: column;
-            align-items: stretch;
-        }
-        
-        .coach-profile-header {
-            flex-direction: column;
-            text-align: center;
-        }
-        
-        .coach-contact-info {
-            flex-direction: column;
-            gap: 0.5rem;
-        }
-    }
-
     .btn-download, .btn-view, .btn-delete {
         padding: 0.5rem;
         border-radius: 6px;
@@ -710,13 +746,70 @@
         display: flex;
         gap: 1rem;
     }
-    .coach-avatar {
-        width: 100px;
-        height: 100px;
-        border-radius: 50%;
-        object-fit: cover;
-        border: 3px solid var(--primary-color);
-    }
+
+/* Medium devices (tablets, 768px and up) */
+@media (min-width: 768px) {
+  .coach-profile-header {
+    flex-direction: row;
+    align-items: center;
+    text-align: left;
+  };
+  
+  .coach-info-wrapper {
+    text-align: left;
+    padding-left: 20px;
+  }
+  
+  .coach-meta {
+    justify-content: flex-start;
+  }
+  
+  .coach-contact-info {
+    justify-content: flex-start;
+ 
+  }
+  
+  .edit-profile-button {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: auto;
+    margin-top: 0;
+  }
+  
+  .switch-btn,
+  .table-switch-btn {
+    flex: 0 1 auto;
+  }
+}
+
+@media (max-width: 768px) {
+  .coach-header-card {
+    display: block; /* Override for smaller screens */
+  }
+}
+
+/* Small devices (landscape phones, 576px and up) */
+@media (min-width: 576px) {
+  .coach-meta {
+    flex-direction: row;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  
+  .coach-contact-info {
+    flex-direction: row;
+    justify-content: center;
+    flex-wrap: wrap;
+  };
+
+}
+
+
+
+
+
+
 </style>
 
 <script>
@@ -916,7 +1009,20 @@
         calendar.gotoDate(initialDate);
         return calendar;
     }
-
+        document.addEventListener('DOMContentLoaded', function() {
+        // Add data-label attributes dynamically for mobile view
+        document.querySelectorAll('table').forEach(table => {
+            const headerTexts = Array.from(table.querySelectorAll('thead th')).map(th => th.textContent.trim());
+            
+            table.querySelectorAll('tbody tr').forEach(row => {
+                Array.from(row.querySelectorAll('td')).forEach((cell, index) => {
+                    if (index < headerTexts.length && !cell.hasAttribute('data-label')) {
+                        cell.setAttribute('data-label', headerTexts[index]);
+                    }
+                });
+            });
+        });
+    });
 </script>
 
 @endsection

@@ -255,6 +255,141 @@ $patient_full_name = $patient_first_name . ' ' . $patient_last_name;
         border-collapse: collapse;
     }
     
+    /* Responsive styles only - to be added at the end of existing CSS */
+
+/* Mobile devices (phones, less than 768px) */
+@media (max-width: 767.98px) {
+    /* Adjust grid layout for mobile */
+    .patient-profile {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+        padding: 1rem;
+    }
+    
+    /* Sidebar adjustments */
+    .patient-sidebar {
+        padding: 1.5rem;
+        width: 100%;
+    }
+    
+    /* Navigation tabs adjustments */
+    .nav-tabs {
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+    
+    .nav-item {
+        font-size: 0.9rem;
+        padding: 0.5rem 0.75rem;
+        flex: 1 0 auto;
+        text-align: center;
+        min-width: 120px;
+    }
+    
+    /* Calendar container adjustments */
+    .calendar-container {
+        height: auto;
+        min-height: 450px;
+    }
+    
+    /* Calendar toolbar adjustments */
+    .fc-header-toolbar {
+        flex-wrap: wrap;
+        padding: 0.75rem;
+    }
+    
+    .fc-toolbar-chunk {
+        margin-bottom: 0.5rem;
+        display: flex;
+        justify-content: center;
+        width: 100%;
+    }
+    
+    /* Make toolbar buttons more touch-friendly */
+    .fc-button {
+        padding: 0.5rem !important;
+        min-height: 44px !important;
+        min-width: 44px !important;
+        margin: 2px !important;
+    }
+    
+    /* Table adjustments */
+    .table-responsive {
+        max-height: 60vh;
+        overflow-x: auto;
+    }
+    
+    .appointments-table th,
+    .appointments-table td {
+        padding: 0.5rem;
+        font-size: 0.9rem;
+    }
+    
+    /* Patient stats adjustments */
+    .patient-stats {
+        grid-template-columns: 1fr 1fr;
+    }
+    
+    .stat-card {
+        padding: 0.75rem;
+    }
+    
+    /* Detail section adjustments */
+    .detail-section {
+        padding: 1.5rem;
+    }
+    
+    /* Patient table adjustments */
+    .patient-table {
+        width: 150%;
+    }
+}
+
+/* Small devices (landscape phones) */
+@media (min-width: 576px) and (max-width: 767.98px) {
+    .patient-profile {
+        padding: 1.25rem;
+    }
+    
+    .patient-sidebar {
+        padding: 1.75rem;
+    }
+    
+    .detail-section {
+        padding: 1.75rem;
+    }
+}
+
+/* Medium devices (tablets) */
+@media (min-width: 768px) and (max-width: 991.98px) {
+    .patient-profile {
+        grid-template-columns: 250px 1fr;
+        gap: 1.5rem;
+        padding: 1.5rem;
+    }
+    
+    .patient-sidebar {
+        padding: 1.5rem;
+    }
+    
+    .calendar-container {
+        height: 550px;
+    }
+    
+    .table-responsive {
+        max-height: 65vh;
+    }
+}
+
+/* Large devices (desktops) */
+@media (min-width: 992px) and (max-width: 1199.98px) {
+    .patient-profile {
+        grid-template-columns: 280px 1fr;
+    }
+}
+
+
 </style>
 <div class="patient-profile">
     <!-- Left Sidebar -->

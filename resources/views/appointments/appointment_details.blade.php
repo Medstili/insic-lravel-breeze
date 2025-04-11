@@ -30,15 +30,17 @@
         <!-- Patient Section -->
         <div class="detail-card patient-info">
             <div class="card-header">
-                <i class="fas fa-user-injured"></i>
-                <h2>Détails du Patient</h2>
+                <div class="header-left">
+                    <i class="fas fa-user-injured"></i>
+                    <h2>Détails du Patient</h2>
+                </div>
                 <a href="{{ route('patient.show',$appointment->patient->id) }}" class="view-profile">
-                    Voir le Profil <i class="fas fa-external-link-alt"></i>
+                    <span class="profile-text">Voir le Profil</span> <i class="fas fa-external-link-alt"></i>
                 </a>
             </div>
-            <div class="card-body container p-4">
-                <div class="row">
-                    <div class="col">
+            <div class="card-body">
+                <div class="info-grid">
+                    <div class="info-column">
                         <div class="info-row">
                             <label>ID :</label>
                             <span>{{ $appointment->patient->id }}</span>
@@ -61,7 +63,7 @@
                         </div>
                     </div>
 
-                    <div class="col">
+                    <div class="info-column">
                         <div class="info-row">
                             <label>Sexe :</label>
                             <span>{{ $appointment->patient->patient_type }}</span>
@@ -89,7 +91,7 @@
                     </div>
 
                     @if ($appointment->patient->patient_type == 'kid' || $appointment->patient->patient_type == 'young')
-                        <div class="col">
+                        <div class="info-column">
                             <div class="info-row">
                                 <label>École :</label>
                                 <span>{{ $appointment->patient->ecole }}</span>
@@ -119,10 +121,12 @@
         <!-- Coach Section -->
         <div class="detail-card coach-info">
             <div class="card-header">
-                <i class="fas fa-user-md"></i>
-                <h2>Détails du Coach</h2>
+                <div class="header-left">
+                    <i class="fas fa-user-md"></i>
+                    <h2>Détails du Coach</h2>
+                </div>
                 <a href="{{ route('user.show',$appointment->coach->id) }}" class="view-profile">
-                    Voir le Profil <i class="fas fa-external-link-alt"></i>
+                    <span class="profile-text">Voir le Profil</span> <i class="fas fa-external-link-alt"></i>
                 </a>
             </div>
             <div class="card-body">
@@ -140,8 +144,10 @@
         <!-- Schedule Section -->
         <div class="detail-card schedule-info">
             <div class="card-header">
-                <i class="fas fa-calendar-alt"></i>
-                <h2>Planning</h2>
+                <div class="header-left">
+                    <i class="fas fa-calendar-alt"></i>
+                    <h2>Planning</h2>
+                </div>
             </div>
             <div class="card-body">
                 @php
@@ -164,8 +170,10 @@
         @if ($appointment->status=='cancel')
             <div class="detail-card schedule-info reason-info">
                 <div class="card-header">
-                    <i class="fas fa-question"></i>
-                    <h2>Raison</h2>
+                    <div class="header-left">
+                        <i class="fas fa-question"></i>
+                        <h2>Raison</h2>
+                    </div>
                 </div>
                 <div class="card-body">
                     <div class="cancel-info">
@@ -187,8 +195,10 @@
         <!-- Report Section -->
         <div class="detail-card report-section">
             <div class="card-header">
-                <i class="fas fa-file-medical"></i>
-                <h2>Session Report</h2>
+                <div class="header-left">
+                    <i class="fas fa-file-medical"></i>
+                    <h2>Session Report</h2>
+                </div>
                 <!-- Error Messages -->
                 @if($errors->has('report'))
                     <div class="error-msg">{{ $errors->first('report') }}</div>
@@ -206,16 +216,16 @@
                             </div>
                         </div>
                         <div class="file-actions">
-                            <a href="{{ route('appointments.downloadReport', $appointment->id) }}" class="btn-download">
+                            <a href="{{ route('appointments.downloadReport', $appointment->id) }}" class="btn-download" title="Download">
                                 <i class="fas fa-download"></i>
                             </a>
-                            <a href="{{ route('appointments.viewReport', $appointment->id) }}" target="_blank" class="btn-view">
+                            <a href="{{ route('appointments.viewReport', $appointment->id) }}" target="_blank" class="btn-view" title="View">
                                 <i class="fas fa-eye"></i>
                             </a>
                             <form action="{{ route('appointments.deleteReport', $appointment->id) }}" method="POST" class="delete-form">
                                 @csrf
                                 @method('DELETE')
-                                <button type="button" class="btn-delete" onclick="confirmDelete(this)">
+                                <button type="button" class="btn-delete" onclick="confirmDelete(this)" title="Delete">
                                     <i class="fas fa-trash"></i>
                                 </button>
                             </form>
@@ -250,8 +260,6 @@
                                 <i class="fas fa-upload"></i> Upload Report
                             </button>
                         </div>
-
-          
                     </form>
                 @endif
             </div>
@@ -276,7 +284,185 @@
 </div>
 
 <style>
-    /* Report Section Styling */
+    :root {
+        --primary-color: #6366f1;
+        --success-color: #16a34a;
+        --warning-color: #f59e0b;
+        --danger-color: #dc2626;
+        --light-bg: #f8f9fa;
+        --border-color: #cbd5e1;
+        --text-dark: #1e293b;
+        --text-muted: #64748b;
+        --shadow-sm: 0 2px 4px rgba(0,0,0,0.05);
+        --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+        --radius-sm: 6px;
+        --radius-md: 8px;
+        --radius-lg: 12px;
+    }
+
+    /* Base styles */
+    .appointment-container {
+        max-width: 1200px;
+        margin: 2rem auto;
+        padding: 0 1rem;
+    }
+
+    /* Header styles */
+    .appointment-header {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 2rem;
+        padding: 1rem;
+        background: var(--light-bg);
+        border-radius: var(--radius-md);
+        box-shadow: var(--shadow-sm);
+    }
+
+    .back-button {
+        padding: 0.5rem;
+        color: var(--text-muted);
+        transition: all 0.3s ease;
+        text-decoration: none;
+    }
+
+    .back-button:hover {
+        color: var(--primary-color);
+        transform: translateX(-3px);
+    }
+
+    .appointment-header h1 {
+        font-size: 1.5rem;
+        color: var(--text-dark);
+        margin: 0;
+        font-weight: 600;
+    }
+
+    .status-badge {
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        margin-left: auto;
+        font-weight: 500;
+    }
+
+    /* Card styles */
+    .detail-card {
+        background: white;
+        border-radius: var(--radius-md);
+        box-shadow: var(--shadow-sm);
+        margin-bottom: 1.5rem;
+        overflow: hidden;
+    }
+
+    .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem;
+        background: var(--light-bg);
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .header-left {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .card-header i {
+        color: var(--primary-color);
+        font-size: 1.25rem;
+    }
+
+    .card-header h2 {
+        font-size: 1.25rem;
+        color: var(--text-dark);
+        margin: 0;
+        font-weight: 600;
+    }
+
+    .view-profile {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: var(--primary-color);
+        text-decoration: none;
+        font-size: 0.9rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+
+    .view-profile:hover {
+        text-decoration: underline;
+    }
+
+    .card-body {
+        padding: 1.5rem;
+    }
+
+    /* Info grid styles */
+    .info-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .info-column {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .info-row {
+        display: flex;
+        flex-wrap: wrap;
+        margin-bottom: 0.75rem;
+    }
+
+    .info-row:last-child {
+        margin-bottom: 0;
+    }
+
+    .info-row label {
+        font-weight: 600;
+        color: var(--text-dark);
+        width: 150px;
+        flex-shrink: 0;
+    }
+
+    .info-row span {
+        color: var(--text-dark);
+        flex: 1;
+    }
+
+    /* Schedule styles */
+    .schedule-item {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 0.75rem;
+        padding-bottom: 0.75rem;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .schedule-item:last-child {
+        margin-bottom: 0;
+        padding-bottom: 0;
+        border-bottom: none;
+    }
+
+    .day {
+        font-weight: 600;
+        color: var(--text-dark);
+        min-width: 120px;
+    }
+
+    .time {
+        color: var(--text-dark);
+    }
+
+    /* Report section styles */
     .report-section {
         margin-top: 2rem;
     }
@@ -286,46 +472,89 @@
         justify-content: space-between;
         align-items: center;
         padding: 1rem;
-        background: #f8f9fa;
-        border-radius: 8px;
+        background: var(--light-bg);
+        border-radius: var(--radius-md);
+        flex-wrap: wrap;
+        gap: 1rem;
     }
 
     .file-info {
         display: flex;
         align-items: center;
         gap: 1rem;
+        flex: 1;
+        min-width: 200px;
+    }
+
+    .file-info i {
+        font-size: 1.5rem;
+        color: #ef4444;
+    }
+
+    .filename {
+        font-weight: 500;
+        color: var(--text-dark);
+        margin: 0;
+        word-break: break-all;
+    }
+
+    .text-muted {
+        color: var(--text-muted);
+        font-size: 0.875rem;
     }
 
     .file-actions {
         display: flex;
-        gap: 1rem;
+        gap: 0.75rem;
     }
 
     .btn-download, .btn-view, .btn-delete {
-        padding: 0.5rem;
-        border-radius: 6px;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: var(--radius-md);
         transition: all 0.3s ease;
+        border: none;
+        cursor: pointer;
     }
 
     .btn-download {
-        color: #2563eb;
+        color: var(--primary-color);
         background: #dbeafe;
     }
 
+    .btn-download:hover {
+        background: var(--primary-color);
+        color: white;
+    }
+
     .btn-view {
-        color: #16a34a;
+        color: var(--success-color);
         background: #dcfce7;
     }
 
+    .btn-view:hover {
+        background: var(--success-color);
+        color: white;
+    }
+
     .btn-delete {
-        color: #dc2626;
+        color: var(--danger-color);
         background: #fee2e2;
     }
 
+    .btn-delete:hover {
+        background: var(--danger-color);
+        color: white;
+    }
+
+    /* Upload form styles */
     .upload-container {
         position: relative;
-        border: 2px dashed #cbd5e1;
-        border-radius: 8px;
+        border: 2px dashed var(--border-color);
+        border-radius: var(--radius-md);
         padding: 2rem;
         text-align: center;
         transition: border-color 0.3s ease;
@@ -338,8 +567,9 @@
         cursor: pointer;
         position: relative;
     }
+
     .upload-box:hover .upload-container {
-        border-color: #2563eb;
+        border-color: var(--primary-color);
     }
 
     #file-preview {
@@ -348,247 +578,337 @@
         gap: 1rem;
         margin-bottom: 1rem;
         padding: 1rem;
-        background: #f8fafc;
-        border-radius: 6px;
+        background: var(--light-bg);
+        border-radius: var(--radius-md);
+        flex-wrap: wrap;
     }
 
     #file-preview.hidden {
         display: none;
     }
 
+    .upload-content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+    }
+
     .upload-content i {
         font-size: 2rem;
-        color: #94a3b8;
+        color: var(--text-muted);
         margin-bottom: 1rem;
     }
 
+    .upload-content p {
+        margin-bottom: 0.5rem;
+        color: var(--text-dark);
+    }
+
     .browse-link {
-        color: #2563eb;
+        color: var(--primary-color);
         font-weight: 500;
         cursor: pointer;
     }
 
+    .upload-content small {
+        color: var(--text-muted);
+    }
+
     #submit-btn {
         margin-top: 1rem;
-        background: #2563eb;
+        background: var(--primary-color);
         color: white;
         padding: 0.75rem 1.5rem;
+        border: none;
+        border-radius: var(--radius-md);
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    #submit-btn:hover {
+        background: #1d4ed8;
+        transform: translateY(-1px);
     }
 
     #submit-btn.hidden {
         display: none;
     }
 
-    .error-msg {
-        color: #dc2626;
-        margin-top: 0.5rem;
-        font-size: 0.875rem;
-    }
-
-    /* Drag & Drop Hover State */
-    .upload-box.dragover {
-        border-color: #2563eb;
-        background: #f8fafc;
-    }
-
-    /* Modern Clean CSS */
-    .appointment-container {
-        max-width: 1200px;
-        margin: 2rem auto;
-        padding: 0 1rem;
-    }
-
-    .appointment-header {
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-        margin-bottom: 2rem;
-        padding: 1rem;
-        background: #f8f9fa;
-        border-radius: 8px;
-    }
-
-    .back-button {
-        padding: 0.5rem;
-        color: #6c757d;
-        transition: all 0.3s ease;
-    }
-
-    .back-button:hover {
-        color: #0d6efd;
-        transform: translateX(-3px);
-    }
-
-    .status-badge {
-        padding: 0.25rem 0.75rem;
-        border-radius: 20px;
-        font-size: 0.9rem;
-        margin-left: auto;
-    }
-
-    .detail-card {
-        background: white;
-        border-radius: 8px;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-        margin-bottom: 1.5rem;
-    }
-
-    .card-header {
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-        padding: 1rem;
-        border-bottom: 1px solid #eee;
-    }
-
-    .card-header i {
-        font-size: 1.25rem;
-        color: #6c757d;
-    }
-
-    .view-profile {
-        margin-left: auto;
-        color: #0d6efd;
-        text-decoration: none;
-    }
-
-    .card-body {
-        padding: 1rem;
-    }
-
-    .info-row {
-        display: grid;
-        grid-template-columns: 120px 1fr;
-        gap: 1rem;
-        padding: 0.5rem 0;
-    }
-
-    .info-row label {
-        color: rgb(197, 53, 241);
-        font-weight: bold;
-    }
-    .info-row span {
-        color: #6c757d;
-        font-weight: 500;
-        font-size: small;
-    }
-
-    .action-buttons {
-        display: flex;
-        gap: 1rem;
-        margin-top: 2rem;
-    }
-
-    .btn {
-        padding: 0.5rem 1.25rem;
-        border-radius: 6px;
+    .btn-remove {
+        background: #fee2e2;
+        color: var(--danger-color);
         border: none;
+        border-radius: var(--radius-sm);
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
         cursor: pointer;
         transition: all 0.3s ease;
     }
 
+    .btn-remove:hover {
+        background: var(--danger-color);
+        color: white;
+    }
+
+    .error-msg {
+        color: var(--danger-color);
+        margin-top: 0.5rem;
+        font-size: 0.875rem;
+    }
+
+    /* Action buttons styles */
+    .action-buttons {
+        display: flex;
+        gap: 1rem;
+        margin-top: 2rem;
+        flex-wrap: wrap;
+    }
+
+    .btn {
+        padding: 0.75rem 1.5rem;
+        border-radius: var(--radius-md);
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        border: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 150px;
+    }
+
     .cancel-btn {
-        background: #dc3545;
+        background: #fee2e2;
+        color: var(--danger-color);
+    }
+
+    .cancel-btn:hover {
+        background: var(--danger-color);
         color: white;
     }
 
     .complete-btn {
-        background: #198754;
+        background: #dcfce7;
+        color: var(--success-color);
+    }
+
+    .complete-btn:hover {
+        background: var(--success-color);
         color: white;
     }
 
-    /* Status Colors */
-    .status-pending { background: #ffc107; color: black; }
-    .status-passed { background: #198754; color: white; }
-    .status-cancel { background: #dc3545; color: white; }
+    /* Responsive styles */
+    @media (max-width: 1200px) {
+        .appointment-container {
+            max-width: 100%;
+            margin: 1.5rem auto;
+        }
+    }
+
+    @media (max-width: 991px) {
+        .info-grid {
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        }
+        
+        .card-body {
+            padding: 1.25rem;
+        }
+    }
 
     @media (max-width: 768px) {
-        .info-row {
+        .appointment-container {
+            margin: 1rem auto;
+            padding: 0 0.75rem;
+        }
+        
+        .appointment-header {
+            padding: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .appointment-header h1 {
+            font-size: 1.25rem;
+        }
+        
+        .card-header h2 {
+            font-size: 1.1rem;
+        }
+        
+        .profile-text {
+            display: none;
+        }
+        
+        .info-grid {
             grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+        
+        .info-row label {
+            width: 120px;
+        }
+        
+        .schedule-item {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.5rem;
+        }
+        
+        .day {
+            min-width: auto;
+        }
+        
+        .existing-report {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        
+        .file-actions {
+            width: 100%;
+            justify-content: flex-end;
         }
         
         .action-buttons {
             flex-direction: column;
+            width: 100%;
+        }
+        
+        .btn {
+            width: 100%;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .appointment-header {
+            flex-wrap: wrap;
+        }
+        
+        .status-badge {
+            margin-left: 0;
+            margin-top: 0.5rem;
+            width: 100%;
+            text-align: center;
+        }
+        
+        .card-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.75rem;
+        }
+        
+        .view-profile {
+            align-self: flex-end;
+        }
+        
+        .info-row {
+            flex-direction: column;
+        }
+        
+        .info-row label {
+            width: 100%;
+            margin-bottom: 0.25rem;
+        }
+        
+        .upload-container {
+            padding: 1rem;
+        }
+        
+        .upload-box {
+            height: 150px;
         }
     }
 </style>
 
 <script>
-    // File Upload Handling
-    const input = document.getElementById('report-input');
-    const preview = document.getElementById('file-preview');
-    const fileName = document.getElementById('file-name');
-    const submitBtn = document.getElementById('submit-btn');
-    const uploadLabel = document.getElementById('upload-label');
-
-    // File Input Change
-    input.addEventListener('change', function(e) {
-        if (this.files && this.files[0]) {
-            updateFileDisplay(this.files[0]);
+    // File upload preview
+    document.addEventListener('DOMContentLoaded', function() {
+        const fileInput = document.getElementById('report-input');
+        const filePreview = document.getElementById('file-preview');
+        const fileName = document.getElementById('file-name');
+        const submitBtn = document.getElementById('submit-btn');
+        const uploadLabel = document.getElementById('upload-label');
+        
+        if (fileInput) {
+            fileInput.addEventListener('change', function() {
+                if (this.files.length > 0) {
+                    const file = this.files[0];
+                    fileName.textContent = file.name;
+                    filePreview.classList.remove('hidden');
+                    submitBtn.classList.remove('hidden');
+                    uploadLabel.style.display = 'none';
+                }
+            });
+            
+            // Drag and drop functionality
+            const uploadBox = document.querySelector('.upload-box');
+            
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                uploadBox.addEventListener(eventName, preventDefaults, false);
+            });
+            
+            function preventDefaults(e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+            
+            ['dragenter', 'dragover'].forEach(eventName => {
+                uploadBox.addEventListener(eventName, highlight, false);
+            });
+            
+            ['dragleave', 'drop'].forEach(eventName => {
+                uploadBox.addEventListener(eventName, unhighlight, false);
+            });
+            
+            function highlight() {
+                uploadBox.classList.add('dragover');
+            }
+            
+            function unhighlight() {
+                uploadBox.classList.remove('dragover');
+            }
+            
+            uploadBox.addEventListener('drop', handleDrop, false);
+            
+            function handleDrop(e) {
+                const dt = e.dataTransfer;
+                const files = dt.files;
+                fileInput.files = files;
+                
+                if (files.length > 0) {
+                    const file = files[0];
+                    fileName.textContent = file.name;
+                    filePreview.classList.remove('hidden');
+                    submitBtn.classList.remove('hidden');
+                    uploadLabel.style.display = 'none';
+                }
+            }
         }
     });
-
-    // Prevent default drag behaviors for both the upload area and document body
-    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-        uploadLabel.addEventListener(eventName, preventDefaults, false);
-        document.body.addEventListener(eventName, preventDefaults, false);
-    });
-
-    function preventDefaults(e) {
-        e.preventDefault();
-        e.stopPropagation();
-    }
-
-    // Highlight drop area when item is dragged over it
-    ['dragenter', 'dragover'].forEach(eventName => {
-        uploadLabel.addEventListener(eventName, highlight, false);
-    });
-
-    ['dragleave', 'drop'].forEach(eventName => {
-        uploadLabel.addEventListener(eventName, unhighlight, false);
-    });
-
-    function highlight(e) {
-        uploadLabel.classList.add('dragover');
-    }
-
-    function unhighlight(e) {
-        uploadLabel.classList.remove('dragover');
-    }
-
-    // Handle dropped files
-    uploadLabel.addEventListener('drop', handleDrop, false);
-
-    function handleDrop(e) {
-        const files = e.dataTransfer.files;
-        if (files.length > 0) {
-            // Directly assign the dropped files to the file input
-            input.files = files;
-            updateFileDisplay(files[0]);
-        }
-    }
-
-    function updateFileDisplay(file) {
-        preview.classList.remove('hidden');
-        fileName.textContent = file.name;
-        submitBtn.classList.remove('hidden');
-        uploadLabel.classList.add('hidden');
-    }
-
-    // Clear File
+    
+    // Clear file selection
     function clearFile() {
-        input.value = '';
-        preview.classList.add('hidden');
+        const fileInput = document.getElementById('report-input');
+        const filePreview = document.getElementById('file-preview');
+        const submitBtn = document.getElementById('submit-btn');
+        const uploadLabel = document.getElementById('upload-label');
+        
+        fileInput.value = '';
+        filePreview.classList.add('hidden');
         submitBtn.classList.add('hidden');
-        uploadLabel.classList.remove('hidden');
+        uploadLabel.style.display = 'block';
     }
-
-    // Delete Confirmation
+    
+    // Confirm delete
     function confirmDelete(button) {
         if (confirm('Êtes-vous sûr de vouloir supprimer ce rapport ?')) {
             button.closest('form').submit();
         }
     }
 </script>
-
 @endsection

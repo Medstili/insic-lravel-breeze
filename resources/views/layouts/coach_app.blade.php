@@ -41,7 +41,7 @@
   <!-- Styles personnalisés -->
   <style>
     :root {
-      --primary-color: #6366f1;
+      --primary-color: #6366f1; 
       --secondary-color: #4f46e5;
       --accent-color: #818cf8;
       --light-bg: #f8fafc;
@@ -137,6 +137,145 @@
     table tbody tr:hover {
         background-color: #f9f9f9;
     }
+
+
+    /* Responsive styles only - to be added at the end of existing CSS */
+
+/* Mobile devices (phones, less than 768px) */
+@media (max-width: 767.98px) {
+    /* Sidebar adjustments */
+    .sidebar {
+        width: 100%;
+        height: auto !important;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        top: auto;
+        z-index: 1000;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        padding: 0.5rem;
+    }
+    
+    .sidebar .logo {
+        display: none;
+    }
+    
+    .sidebar .mt-4 {
+        display: flex;
+        width: 100%;
+        margin-top: 0 !important;
+    }
+    
+    .sidebar .mt-4 form {
+        flex: 1;
+    }
+    
+    .menu-item {
+        padding: 0.75rem;
+        justify-content: center;
+        flex-direction: column;
+        font-size: 0.8rem;
+    }
+    
+    .menu-item i {
+        width: auto;
+        margin-bottom: 0.25rem;
+    }
+    
+    .menu-item:hover {
+        transform: none;
+    }
+    
+    /* Navbar adjustments */
+    .custom-navbar {
+        width: 100%;
+        left: 0;
+        padding: 0.75rem;
+        height: 60px;
+    }
+    
+    /* Main content adjustments */
+    .main-content {
+        width: 100%;
+        margin-left: 0;
+        padding: 1rem;
+        top: 60px;
+        height: calc(100vh - 120px); /* Account for top navbar and bottom sidebar */
+        padding-bottom: 80px; /* Add padding to avoid content being hidden by bottom sidebar */
+    }
+    
+    /* Table adjustments */
+    .table-wrapper {
+        overflow-x: auto;
+    }
+    
+    table th, table td {
+        padding: 8px 10px;
+        font-size: 0.8rem;
+    }
+}
+
+/* Small devices (landscape phones) */
+@media (min-width: 576px) and (max-width: 767.98px) {
+    .menu-item {
+        padding: 0.75rem 1rem;
+    }
+}
+
+/* Medium devices (tablets) */
+@media (min-width: 768px) and (max-width: 991.98px) {
+    /* Sidebar adjustments */
+    .sidebar {
+        width: 220px;
+    }
+    
+    .sidebar .logo {
+        font-size: 1.5rem;
+        padding: 1.25rem;
+    }
+    
+    .menu-item {
+        padding: 0.75rem 1.5rem;
+    }
+    
+    /* Navbar adjustments */
+    .custom-navbar {
+        width: calc(100% - 220px);
+        left: 220px;
+    }
+    
+    /* Main content adjustments */
+    .main-content {
+        width: calc(100% - 220px);
+        margin-left: 220px;
+        padding: 1.5rem;
+    }
+}
+
+/* Large devices (desktops) */
+@media (min-width: 992px) and (max-width: 1199.98px) {
+    /* Sidebar adjustments */
+    .sidebar {
+        width: 250px;
+    }
+    
+    /* Navbar adjustments */
+    .custom-navbar {
+        width: calc(100% - 250px);
+        left: 250px;
+    }
+    
+    /* Main content adjustments */
+    .main-content {
+        width: calc(100% - 250px);
+        margin-left: 250px;
+    }
+}
+
+
+
   </style>
 
 </head>

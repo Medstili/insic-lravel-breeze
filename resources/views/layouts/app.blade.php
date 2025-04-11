@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="csrf-token" content="{{ csrf_token() }}" />
+  
   <title>Insic Dashboard</title>
   <!-- Fonts & Icons -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -15,19 +16,19 @@
   <script src="https://cdn.jsdelivr.net/npm/tailwindcss@3.3.2/dist/tailwind.min.js"></script>
   <link rel="preconnect" href="https://fonts.bunny.net">
   <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
-   <!-- Scripts  -->
-   <!--  bootstrap Scripts and links-->
-     <!-- links  -->
+
+  <!-- Bootstrap -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"rel="stylesheet"/>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"/>
-   <!-- scripts -->
+  
+  <!-- Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
 
-  <!--  drag-and-drop library SortableJS.-->
+  <!-- SortableJS -->
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
 
   <style>
@@ -87,14 +88,15 @@
     .custom-navbar {
       background: white;
       box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
-      padding:  3rem;
+      padding: 1rem;
       height: 80px;
       width: calc(100% - 280px);
       position: fixed;
       top: 0;
       left: 280px;
       z-index: 1000;
-}
+      transition: all 0.3s ease;
+    }
 
     .custom-navbar .profile-img {
       width: 40px;
@@ -114,10 +116,11 @@
       margin-left: 280px;
       padding: 2rem;
       position: relative;
-      top: 60px; /* Push content down below fixed navbar */
-      height: calc(100vh - 80px); /* Full height minus navbar */
-      overflow-y: auto; /* Add scroll if content overflows */
-}
+      top: 60px;
+      height: calc(100vh - 80px);
+      overflow-y: auto;
+      transition: all 0.3s ease;
+    }
 
     .card {
       background: white;
@@ -131,70 +134,129 @@
       transform: translateY(-3px);
     }
 
-    @media (max-width: 768px) {
+    /* Notifications */
+    .notification-dropdown {
+      position: absolute;
+      top: 40px;
+      right: 0;
+      width: 400px;
+      max-height: 500px;
+      overflow-y: auto;
+      background: white;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      z-index: 1050;
+    }
+
+    .notification-item {
+      padding: 10px;
+      margin: 10px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      border-radius: 8px;
+    }
+
+    .notification-item.unread {
+      background: rgba(124, 126, 227, 0.77);
+      color: white;
+    }
+
+    .notification-count {
+      position: absolute;
+      top: -5px;
+      right: -5px;
+      font-size: 12px;
+      padding: 3px 6px;
+    }
+
+    /* Mobile Menu Button */
+    .mobile-menu-btn {
+      display: none;
+      position: fixed;
+      top: 15px;
+      left: 15px;
+      z-index: 1100;
+      background: var(--primary-color);
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    /* Responsive Styles */
+    @media (max-width: 1024px) {
       .sidebar {
         margin-left: -280px;
+        z-index: 1000;
       }
       
-      .main-content {
+      .sidebar.active {
         margin-left: 0;
+      }
+
+      .custom-navbar {
+        width: 100%;
+        left: 0;
+        padding: 1rem;
+      }
+
+      .main-content {
+        width: 100%;
+        margin-left: 0;
+        padding: 1rem;
+        top: 80px;
+      }
+
+      .mobile-menu-btn {
+        display: block;
       }
     }
 
-    .notification-dropdown {
-    position: absolute;
-    top: 40px;
-    right: 0;
-    width: 400px;
-    height: 500px;
-    overflow-y: scroll;
-    background: rgb(255, 255, 255); /* Light grey */
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-    z-index: 1050;
+    @media (max-width: 768px) {
+      .notification-dropdown {
+        width: 100vw;
+        right: -20px;
+      }
 
-}
+      .custom-navbar .profile-img {
+        width: 35px;
+        height: 35px;
+      }
 
-.notification-item {
-    padding: 10px;
-    margin: 10px;
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1), 0px 1px 3px rgba(0, 0, 0, 0.06);
-    border: 1px solid rgba(0, 0, 0, 0.1);
-    border-radius: 10px;
+      .menu-item {
+        padding: 0.75rem 1.5rem;
+      }
+    }
 
-}
-.notification-item p{
-  font-size: 12px;
-}
-.notification-item small{
-  font-size: 8px;
-  color: green;
-}
+    @media (max-width: 480px) {
+      .logo {
+        font-size: 1.5rem;
+        padding: 1rem;
+      }
 
+      .notification-item p {
+        font-size: 10px;
+      }
 
-.notification-item.unread {
-    background:rgba(124, 126, 227, 0.77);
-    color: white;
+      .notification-item small {
+        font-size: 8px;
+      }
 
-}
-
-.notification-count {
-    position: absolute;
-    top: -5px;
-    right: -5px;
-    /* left: 10px; */
-    font-size: 12px;
-    padding: 3px 6px;
-}
-
- 
-
+      .main-content {
+        padding: 1rem 0.5rem;
+      }
+    }
   </style>
 </head>
-<body class="overflow-x-hidden">
+<body class="overflow-x-hidden" x-data="{ sidebarOpen: false }">
+  <!-- Mobile Menu Button -->
+  <button class="mobile-menu-btn" @click="sidebarOpen = !sidebarOpen">
+    <i class="fas fa-bars"></i>
+  </button>
+
   <!-- Sidebar -->
-  <div class="sidebar fixed h-full">
+  <div class="sidebar fixed h-full" :class="{ 'active': sidebarOpen }">
     <div class="logo">Insic</div>
     <div class="mt-4">
       <form action="{{ route('global_dashboard') }}" method="get">
@@ -231,86 +293,56 @@
   </div>
 
   <!-- Navbar -->
-  <nav x-data="{ open: false }" class="custom-navbar z-50">
-            <div class="d-flex justify-content-end align-items-center space-x-4">
-                <div class="flex  justify-content-between" style="width: 15%;">
-                  <!-- <div class="notification-container"> -->
-
-                  <div id="notificationContainer" class="position-relative">
-                      <!-- Notification Icon -->
-                      <div id="notificationIcon" onclick="toggleNotifications()" class="position-relative">
-                          <i class="fa-solid fa-bell" style="font-size: 1.5rem;"></i>
-                          <span id="notificationCount" class="notification-count badge bg-danger rounded-circle {{ auth()->user()->unreadNotifications->count() > 0 ? '' : 'd-none' }}">
-                              {{ auth()->user()->unreadNotifications->count() }}
-                          </span>
-                      </div>
-
-                      <!-- Notification Dropdown -->
-                      <!-- <div id="notificationDropdown" class="notification-dropdown d-none">
-
-                          @if(auth()->user()->notifications->isEmpty())
-                              <p class="text-center p-3">There are no notifications</p>
-                          @else
-                              @foreach(auth()->user()->notifications as $notification)
-                                  <div class="notification-item {{ $notification->read_at ? '' : 'unread' }}">
-                                      <p>{{ $notification->data['message'] ?? 'No message provided' }}</p>
-                                      <small>{{ $notification->created_at->diffForHumans() }}</small>
-                                  </div>
-                              @endforeach
-                          @endif
-                      </div> -->
-
-
-                      <div id="notificationDropdown" class="notification-dropdown d-none">
-                        @if(auth()->user()->notifications->isEmpty())
-                                <p class="text-center p-3">There are no notifications</p>
-                        @else
-                          @foreach(auth()->user()->notifications as $notification)
-                              <div class="notification-item {{ $notification->read_at ? '' : 'unread' }}" data-id="{{ $notification->id }}">
-                                  <p >{{ $notification->data['message'] ?? 'No message provided' }}</p>
-                                  <small>{{ $notification->created_at->diffForHumans() }}</small>
-                              </div>
-                          @endforeach
-                        @endif
-                      </div>
-
-                  </div>
-
-
-
-                  <!-- </div> -->
-                  <x-dropdown align="right" width="48" class="cursor-pointer">
-                    <x-slot name="trigger">
-                      <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none transition ease-in-out duration-150">
-                        <div>{{ Auth::user()->full_name }}</div>
-                        <div class="ms-1">
-                          <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-                          </svg>
-                        </div>
-                      </button>
-                    </x-slot>
-  
-                    <x-slot name="content">
-                      <x-dropdown-link :href="route('user.show',Auth::user()->id)">
-                      <i class="fas fa-user text-sm me-2"></i>
-                        {{ __('Profil') }}
-                      </x-dropdown-link> 
-  
-                      <!-- Authentification -->
-                      <form method="POST" action="{{ route('logout') }}">
-                        @csrf
-  
-                        <x-dropdown-link :href="route('logout')" onclick="event.preventDefault(); this.closest('form').submit();">
-                        <i class="fas fa-sign-out-alt text-sm me-2"></i>
-                          {{ __('Déconnexion') }}
-                        </x-dropdown-link>
-                      </form>
-  
-                    </x-slot>
-                  </x-dropdown>
-              </div>
+  <nav class="custom-navbar">
+    <div class="d-flex justify-content-end align-items-center">
+      <div class="d-flex align-items-center gap-4" style="width: 15%;">
+        <div id="notificationContainer" class="position-relative">
+          <div id="notificationIcon" onclick="toggleNotifications()" class="position-relative">
+            <i class="fa-solid fa-bell" style="font-size: 1.5rem;"></i>
+            <span id="notificationCount" class="notification-count badge bg-danger rounded-circle {{ auth()->user()->unreadNotifications->count() > 0 ? '' : 'd-none' }}">
+              {{ auth()->user()->unreadNotifications->count() }}
+            </span>
+          </div>
+          <div id="notificationDropdown" class="notification-dropdown d-none">
+            @if(auth()->user()->notifications->isEmpty())
+              <p class="text-center p-3">There are no notifications</p>
+            @else
+              @foreach(auth()->user()->notifications as $notification)
+                <div class="notification-item {{ $notification->read_at ? '' : 'unread' }}" data-id="{{ $notification->id }}">
+                  <p>{{ $notification->data['message'] ?? 'No message provided' }}</p>
+                  <small>{{ $notification->created_at->diffForHumans() }}</small>
                 </div>
+              @endforeach
+            @endif
+          </div>
+        </div>
+        <x-dropdown align="right" width="48">
+          <x-slot name="trigger">
+            <button class="d-flex align-items-center px-3 py-2 border-0 bg-transparent">
+              <div>{{ Auth::user()->full_name }}</div>
+              <div class="ms-1">
+                <svg class="fill-current h-4 w-4" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/>
+                </svg>
+              </div>
+            </button>
+          </x-slot>
+          <x-slot name="content">
+            <x-dropdown-link :href="route('user.show',Auth::user()->id)">
+              <i class="fas fa-user text-sm me-2"></i>
+              {{ __('Profil') }}
+            </x-dropdown-link>
+            <form method="POST" action="{{ route('logout') }}">
+              @csrf
+              <x-dropdown-link :href="route('logout')" onclick="event.preventDefault(); this.closest('form').submit();">
+                <i class="fas fa-sign-out-alt text-sm me-2"></i>
+                {{ __('Déconnexion') }}
+              </x-dropdown-link>
+            </form>
+          </x-slot>
+        </x-dropdown>
+      </div>
+    </div>
   </nav>
 
   <!-- Main Content -->
@@ -318,8 +350,11 @@
     @yield('content')
   </div>
 
+  <!-- Alpine.js -->
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
   <script>
-    // Ajouter la classe active à l'élément de menu actuel
+    // Menu active state
     const currentPath = window.location.pathname;
     document.querySelectorAll('.menu-item').forEach(item => {
       if (item.closest('form').action.includes(currentPath)) {
@@ -329,58 +364,44 @@
       }
     });
 
+    // Notifications
     function toggleNotifications() {
-    const dropdown = document.getElementById('notificationDropdown');
-    dropdown.classList.toggle('d-none');
+      const dropdown = document.getElementById('notificationDropdown');
+      dropdown.classList.toggle('d-none');
     }
 
-    // Close when clicking outside
-    document.addEventListener('click', function (event) {
-        const notificationContainer = document.getElementById('notificationContainer');
-        const dropdown = document.getElementById('notificationDropdown');
-
-        if (!notificationContainer.contains(event.target)) {
-            dropdown.classList.add('d-none');
-        }
+    document.addEventListener('click', function(event) {
+      const notificationContainer = document.getElementById('notificationContainer');
+      const dropdown = document.getElementById('notificationDropdown');
+      if (!notificationContainer.contains(event.target)) {
+        dropdown.classList.add('d-none');
+      }
     });
 
     document.querySelectorAll('.notification-item').forEach(item => {
-    item.addEventListener('click', function () {
-        const notificationId = this.getAttribute('data-id');
-        const uri = '{{ route("notifications.mark-as-read") }}';
-        fetch(uri, {
-            method: 'POST',
-            headers: {
-                'X-CSRF-TOKEN': '{{ csrf_token()}}',
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
-            }
-            ,
-                  body: JSON.stringify({ id: notificationId })
+      item.addEventListener('click', function() {
+        const notificationId = this.dataset.id;
+        fetch('{{ route("notifications.mark-as-read") }}', {
+          method: 'POST',
+          headers: {
+            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ id: notificationId })
         })
         .then(response => response.json())
         .then(data => {
-            if (data.success) {
-                // Optionally update the UI (e.g., remove the 'unread' class)
-                this.classList.remove('unread');
-                const notificationCount = document.getElementById('notificationCount');
-                const currentCount = parseInt(notificationCount.textContent, 10);
-                if (currentCount > 0) {
-                  notificationCount.textContent = currentCount - 1;
-                }
-                if (currentCount - 1 === 0) {
-                  notificationCount.classList.add('d-none');
-                }
-                // You can also update the unread count displayed in your notification icon.
-            } else {
-                console.error('Failed to mark notification as read');
-            }
-        })
-        .catch(error => console.error('Error:', error));
+          if (data.success) {
+            this.classList.remove('unread');
+            const countElement = document.getElementById('notificationCount');
+            let count = parseInt(countElement.textContent);
+            if (count > 0) count--;
+            countElement.textContent = count;
+            if (count === 0) countElement.classList.add('d-none');
+          }
+        });
+      });
     });
-});
-
-
   </script>
 </body>
 </html>

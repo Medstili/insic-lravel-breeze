@@ -137,6 +137,104 @@
         margin-top: 0.5rem;
     }
 
+/* Responsive styles only - to be added at the end of existing CSS */
+
+/* Mobile devices (phones, less than 768px) */
+@media (max-width: 767.98px) {
+    .creation-container {
+        padding: 1rem;
+    }
+    
+    .glass-card {
+        padding: 1rem;
+    }
+    
+    .form-header {
+        font-size: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .row.g-3 {
+        row-gap: 0.75rem !important;
+    }
+    
+    .col-md-4, .col-md-6 {
+        width: 100%;
+    }
+    
+    .section-title {
+        font-size: 1.25rem;
+        margin: 1.25rem 0;
+    }
+    
+    /* Make calendar responsive */
+    #calendar {
+        overflow-x: auto;
+    }
+    
+    /* Make toolbar buttons more touch-friendly */
+    .fc-button {
+        padding: 0.5rem !important;
+        min-height: 44px !important;
+        min-width: 44px !important;
+        margin: 2px !important;
+    }
+    
+    /* Improve calendar toolbar layout on small screens */
+    .fc-header-toolbar {
+        flex-wrap: wrap;
+    }
+    
+    .fc-toolbar-chunk {
+        margin-bottom: 0.5rem;
+    }
+    
+    /* Ensure form inputs have good touch targets */
+    .form-control, .form-select, input[type="number"] {
+        min-height: 44px;
+        font-size: 16px; /* Prevent zoom on iOS */
+    }
+    
+    /* Improve coach selection on mobile */
+    .coach-section .form-check {
+        padding: 0.5rem;
+    }
+    
+    /* Improve image upload section */
+    label[for="image-input"] {
+        min-height: 44px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    /* Make submit button more touch-friendly */
+    .btn-primary {
+        min-height: 44px;
+    }
+}
+
+/* Small devices (landscape phones) */
+@media (min-width: 576px) and (max-width: 767.98px) {
+    .creation-container {
+        padding: 1.25rem;
+    }
+    
+    .glass-card {
+        padding: 1.25rem;
+    }
+}
+
+/* Medium devices (tablets) */
+@media (min-width: 768px) and (max-width: 991.98px) {
+    /* Ensure calendar is responsive but maintains functionality */
+    #calendar {
+        overflow-x: auto;
+    }
+}
+
+
+
 </style>
 
 <div class="creation-container">
@@ -232,7 +330,7 @@
 
             <!-- Guardian Section -->
             <div id="parentSection" class="d-none">
-                <h4 class="section-title parent-title">Informations sur le Tuteur</h4>
+                <h4 class="section-title parent-title">Information adulte</h4>
                 <div class="row g-3">
                     <div class="col-md-6">
                         <div class="form-floating">
@@ -437,21 +535,22 @@
 
         
         if (selectedType === 'young') {
-            kidTitle.textContent = 'Young Details';
+            kidTitle.textContent = 'Détails du jeune';
         }
         else {
-            kidTitle.textContent = 'Kid Details';
+            kidTitle.textContent = 'Détails de l\'enfant';
         }
         if (selectedType === 'kid' || selectedType === 'young') {
 
+          
+            
             kidFirstName.setAttribute("required", "");
             kidLastName.setAttribute("required", "");
             kidEcole.setAttribute("required", "");
             kidSystem.setAttribute("required", "");
-
             kidSection.classList.remove('d-none');
             parentSection.classList.remove('d-none');
-            parentTitle.textContent = 'Parent Details';
+            parentTitle.textContent = 'Détails du parent';
         } 
         else if (selectedType === 'adult') {
             kidFirstName.removeAttribute('required');
@@ -460,7 +559,7 @@
             kidSystem.removeAttribute('required');
             kidSection.classList.add('d-none');
             parentSection.classList.remove('d-none');
-            parentTitle.textContent = 'Patient Details';
+            parentTitle.textContent = 'Information adulte';
         } 
         else {
             kidSection.classList.add('d-none');
@@ -470,9 +569,9 @@
         });
         if (parentEmail.classList.contains('is-invalid')) {
             parentSection.classList.remove('d-none');
-            console.log('exist'); 
         }
 
+        console.log(parentTitle.innerHTML);
         
     }); 
     document.addEventListener('DOMContentLoaded', function() {

@@ -9,48 +9,52 @@
         --dark-text: #1e293b;
     }
 
+    /* Responsive container */
     .coach-form-container {
+        width: 100%;
         max-width: 1200px;
-        margin: 2rem auto;
-        padding: 2rem;
+        margin: 1rem auto;
+        padding: 1rem;
         background: white;
         border-radius: 12px;
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
     }
 
     .form-header {
-        font-size: 1.75rem;
+        font-size: 1.5rem;
         font-weight: 600;
         color: var(--dark-text);
-        margin-bottom: 2rem;
+        margin-bottom: 1.5rem;
         padding-bottom: 1rem;
         border-bottom: 2px solid var(--primary);
     }
 
+    /* Responsive grid layout */
     .form-grid {
         display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 2rem;
-        margin-bottom: 2rem;
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+        margin-bottom: 1.5rem;
     }
 
     .form-card {
         background: var(--light-bg);
         border-radius: 8px;
-        padding: 1.5rem;
+        padding: 1.25rem;
     }
 
     .form-floating {
         position: relative;
-        margin-bottom: 1.5rem;
+        margin-bottom: 1.25rem;
     }
 
     .form-control {
         width: 100%;
-        padding: 1rem;
+        padding: 0.75rem;
         border: 1px solid #e2e8f0;
         border-radius: 8px;
         transition: all 0.3s ease;
+        font-size: 1rem; /* Ensure readable text size on mobile */
     }
 
     .form-control:focus {
@@ -58,40 +62,68 @@
         box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
     }
 
+    /* Improve form labels */
+    .form-floating label {
+        padding: 0.75rem;
+        font-size: 0.9rem;
+    }
+
+    /* Calendar container with better mobile support */
     .calendar-container {
         background: white;
         border-radius: 8px;
-        padding: 1.5rem;
-        margin-top: 2rem;
+        padding: 1rem;
+        margin-top: 1.5rem;
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        overflow-x: auto; /* Allow horizontal scrolling for calendar on small screens */
     }
     
     #calendar {
         background: white;
         border-radius: 12px;
-        padding: 1rem;
+        padding: 0.5rem;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        min-height: 400px; /* Ensure minimum height for calendar */
     }
+
     .fc-header-toolbar {
-        background: linear-gradient(195deg, var(--primary-color), var(--secondary-color));
+        background: linear-gradient(195deg, var(--primary), var(--secondary));
         color: white;
-        padding: 1rem;
+        padding: 0.75rem;
         border-radius: 8px 8px 0 0;
+        flex-wrap: wrap; /* Allow toolbar to wrap on small screens */
     }
+
+    /* Make toolbar buttons more touch-friendly */
+    .fc-button {
+        padding: 0.5rem !important;
+        min-height: 44px !important;
+        min-width: 44px !important;
+        margin: 2px !important;
+        font-size: 0.9rem !important;
+    }
+
     .fc-button-primary {
-        background-color: var(--primary-color) !important;
-        border-color: var(--primary-color) !important;
+        background-color: var(--primary) !important;
+        border-color: var(--primary) !important;
     }
+
+    /* Improved submit button with better touch target */
     .btn-submit {
         background: var(--primary);
         color: white;
-        padding: 1rem 2rem;
+        padding: 0.75rem 1.5rem;
         border-radius: 8px;
         font-weight: 500;
         transition: all 0.3s ease;
         width: 100%;
         max-width: 300px;
-        margin: 2rem auto 0;
+        margin: 1.5rem auto 0;
+        display: block; /* Center the button */
+        min-height: 44px; /* Better touch target */
+        border: none;
+        cursor: pointer;
+        font-size: 1rem;
     }
 
     .btn-submit:hover {
@@ -117,6 +149,156 @@
         border-radius: 8px;
         margin: 1rem 0;
     }
+
+    /* Image preview responsive styles */
+    #image-preview {
+        margin: 1rem auto;
+        text-align: center;
+    }
+
+    #image-preview-img {
+        width: 80px;
+        height: 80px;
+        object-fit: cover;
+    }
+
+    /* Custom file upload button */
+    label[for="image-input"] {
+        display: inline-block;
+        padding: 0.75rem 1rem;
+        min-height: 44px;
+        cursor: pointer;
+    }
+
+    /* Extra small devices (phones, less than 576px) */
+    @media (max-width: 575.98px) {
+        .form-header {
+            font-size: 1.3rem;
+        }
+        
+        .form-card {
+            padding: 1rem;
+        }
+        
+        .form-control {
+            font-size: 16px; /* Prevent zoom on iOS */
+        }
+        
+        /* Optimize calendar for very small screens */
+        .fc-toolbar-title {
+            font-size: 1.1rem !important;
+        }
+        
+        .fc-button {
+            padding: 0.4rem !important;
+            font-size: 0.8rem !important;
+        }
+    }
+
+    /* Small devices (landscape phones, 576px and up) */
+    @media (min-width: 576px) and (max-width: 767.98px) {
+        .coach-form-container {
+            padding: 1.5rem;
+            margin: 1.5rem auto;
+        }
+        
+        .form-header {
+            font-size: 1.4rem;
+        }
+    }
+
+    /* Medium devices (tablets, 768px and up) */
+    @media (min-width: 768px) {
+        .coach-form-container {
+            padding: 2rem;
+            margin: 2rem auto;
+        }
+
+        .form-header {
+            font-size: 1.75rem;
+        }
+
+        .form-grid {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2rem;
+        }
+
+        .form-card {
+            padding: 1.5rem;
+        }
+
+        .calendar-container {
+            padding: 1.5rem;
+        }
+
+        #calendar {
+            padding: 1rem;
+        }
+
+        .fc-header-toolbar {
+            padding: 1rem;
+        }
+    }
+
+    /* Large devices (desktops, 992px and up) */
+    @media (min-width: 992px) {
+        .form-header {
+            font-size: 1.85rem;
+        }
+        
+        .form-control {
+            padding: 0.85rem;
+        }
+    }
+
+    /* Calendar responsive adjustments */
+    @media (max-width: 767px) {
+        .fc-toolbar {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .fc-toolbar-chunk {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 0.5rem;
+            width: 100%;
+        }
+
+        .fc-toolbar-title {
+            font-size: 1.25rem !important;
+            text-align: center;
+        }
+
+        .fc-view-harness {
+            min-height: 400px;
+        }
+
+        /* Adjust calendar view for mobile */
+        .fc .fc-scrollgrid-liquid {
+            height: 100%;
+        }
+
+        /* Make time slots more readable on mobile */
+        .fc-timegrid-slot {
+            height: 3em !important;
+        }
+
+        /* Ensure calendar fits in viewport */
+        .fc-view {
+            overflow: visible;
+        }
+        
+        /* Improve touch targets for time slots */
+        .fc-timegrid-slot-lane {
+            min-height: 44px;
+        }
+    }
+    
+    /* Fix for iOS input styling */
+
 </style>
 
 <div class="coach-form-container">
@@ -200,27 +382,21 @@
                       <img src="#" alt="Image Preview" id="image-preview-img" class="rounded-circle shadow img-thumbnail" style="width: 80px; height: 80px; object-fit: cover;">
                     </div>
                 </div>
-
-
-
-
             </div>
         </div>
 
-                <!-- Error Messages -->
-                @error('planning')
-                  <div class="alert-danger">
-                      <i class="fas fa-exclamation-circle mr-2"></i>
-                      {{ $message }}
-                  </div>
-                @enderror
+        <!-- Error Messages -->
+        @error('planning')
+          <div class="alert-danger">
+              <i class="fas fa-exclamation-circle mr-2"></i>
+              {{ $message }}
+          </div>
+        @enderror
 
         <!-- Calendar Section -->
         <div class="calendar-container">
             <div id="calendar"></div>
         </div>
-
-
 
         <!-- Hidden Input & Submit -->
         <input type="hidden" id="planning" name="planning">
@@ -231,7 +407,6 @@
 </div>
 
 <script>
-
   var availabilityData = {};
 
   function addAvailabilityEvent(date, eventId, startTime, endTime) {
@@ -245,6 +420,7 @@
     });
     console.log("Après ajout :", availabilityData);
   }
+  
   function updateAvailabilityEvent(event) {
     var newStart = event.start;
     var newEnd = event.end ? event.end : event.start;
@@ -274,6 +450,7 @@
     });
     console.log("Après mise à jour :", availabilityData);
   }
+  
   function deleteAvailabilityEvent(event) {
     for (var date in availabilityData) {
       availabilityData[date] = availabilityData[date].filter(function(slot) {
@@ -285,15 +462,18 @@
     }
     console.log("Après suppression :", availabilityData);
   }
+  
   document.addEventListener("DOMContentLoaded", function() {
     var calendarEl = document.getElementById("calendar");
     
     // Vous pouvez choisir une couleur par défaut pour les événements de disponibilité des entraîneurs.
     var defaultColor = "blue";
+    
+    // Determine initial view based on screen size
+    var initialView = window.innerWidth < 768 ? "timeGridDay" : "timeGridWeek";
 
     var calendar = new FullCalendar.Calendar(calendarEl, {
-      // Par exemple, afficher une vue hebdomadaire.
-      initialView: "timeGridWeek",
+      initialView: initialView,
       selectable: true,
       editable: true, // Activer le glisser-déposer, redimensionner, etc.
       height:'500px',
@@ -306,6 +486,11 @@
       allDaySlot: false,
       nowIndicator: true,
       expandRows: true,
+      headerToolbar: {
+        left: 'prev,next today',
+        center: 'title',
+        right: 'timeGridDay,timeGridWeek'
+      },
       // Lorsqu'un entraîneur sélectionne un créneau horaire, capturer automatiquement les heures de début/fin.
       select: function(info) {
         var startDateTime = info.startStr; 
@@ -345,28 +530,36 @@
           deleteAvailabilityEvent(info.event);
           info.event.remove();
         }
+      },
+      // Responsive handling
+      windowResize: function(view) {
+        if (window.innerWidth < 768) {
+          calendar.changeView('timeGridDay');
+        } else {
+          calendar.changeView('timeGridWeek');
+        }
       }
     });
     
     calendar.render();
-
   });
+  
   function previewImage(event) {
-        const input = event.target;
-        const previewContainer = document.getElementById("image-preview");
-        const previewImage = document.getElementById("image-preview-img");
+    const input = event.target;
+    const previewContainer = document.getElementById("image-preview");
+    const previewImage = document.getElementById("image-preview-img");
 
-        if (input.files && input.files[0]) {
-            const reader = new FileReader();
-            reader.onload = function (e) {
-                previewImage.src = e.target.result;
-                previewContainer.classList.remove("d-none"); // Show preview
-            };
-            reader.readAsDataURL(input.files[0]);
-        }
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            previewImage.src = e.target.result;
+            previewContainer.classList.remove("d-none"); // Show preview
+        };
+        reader.readAsDataURL(input.files[0]);
     }
+  }
  
-    function coachUpdatePlanning() {
+  function coachUpdatePlanning() {
     var planningInput = document.getElementById("planning");
     planningInput.value = JSON.stringify(availabilityData);
   }

@@ -1,9 +1,9 @@
-@extends('layouts.app')
+@extends('layouts.coach_app')
 
 @section('content')
 <style>
     :root {
-        --primary: #6366f1;
+        --primary-color: #6366f1;
         --secondary: #4f46e5;
         --light-bg: #f8fafc;
         --dark-text: #1e293b;
@@ -24,7 +24,7 @@
         color: var(--dark-text);
         margin-bottom: 2rem;
         padding-bottom: 1rem;
-        border-bottom: 2px solid var(--primary);
+        border-bottom: 2px solid var(--primary-color);
     }
 
     .form-grid {
@@ -54,7 +54,7 @@
     }
 
     .form-control:focus {
-        border-color: var(--primary);
+        border-color: var(--primary-color);
         box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
     }
 
@@ -73,17 +73,17 @@
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
     }
     .fc-header-toolbar {
-        background: linear-gradient(195deg, var(--primary-color), var(--secondary-color));
+        background: linear-gradient(195deg, var(--primary-color-color), var(--secondary-color));
         color: white;
         padding: 1rem;
         border-radius: 8px 8px 0 0;
     }
     .fc-button-primary {
-        background-color: var(--primary-color) !important;
-        border-color: var(--primary-color) !important;
+        background-color: var(--primary-color-color) !important;
+        border-color: var(--primary-color-color) !important;
     }
     .btn-submit {
-        background: var(--primary);
+        background: var(--primary-color);
         color: white;
         padding: 1rem 2rem;
         border-radius: 8px;
@@ -117,6 +117,117 @@
         border-radius: 8px;
         margin: 1rem 0;
     }
+
+    /* Responsive styles only - to be added at the end of existing CSS */
+
+/* Mobile devices (phones, less than 768px) */
+@media (max-width: 767.98px) {
+    .coach-form-container {
+        margin: 1rem;
+        padding: 1rem;
+    }
+    
+    .form-header {
+        font-size: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .form-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+    
+    .form-card {
+        padding: 1rem;
+    }
+    
+    .form-floating {
+        margin-bottom: 1rem;
+    }
+    
+    .calendar-container {
+        padding: 1rem;
+        margin-top: 1.5rem;
+    }
+    
+    #calendar {
+        height: auto;
+        min-height: 400px;
+    }
+    
+    /* Calendar toolbar adjustments */
+    .fc-header-toolbar {
+        flex-wrap: wrap;
+        padding: 0.75rem;
+    }
+    
+    .fc-toolbar-chunk {
+        margin-bottom: 0.5rem;
+        display: flex;
+        justify-content: center;
+        width: 100%;
+    }
+    
+    /* Make toolbar buttons more touch-friendly */
+    .fc-button {
+        padding: 0.5rem !important;
+        min-height: 44px !important;
+        min-width: 44px !important;
+        margin: 2px !important;
+    }
+    
+    /* Ensure form inputs have good touch targets */
+    .form-control, select, input[type="file"] {
+        min-height: 44px;
+        font-size: 16px; /* Prevent zoom on iOS */
+    }
+    
+    /* Improve image upload section */
+    label[for="image-input"] {
+        min-height: 44px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    /* Make submit button more touch-friendly */
+    .btn-submit {
+        min-height: 44px;
+        margin: 1.5rem auto 0;
+    }
+}
+
+/* Small devices (landscape phones) */
+@media (min-width: 576px) and (max-width: 767.98px) {
+    .coach-form-container {
+        margin: 1.5rem;
+        padding: 1.5rem;
+    }
+    
+    .form-card {
+        padding: 1.25rem;
+    }
+}
+
+/* Medium devices (tablets) */
+@media (min-width: 768px) and (max-width: 991.98px) {
+    .coach-form-container {
+        max-width: 90%;
+    }
+    
+    .form-grid {
+        gap: 1.5rem;
+    }
+    
+    /* Ensure calendar is responsive but maintains functionality */
+    #calendar {
+        overflow-x: auto;
+    }
+}
+
+
+
 </style>
 
 <div class="coach-form-container">

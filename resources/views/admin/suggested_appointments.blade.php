@@ -2,103 +2,153 @@
 
 @php
     use App\Models\Patient;
-
 @endphp
 
 @section('content')
 
-
 <style>
+    :root {
+        --primary-color: #6366f1;
+        --secondary-color: #4f46e5;
+        --light-bg: #f8fafc;
+        --border-color: #e2e8f0;
+        --text-dark: #1e293b;
+        --text-muted: #64748b;
+        --shadow-sm: 0 4px 6px rgba(0, 0, 0, 0.05);
+        --shadow-md: 0 3px 6px rgba(0, 0, 0, 0.1);
+        --radius-sm: 6px;
+        --radius-md: 8px;
+        --radius-lg: 12px;
+        --priority1-bg: #fee2e2;
+        --priority1-border: #ef4444;
+        --priority1-text: #dc2626;
+        --priority2-bg: #fef3c7;
+        --priority2-border: #f59e0b;
+        --priority2-text: #d97706;
+        --priority3-bg: #dcfce7;
+        --priority3-border: #22c55e;
+        --priority3-text: #16a34a;
+    }
+
+    /* Base styles */
     .calendar-wrapper {
         padding: 1rem;
         min-height: calc(100vh - 80px);
-        background: #f8fafc;
+        background: var(--light-bg);
     }
 
     .calendar-container {
         background: white;
-        border-radius: 12px;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-        padding: 2rem;
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-sm);
+        padding: 1.5rem;
+        overflow: hidden;
     }
 
     .calendar-header {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        margin-bottom: 2rem;
+        margin-bottom: 1.5rem;
         padding-bottom: 1rem;
-        border-bottom: 1px solid #e2e8f0;
+        border-bottom: 1px solid var(--border-color);
     }
 
     .calendar-title {
-        font-size: 1.75rem;
+        font-size: 1.5rem;
         font-weight: 600;
-        color: #1e293b;
+        color: var(--text-dark);
+        margin: 0;
     }
 
     .week-navigation {
         display: flex;
         align-items: center;
         gap: 1rem;
+        flex-wrap: wrap;
     }
 
     .nav-button {
         padding: 0.5rem 1rem;
-        border-radius: 8px;
-        background: #3b82f6;
+        border-radius: var(--radius-md);
+        background: var(--primary-color);
         color: white;
         transition: all 0.2s ease;
         display: flex;
         align-items: center;
         gap: 0.5rem;
+        text-decoration: none;
+        border: none;
+        cursor: pointer;
     }
 
     .nav-button:hover {
-        background: #2563eb;
+        background: var(--secondary-color);
         transform: translateY(-1px);
     }
 
     .current-week {
         font-weight: 500;
-        color: #64748b;
+        color: var(--text-muted);
     }
 
+    /* Alert styles */
+    .alert {
+        padding: 0.75rem 1rem;
+        border-radius: var(--radius-md);
+        margin-bottom: 1rem;
+    }
+
+    .alert-warning {
+        background: #fef3c7;
+        color: #92400e;
+        border: 1px solid #f59e0b;
+    }
+
+    .alert-success {
+        background: #dcfce7;
+        color: #166534;
+        border: 1px solid #22c55e;
+    }
+
+    .d-none {
+        display: none !important;
+    }
+
+    /* Responsive table container */
     .table-container {
-        border: 1px solid #e2e8f0;
-        border-radius: 8px;
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-md);
         position: relative;
-        max-height: 70vh;
-        overflow-y: auto;
+        overflow: hidden;
     }
 
+    /* Desktop view */
     .calendar-table {
         width: 100%;
         border-collapse: collapse;
-        min-width: 1200px;
     }
 
     .calendar-table th {
         background: #f1f5f9;
-        color: #64748b;
+        color: var(--text-muted);
         font-weight: 500;
-        padding: 1rem;
+        padding: 0.75rem;
         position: sticky;
         top: 0;
         z-index: 23;
     }
 
     .calendar-table td {
-        padding: 0.75rem;
-        border: 1px solid #e2e8f0;
+        padding: 0.5rem;
+        border: 1px solid var(--border-color);
         vertical-align: top;
-        min-width: 150px;
     }
 
     .day-header {
-        background: #f8fafc;
+        background: var(--light-bg);
         font-weight: 600;
-        color: #1e293b;
+        color: var(--text-dark);
         position: sticky;
         top: 55px;
         left: 0;
@@ -108,7 +158,7 @@
 
     .coach-name {
         font-weight: 500;
-        color: #1e293b;
+        color: var(--text-dark);
         white-space: nowrap;
         position: sticky;
         left: 0;
@@ -117,8 +167,8 @@
     }
 
     .appointment-card {
-        padding: 0.2rem;
-        border-radius: 6px;
+        padding: 0.5rem;
+        border-radius: var(--radius-sm);
         margin: 2px 0;
         cursor: pointer;
         transition: all 0.2s ease;
@@ -127,7 +177,7 @@
 
     .appointment-card:hover {
         transform: translateY(-2px);
-        box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+        box-shadow: var(--shadow-md);
     }
 
     .appointment-card::before {
@@ -140,55 +190,45 @@
     }
 
     .priority1 {
-        background: #fee2e2;
-        border-left: 4px solid #ef4444;
+        background: var(--priority1-bg);
+        border-left: 4px solid var(--priority1-border);
     }
 
     .priority1 .appointment-time {
-        color: #dc2626;
+        color: var(--priority1-text);
     }
 
     .priority2 {
-        background: #fef3c7;
-        border-left: 4px solid #f59e0b;
+        background: var(--priority2-bg);
+        border-left: 4px solid var(--priority2-border);
     }
 
     .priority2 .appointment-time {
-        color: #d97706;
+        color: var(--priority2-text);
     }
 
     .priority3 {
-        background: #dcfce7;
-        border-left: 4px solid #22c55e;
+        background: var(--priority3-bg);
+        border-left: 4px solid var(--priority3-border);
     }
 
     .priority3 .appointment-time {
-        color: #16a34a;
+        color: var(--priority3-text);
     }
 
     .appointment-time {
         font-size: 0.875rem;
-        color: #64748b;
+        color: var(--text-muted);
         margin-top: 0.25rem;
     }
 
-    @media (max-width: 768px) {
-        .calendar-wrapper {
-            margin-left: 0;
-            padding: 1rem;
-        }
-        
-        .calendar-header {
-            flex-direction: column;
-            gap: 1rem;
-        }
-    }
-    
     .appointment-actions {
         display: flex;
         gap: 0.5rem;
         justify-content: center;
+        margin-top: 0.5rem;
     }
+
     .action-btn {
         background: none;
         border: none;
@@ -202,15 +242,291 @@
         opacity: 1;
         transform: scale(1.1);
     }
-    .booked{
-        background-color: #16a34a;
+
+    .booked {
+        background-color: var(--priority3-text);
         color: white;
+    }
+
+    /* Mobile calendar view */
+    .mobile-calendar {
+        display: none;
+    }
+
+    .mobile-day-section {
+        margin-bottom: 1.5rem;
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-md);
+        overflow: hidden;
+    }
+
+    .mobile-day-header {
+        background: #f1f5f9;
+        color: var(--text-dark);
+        padding: 0.75rem;
+        font-weight: 600;
+        text-align: center;
+    }
+
+    .mobile-coach-section {
+        border-top: 1px solid var(--border-color);
+    }
+
+    .mobile-coach-header {
+        background: var(--light-bg);
+        padding: 0.5rem;
+        font-weight: 500;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .mobile-coach-header .toggle-btn {
+        background: none;
+        border: none;
+        color: var(--text-dark);
+        font-size: 1.2rem;
+    }
+
+    .mobile-timeslots {
+        padding: 0.5rem;
+    }
+
+    .mobile-timeslot {
+        margin-bottom: 0.5rem;
+        border-bottom: 1px solid var(--border-color);
+        padding-bottom: 0.5rem;
+    }
+
+    .mobile-timeslot:last-child {
+        margin-bottom: 0;
+        border-bottom: none;
+        padding-bottom: 0;
+    }
+
+    .mobile-timeslot-header {
+        font-weight: 500;
+        margin-bottom: 0.25rem;
+        color: var(--text-muted);
+    }
+
+    .mobile-appointments {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    /* Modal styles */
+    .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 1000;
+    }
+
+    .modal-dialog {
+        margin: 10% auto;
+        max-width: 500px;
+        width: 90%;
+    }
+
+    .modal-content {
+        border-radius: var(--radius-lg);
+        border: none;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        background: white;
+    }
+
+    .modal-header {
+        background: var(--light-bg);
+        border-bottom: 1px solid var(--border-color);
+        padding: 1rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .modal-title {
+        font-weight: 600;
+        color: var(--text-dark);
+        margin: 0;
+    }
+
+    .modal-body {
+        padding: 1rem;
+    }
+
+    .modal-footer {
+        padding: 1rem;
+        border-top: 1px solid var(--border-color);
+        display: flex;
+        justify-content: flex-end;
+        gap: 0.5rem;
+    }
+
+    .close, .btn-close {
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        cursor: pointer;
+    }
+
+    .btn {
+        padding: 0.5rem 1rem;
+        border-radius: var(--radius-md);
+        font-weight: 500;
+        cursor: pointer;
+    }
+
+    .btn-primary {
+        background: var(--primary-color);
+        color: white;
+        border: none;
+    }
+
+    .btn-secondary {
+        background: #e2e8f0;
+        color: var(--text-dark);
+        border: none;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 0.5rem;
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-md);
+        margin-bottom: 1rem;
+    }
+
+    .form-label {
+        display: block;
+        margin-bottom: 0.25rem;
+        font-weight: 500;
+    }
+
+    .mt-4 {
+        margin-top: 1rem;
+    }
+
+    .me-3 {
+        margin-right: 0.75rem;
+    }
+
+    .mb-3 {
+        margin-bottom: 0.75rem;
+    }
+
+    .text-muted {
+        color: var(--text-muted);
+    }
+
+    .buttons {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .flex {
+        display: flex;
+    }
+
+    .items-center {
+        align-items: center;
+    }
+
+    .gap-4 {
+        gap: 1rem;
+    }
+
+    /* Responsive styles */
+    @media (max-width: 1200px) {
+        .calendar-table {
+            min-width: 1000px;
+        }
+        
+        .table-container {
+            overflow-x: auto;
+        }
+    }
+
+    @media (max-width: 991px) {
+        .calendar-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+        
+        .week-navigation {
+            width: 100%;
+            justify-content: space-between;
+        }
+        
+        .calendar-container {
+            padding: 1rem;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .calendar-wrapper {
+            padding: 0.5rem;
+        }
+        
+        .calendar-container {
+            padding: 0.75rem;
+        }
+        
+        .calendar-title {
+            font-size: 1.25rem;
+        }
+        
+        .nav-button {
+            padding: 0.4rem 0.8rem;
+            font-size: 0.9rem;
+        }
+        
+        /* Hide desktop table on mobile */
+        .table-container {
+            display: none;
+        }
+        
+        /* Show mobile calendar */
+        .mobile-calendar {
+            display: block;
+        }
+        
+        .modal-dialog {
+            margin: 5% auto;
+            width: 95%;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .calendar-title {
+            font-size: 1.1rem;
+        }
+        
+        .week-navigation {
+            flex-direction: column;
+            align-items: stretch;
+            width: 100%;
+        }
+        
+        .nav-button {
+            text-align: center;
+            justify-content: center;
+        }
+        
+        .buttons {
+            flex-direction: column;
+        }
     }
 </style>
 
 <div class="calendar-wrapper">
     <div class="calendar-container">
-
         @if ($messages !=[])
             <div class="alert alert-warning">
                 <ul>
@@ -223,27 +539,26 @@
         @endif
 
         <div class="alert alert-success d-none" id="successMsg"></div>
+        
         <div class="calendar-header">
             <div class="flex items-center gap-4">
                 <h1 class="calendar-title">Rendez-vous Suggérés</h1>
             </div>
-   
             
             <div class="week-navigation">
-
                 <span class="current-week me-3">
                     {{ \Carbon\Carbon::parse($currentWeekStart)->format('d M, Y') }} - 
                     {{ \Carbon\Carbon::parse($currentWeekStart)->addDays(5)->format('d M, Y') }}
                 </span>
-                <form action="" method="get"  class="nav-button" >
-                    <button type="submit" name="generate" >
+                <form action="" method="get" class="nav-button">
+                    <button type="submit" name="generate">
                         <i class="fa-solid fa-calendar-plus"></i> Générer des Rendez-vous
                     </button>
                 </form>
-         
             </div>
         </div>
 
+        <!-- Desktop Table View -->
         <div class="table-container">
             <table class="calendar-table">
                 <thead>
@@ -269,8 +584,6 @@
                                 } else {
                                     $appointmentsForDay = collect();
                                 }
-                             
-                               
                             @endphp
 
                             <tr>
@@ -290,28 +603,31 @@
                                     <td>
                                         @foreach ($cellAppointments as $appointment)
                                             @php
-                                               
                                                 $classStatus = '';
                                                 switch ($appointment->priority) {
                                                     case 'priority 1': $classStatus = 'priority1'; break;
                                                     case 'priority 2': $classStatus = 'priority2'; break;
                                                     case 'priority 3': $classStatus = 'priority3'; break;
                                                 }
-                                                $classbooked =$appointment->Status ==  'booked' ? 'booked':'';
-                                                $display = $appointment->Status ==  'booked' ? 'd-none' : '';
-                                                $timeColor =$appointment->Status ==  'booked'? 'style = color:white' : '';
+                                                $classbooked = $appointment->Status == 'booked' ? 'booked' : '';
+                                                $display = $appointment->Status == 'booked' ? 'd-none' : '';
+                                                $timeColor = $appointment->Status == 'booked' ? 'style=color:white' : '';
 
-                                                $patient = Patient::where('id',$appointment->patient_id)->first();
+                                                $patient = Patient::where('id', $appointment->patient_id)->first();
                                                 $patientName = in_array($patient->patient_type, ['kid', 'young']) ? 
-                                                $patient->first_name.' '.$patient->last_name :  $patient->parent_first_name.' '.$patient->parent_last_name;
-
+                                                    $patient->first_name.' '.$patient->last_name : 
+                                                    $patient->parent_first_name.' '.$patient->parent_last_name;
                                             @endphp
-                                            <div class="appointment-card {{ $classStatus }} {{ $classbooked }}" data-app-start="{{ $appointment->startTime }}"  data-app-end="{{ $appointment->endTime }}" data-app-date="{{ $appointment->Date }}" data-app-id="{{ $appointment->id}}">
+                                            <div class="appointment-card {{ $classStatus }} {{ $classbooked }}" 
+                                                data-app-start="{{ $appointment->startTime }}" 
+                                                data-app-end="{{ $appointment->endTime }}" 
+                                                data-app-date="{{ $appointment->Date }}" 
+                                                data-app-id="{{ $appointment->id }}">
                                                 <div class="font-medium text-sm">{{ $patientName }}</div>
                                                 <div class="appointment-time" {{ $timeColor }}>
                                                     {{ $appointment->startTime }} - {{ $appointment->endTime }}
                                                 </div>
-                                                <div class="appointment-actions  {{ $display }}">
+                                                <div class="appointment-actions {{ $display }}">
                                                     <button type="button" class="action-btn" title="Modifier le Rendez-vous" onclick="openEditModal(this)">
                                                         <i class="fa-solid fa-pen-to-square"></i>
                                                     </button>
@@ -322,9 +638,7 @@
                                                             '<?php echo $appointment->startTime?>',
                                                             '<?php echo $appointment->endTime ?>',
                                                             '<?php echo $appointment->patient_id ?>',
-                                                            
-                                                             this)"
-                                                    >
+                                                            this)">
                                                         <i class="fa-solid fa-arrows-rotate"></i>
                                                     </button>
                                                     <button type="button" class="action-btn" title="Changer de Coach" 
@@ -333,15 +647,14 @@
                                                             '<?php echo $appointment->Date?>',
                                                             '<?php echo $appointment->startTime?>',
                                                             '<?php echo $appointment->endTime ?>',
-                                                             this)"
-                                                    >
+                                                            this)">
                                                         <i class="fa-solid fa-user"></i>
                                                     </button>
-                                                    
-                                                    <button type="button" class="action-btn"  title="Bloquer le Créneau" onclick="block('<?php echo  $appointment->id ?>')">
+                                                    <button type="button" class="action-btn" title="Bloquer le Créneau" 
+                                                        onclick="block('<?php echo $appointment->id ?>')">
                                                         <i class="fa-solid fa-eraser"></i>
                                                     </button>
-                                                    <button type="button" class="action-btn"  title="Réserver le Rendez-vous"
+                                                    <button type="button" class="action-btn" title="Réserver le Rendez-vous"
                                                         onclick="bookAppointment(
                                                             <?php echo $coach->id?>,
                                                             '<?php echo $appointment->Date?>',
@@ -349,8 +662,7 @@
                                                             '<?php echo $appointment->endTime ?>',
                                                             <?php echo $appointment->patient_id?>, 
                                                             <?php echo $appointment->speciality_id?>,
-                                                            <?php echo $appointment->id?>
-                                                        )">
+                                                            <?php echo $appointment->id?>)">
                                                         <i class="fa-solid fa-check"></i>
                                                     </button>
                                                 </div>
@@ -364,111 +676,236 @@
                 </tbody>
             </table>
         </div>
-            <!--  Change Patient Modal -->
-            <div id="changePatientModal" class="modal" tabindex="-1" role="dialog" style="display:none; position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.5);">
-                <div class="modal-dialog" role="document" style="margin: 10% auto; max-width: 500px;">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title">Changer de Patient</h5>
-                            <button type="button" class="close" onclick="closeChangeModal()">×</button>
-                        </div>
-                        <div id="errorMsg"class="alert alert-warning d-none"></div>
-                        <div class="modal-body">
-                            <div class="buttons">
-                                <button class="btn btn-primary" 
-                                    onclick="selectRandomAutoPatient()">
-                                    Automatique
-                                </button>
-                                <button class="btn btn-primary" 
-                                    onclick="manualPatient()">
-                                    Manuel
-                                </button>
-                            </div>
-                            <div class="mt-4 d-none" id="autoGeneratedPatientContainer">
-                                <h6>Patients Disponibles</h6>
-                                <small class="text-muted">Patient généré automatiquement en fonction de la date et du créneau</small>
-                                <label class="autoGeneratedPatientLabel form-control text-black"></label>
-                                <input type="hidden" id="autoGeneratedPatient" name="autoGeneratedPatient" readonly>
-                            </div>
 
-                            <div class="mt-4 d-none" id="manualPatient">
-                                <h6 >Nom De Patient</h6>
+        <!-- Mobile Calendar View -->
+        <div class="mobile-calendar">
+            @foreach ($days as $day)
+                <div class="mobile-day-section">
+                    <div class="mobile-day-header">
+                        {{ \Carbon\Carbon::parse($day)->format('l, d M, Y') }}
+                    </div>
                     
-                                <input type="text" name="manualPatientName" id="manualPatientName">
+                    @foreach ($allCoaches as $coach)
+                        @php
+                            if (isset($_GET['generate'])) {
+                                $appointmentsForDay = $patientSchedules->where('coach_id', $coach->id)
+                                    ->where('Date', $day);
+                            } else {
+                                $appointmentsForDay = collect();
+                            }
+                            
+                            // Skip coaches with no appointments
+                            if ($appointmentsForDay->isEmpty()) {
+                                continue;
+                            }
+                        @endphp
+                        
+                        <div class="mobile-coach-section">
+                            <div class="mobile-coach-header">
+                                <span>{{ $coach->full_name }}</span>
+                                <button type="button" class="toggle-btn" onclick="toggleCoachTimeslots(this)">
+                                    <i class="fa-solid fa-chevron-down"></i>
+                                </button>
+                            </div>
+                            <div class="mobile-timeslots">
+                                @foreach ($timeSlots as $slot)
+                                    @php
+                                        $slotStart = strtotime($day . ' ' . $slot['start']);
+                                        $slotEnd = strtotime($day . ' ' . $slot['end']);
+                                        $slotAppointments = [];
+                                        
+                                        foreach ($appointmentsForDay as $appointment) {
+                                            $apptStart = strtotime($day . ' ' . $appointment->startTime);
+                                            if ($apptStart >= $slotStart && $apptStart < $slotEnd) {
+                                                $slotAppointments[] = $appointment;
+                                            }
+                                        }
+                                    @endphp
+                                    
+                                    @if(count($slotAppointments) > 0)
+                                        <div class="mobile-timeslot">
+                                            <div class="mobile-timeslot-header">
+                                                {{ $slot['start'] }} - {{ $slot['end'] }}
+                                            </div>
+                                            <div class="mobile-appointments">
+                                                @foreach ($slotAppointments as $appointment)
+                                                    @php
+                                                        $classStatus = '';
+                                                        switch ($appointment->priority) {
+                                                            case 'priority 1': $classStatus = 'priority1'; break;
+                                                            case 'priority 2': $classStatus = 'priority2'; break;
+                                                            case 'priority 3': $classStatus = 'priority3'; break;
+                                                        }
+                                                        $classbooked = $appointment->Status == 'booked' ? 'booked' : '';
+                                                        $display = $appointment->Status == 'booked' ? 'd-none' : '';
+                                                        $timeColor = $appointment->Status == 'booked' ? 'style=color:white' : '';
+
+                                                        $patient = Patient::where('id', $appointment->patient_id)->first();
+                                                        $patientName = in_array($patient->patient_type, ['kid', 'young']) ? 
+                                                            $patient->first_name.' '.$patient->last_name : 
+                                                            $patient->parent_first_name.' '.$patient->parent_last_name;
+                                                    @endphp
+                                                    <div class="appointment-card {{ $classStatus }} {{ $classbooked }}" 
+                                                        data-app-start="{{ $appointment->startTime }}" 
+                                                        data-app-end="{{ $appointment->endTime }}" 
+                                                        data-app-date="{{ $appointment->Date }}" 
+                                                        data-app-id="{{ $appointment->id }}">
+                                                        <div class="font-medium text-sm">{{ $patientName }}</div>
+                                                        <div class="appointment-time" {{ $timeColor }}>
+                                                            {{ $appointment->startTime }} - {{ $appointment->endTime }}
+                                                        </div>
+                                                        <div class="appointment-actions {{ $display }}">
+                                                            <button type="button" class="action-btn" title="Modifier le Rendez-vous" onclick="openEditModal(this)">
+                                                                <i class="fa-solid fa-pen-to-square"></i>
+                                                            </button>
+                                                            <button type="button" class="action-btn" title="Changer de Patient" 
+                                                                onclick="openChangeModal(
+                                                                    <?php echo $coach->speciality_id?>,
+                                                                    '<?php echo $appointment->Date?>',
+                                                                    '<?php echo $appointment->startTime?>',
+                                                                    '<?php echo $appointment->endTime ?>',
+                                                                    '<?php echo $appointment->patient_id ?>',
+                                                                    this)">
+                                                                <i class="fa-solid fa-arrows-rotate"></i>
+                                                            </button>
+                                                            <button type="button" class="action-btn" title="Changer de Coach" 
+                                                                onclick="openCoachChangeModal(
+                                                                    <?php echo $coach->speciality_id?>,
+                                                                    '<?php echo $appointment->Date?>',
+                                                                    '<?php echo $appointment->startTime?>',
+                                                                    '<?php echo $appointment->endTime ?>',
+                                                                    this)">
+                                                                <i class="fa-solid fa-user"></i>
+                                                            </button>
+                                                            <button type="button" class="action-btn" title="Bloquer le Créneau" 
+                                                                onclick="block('<?php echo $appointment->id ?>')">
+                                                                <i class="fa-solid fa-eraser"></i>
+                                                            </button>
+                                                            <button type="button" class="action-btn" title="Réserver le Rendez-vous"
+                                                                onclick="bookAppointment(
+                                                                    <?php echo $coach->id?>,
+                                                                    '<?php echo $appointment->Date?>',
+                                                                    '<?php echo $appointment->startTime?>',
+                                                                    '<?php echo $appointment->endTime ?>',
+                                                                    <?php echo $appointment->patient_id?>, 
+                                                                    <?php echo $appointment->speciality_id?>,
+                                                                    <?php echo $appointment->id?>)">
+                                                                <i class="fa-solid fa-check"></i>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                @endforeach
+                                            </div>
+                                        </div>
+                                    @endif
+                                @endforeach
                             </div>
                         </div>
-
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-primary" onclick="updateSuggestedAppointment()">Mettre à Jour</button>
-                            <button type="button" class="btn btn-secondary" onclick="closeChangeModal()">Fermer</button>
-                        </div>
-                    </div>
+                    @endforeach
                 </div>
-            </div>
-               <!--  Change Coach Modal -->
-            <div id="changeCoachModal" class="modal" tabindex="-1" role="dialog" style="display:none; position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.5);">
-                <div class="modal-dialog" role="document" style="margin: 10% auto; max-width: 500px;">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title">Changer de Coach</h5>
-                            <button type="button" class="close" onclick="closeCoachChangeModal()">×</button>
-                        </div>
-                        <div id="errorMsg"class="alert alert-warning d-none"></div>
-                        <div class="modal-body">
-
-                            <div class="mt-4 " id="coachSelectionContainer">
-                                <h6 >Tous les entraîneurs</h6>
-                                <small class="text-muted">tous les entraîneurs disponibles en fonction de la spécialité et du créneau horaire</small>
-                                <select name="" id="allCoachSelect" class="form-control text-black">
-                                    <option value="" selected disabled>Sélectionnez un Entraineur</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-primary" onclick="updateAppointmentCoach()">Mettre à Jour</button>
-                            <button type="button" class="btn btn-secondary" onclick="closeCoachChangeModal()">Fermer</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- edit appointment Modal-->
-        
-            <div class="modal" id="editAppointmentModal" tabindex="-1" role="dialog" style="display:none; position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.5);">
-            <div class="modal-dialog" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="editAppointmentModalLabel">Modifier le Rendez-vous</h5>
-                            <button type="button" class="btn-close" onclick="closeEditModal()"></button>
-                        </div>
-                        <div class="modal-body">
-                            <!-- Add your edit form here -->
-                            <form action="{{ route("update_sugg_app_planning") }}" method="post" id="editAppointmentForm">
-                                @csrf
-                                @method("Patch")
-
-                                <div class="mb-3">
-                                    <label for="appointmentDate" class="form-label">Date</label>
-                                    <input type="date" class="form-control" id="appointmentDate" name="date" required>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="startTime" class="form-label">Heure de Début</label>
-                                    <input type="time" class="form-control" id="startTime" name="start_time" required>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="endTime" class="form-label">Heure de Fin</label>
-                                    <input type="time" class="form-control" id="endTime" name="end_time" required>
-                                </div>
-                                <input type="hidden" id="app_id" name="app_id">
-                                <button type="submit" class="btn btn-primary">Enregistrer les Modifications</button>
-                            </form>
-                        </div>
-                    </div>
-            </div>
-            </div>
+            @endforeach
+        </div>
     </div>
 </div>
 
+<!-- Change Patient Modal -->
+<div id="changePatientModal" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Changer de Patient</h5>
+                <button type="button" class="close" onclick="closeChangeModal()">×</button>
+            </div>
+            <div id="errorMsg" class="alert alert-warning d-none"></div>
+            <div class="modal-body">
+                <div class="buttons">
+                    <button class="btn btn-primary" onclick="selectRandomAutoPatient()">
+                        Automatique
+                    </button>
+                    <button class="btn btn-primary" onclick="manualPatient()">
+                        Manuel
+                    </button>
+                </div>
+                <div class="mt-4 d-none" id="autoGeneratedPatientContainer">
+                    <h6>Patients Disponibles</h6>
+                    <small class="text-muted">Patient généré automatiquement en fonction de la date et du créneau</small>
+                    <label class="autoGeneratedPatientLabel form-control text-black"></label>
+                    <input type="hidden" id="autoGeneratedPatient" name="autoGeneratedPatient" readonly>
+                </div>
+
+                <div class="mt-4 d-none" id="manualPatient">
+                    <h6>Nom De Patient</h6>
+                    <input type="text" name="manualPatientName" id="manualPatientName" class="form-control">
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" onclick="updateSuggestedAppointment()">Mettre à Jour</button>
+                <button type="button" class="btn btn-secondary" onclick="closeChangeModal()">Fermer</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Change Coach Modal -->
+<div id="changeCoachModal" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Changer de Coach</h5>
+                <button type="button" class="close" onclick="closeCoachChangeModal()">×</button>
+            </div>
+            <div id="errorMsg" class="alert alert-warning d-none"></div>
+            <div class="modal-body">
+                <div class="mt-4" id="coachSelectionContainer">
+                    <h6>Tous les entraîneurs</h6>
+                    <small class="text-muted">tous les entraîneurs disponibles en fonction de la spécialité et du créneau horaire</small>
+                    <select name="" id="allCoachSelect" class="form-control text-black">
+                        <option value="" selected disabled>Sélectionnez un Entraineur</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" onclick="updateAppointmentCoach()">Mettre à Jour</button>
+                <button type="button" class="btn btn-secondary" onclick="closeCoachChangeModal()">Fermer</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Appointment Modal -->
+<div class="modal" id="editAppointmentModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editAppointmentModalLabel">Modifier le Rendez-vous</h5>
+                <button type="button" class="btn-close" onclick="closeEditModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <form action="{{ route('update_sugg_app_planning') }}" method="post" id="editAppointmentForm">
+                    @csrf
+                    @method("Patch")
+
+                    <div class="mb-3">
+                        <label for="appointmentDate" class="form-label">Date</label>
+                        <input type="date" class="form-control" id="appointmentDate" name="date" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="startTime" class="form-label">Heure de Début</label>
+                        <input type="time" class="form-control" id="startTime" name="start_time" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="endTime" class="form-label">Heure de Fin</label>
+                        <input type="time" class="form-control" id="endTime" name="end_time" required>
+                    </div>
+                    <input type="hidden" id="app_id" name="app_id">
+                    <button type="submit" class="btn btn-primary">Enregistrer les Modifications</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 
 <script>
     let currentAppointmentElement = null; 
@@ -810,7 +1247,32 @@
        
       
     }
+      
+    // Toggle coach timeslots in mobile view
+    function toggleCoachTimeslots(button) {
+        const timeslotsContainer = button.closest('.mobile-coach-section').querySelector('.mobile-timeslots');
+        const icon = button.querySelector('i');
+        
+        if (timeslotsContainer.style.display === 'none') {
+            timeslotsContainer.style.display = 'block';
+            icon.classList.remove('fa-chevron-down');
+            icon.classList.add('fa-chevron-up');
+        } else {
+            timeslotsContainer.style.display = 'none';
+            icon.classList.remove('fa-chevron-up');
+            icon.classList.add('fa-chevron-down');
+        }
+    }
     
+    // Initialize mobile view
+    document.addEventListener('DOMContentLoaded', function() {
+        const coachSections = document.querySelectorAll('.mobile-coach-section');
+        coachSections.forEach(section => {
+            const timeslots = section.querySelector('.mobile-timeslots');
+            if (timeslots) {
+                timeslots.style.display = 'none';
+            }
+        });
+    });
 </script>
-
 @endsection

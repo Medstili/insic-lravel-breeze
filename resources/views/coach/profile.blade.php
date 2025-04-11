@@ -552,6 +552,168 @@
         display: flex;
         gap: 1rem;
     }
+
+
+    /* Responsive styles only - to be added at the end of existing CSS */
+
+/* Mobile devices (phones, less than 768px) */
+@media (max-width: 767.98px) {
+    .coach-profile-container {
+        margin: 1rem auto;
+        padding: 0 1rem;
+    }
+    
+    /* Coach Header Card */
+    .coach-header-card {
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .coach-profile-header {
+        flex-direction: column;
+        text-align: center;
+        gap: 1rem;
+    }
+    
+    .coach-avatar-wrapper {
+        margin: 0 auto;
+    }
+    
+    .coach-name {
+        font-size: 1.5rem;
+    }
+    
+    .coach-meta {
+        flex-direction: column;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .coach-contact-info {
+        flex-direction: column;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .edit-profile-button {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    /* Section Switcher */
+    .section-switcher {
+        flex-wrap: wrap;
+    }
+    
+    .switch-btn, .table-switch-btn {
+        flex: 1 0 auto;
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
+        justify-content: center;
+    }
+    
+    /* Calendar Views */
+    .calendar-view {
+        padding: 1rem;
+    }
+    
+    /* Calendar toolbar adjustments */
+    .fc-header-toolbar {
+        flex-wrap: wrap;
+        padding: 0.75rem;
+    }
+    
+    .fc-toolbar-chunk {
+        margin-bottom: 0.5rem;
+        display: flex;
+        justify-content: center;
+        width: 100%;
+    }
+    
+    /* Make toolbar buttons more touch-friendly */
+    .fc-button {
+        padding: 0.5rem !important;
+        min-height: 44px !important;
+        min-width: 44px !important;
+        margin: 2px !important;
+    }
+    
+    /* Table adjustments */
+    .table-responsive {
+        max-height: 60vh;
+    }
+    
+    thead th, tbody td {
+        padding: 0.5rem;
+        font-size: 0.9rem;
+    }
+    
+    /* File action buttons */
+    .file-actions {
+        display: flex;
+        gap: 0.5rem;
+    }
+    
+    .btn-download, .btn-view, .btn-delete {
+        min-height: 44px;
+        min-width: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+}
+
+/* Small devices (landscape phones) */
+@media (min-width: 576px) and (max-width: 767.98px) {
+    .coach-profile-container {
+        margin: 1.5rem auto;
+        padding: 0 1.25rem;
+    }
+    
+    .coach-header-card {
+        padding: 1.75rem;
+    }
+    
+    .coach-name {
+        font-size: 1.625rem;
+    }
+    
+    .coach-meta {
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+}
+
+/* Medium devices (tablets) */
+@media (min-width: 768px) and (max-width: 991.98px) {
+    .coach-profile-container {
+        max-width: 90%;
+    }
+    
+    .coach-header-card {
+        flex-wrap: wrap;
+    }
+    
+    .coach-profile-header {
+        flex: 1 0 100%;
+        margin-bottom: 1rem;
+    }
+    
+    .edit-profile-button {
+        margin-left: auto;
+    }
+    
+    /* Ensure calendar is responsive but maintains functionality */
+    .calendar-view {
+        overflow-x: auto;
+    }
+}
+
+
+
 </style>
 
 <script>

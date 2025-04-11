@@ -152,6 +152,124 @@
     color: var(--dark-text);
     cursor: pointer;
 }
+/* Responsive styles only - to be added at the end of existing CSS */
+
+/* Mobile devices (phones, less than 768px) */
+@media (max-width: 767.98px) {
+    .creation-container {
+        padding: 1rem;
+    }
+    
+    .glass-card {
+        padding: 1rem;
+    }
+    
+    .form-header {
+        font-size: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .row.g-3 {
+        row-gap: 0.75rem !important;
+    }
+    
+    .col-md-4, .col-md-6 {
+        width: 100%;
+    }
+    
+    .section-title {
+        font-size: 1.25rem;
+        margin: 1.25rem 0;
+    }
+    
+    /* Make calendar responsive */
+    #calendar {
+        overflow-x: auto;
+        height: auto;
+        min-height: 400px;
+    }
+    
+    /* Make toolbar buttons more touch-friendly */
+    .fc-button {
+        padding: 0.5rem !important;
+        min-height: 44px !important;
+        min-width: 44px !important;
+        margin: 2px !important;
+    }
+    
+    /* Improve calendar toolbar layout on small screens */
+    .fc-header-toolbar {
+        flex-wrap: wrap;
+    }
+    
+    .fc-toolbar-chunk {
+        margin-bottom: 0.5rem;
+    }
+    
+    /* Ensure form inputs have good touch targets */
+    .form-control, .form-select, input[type="number"] {
+        min-height: 44px;
+        font-size: 16px; /* Prevent zoom on iOS */
+    }
+    
+    /* Improve coach selection on mobile */
+    .coach-section {
+        max-height: 250px !important; /* Adjust scrollable area height for mobile */
+    }
+    
+    .coach-section .form-check {
+        padding: 0.5rem;
+    }
+    
+    .coach-capacity {
+        width: 80px !important;
+    }
+    
+    /* Improve image upload section */
+    label[for="image-input"] {
+        min-height: 44px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    /* Make submit button more touch-friendly */
+    .btn-primary {
+        min-height: 44px;
+        width: 100%;
+        max-width: 300px;
+    }
+    
+    /* Improve priority events display on mobile */
+    .priority1, .priority2, .priority3 {
+        margin: 2px 0;
+    }
+}
+
+/* Small devices (landscape phones) */
+@media (min-width: 576px) and (max-width: 767.98px) {
+    .creation-container {
+        padding: 1.25rem;
+    }
+    
+    .glass-card {
+        padding: 1.25rem;
+    }
+}
+
+/* Medium devices (tablets) */
+@media (min-width: 768px) and (max-width: 991.98px) {
+    /* Ensure calendar is responsive but maintains functionality */
+    #calendar {
+        overflow-x: auto;
+    }
+    
+    .coach-section {
+        max-height: 300px; /* Maintain scrollable area */
+    }
+}
+
+
 </style>
 
 <div class="creation-container">
@@ -415,7 +533,7 @@
             <div class="col-12 text-center mt-4">
                 <input type="hidden" name="priorities" id="prioritiesInput">
                 <button type="submit" class="btn btn-primary px-5 py-2">
-                    <i class="fas fa-save me-2"></i>Mettre à jour le profil du patientl du Patient
+                    <i class="fas fa-save me-2"></i>Mettre à jour le profil du Patient
                 </button>
             </div>
         </form>
@@ -449,75 +567,77 @@
     const calendarEl = document.querySelector('#calendar');
 
     document.querySelectorAll('.form-check-input').forEach(function(checkbox) {
+       
         checkbox.addEventListener('change', function() {
-            let coachId = this.value;
-            let input = document.getElementById('coach' + coachId);
-            if (this.checked) {
-                // Show the input if checked.
-                if(input) {
-                    input.classList.remove('d-none');
+                let coachId = this.value;
+                let input = document.getElementById('coach' + coachId);
+                if (this.checked) {
+                    // Show the input if checked.
+                    if(input) {
+                        input.classList.remove('d-none');
+                    }
+                } 
+                else {
+                    // Hide the input if unchecked.
+                    if(input) {
+                        input.classList.add('d-none');
+                    }
                 }
-            } else {
-                // Hide the input if unchecked.
-                if(input) {
-                    input.classList.add('d-none');
-                }
+            });
+        });
+
+        if (patientTypeSelect.value == 'kid'|| patientTypeSelect.value=='young') {
+                kidSection.classList.remove('d-none');
+                parentSection.classList.remove('d-none');
+                parentSectionTitle.textContent = 'Détails du parent';
+
+                kidFirstName.setAttribute("required", "");
+                kidLastName.setAttribute("required", "");
+                kidEcole.setAttribute("required", "");
+                kidSystem.setAttribute("required", "");
             }
-        });
-    });
+            else{
+                kidSection.classList.add('d-none');
+                parentSection.classList.remove('d-none');
+                parentSectionTitle.textContent = 'Détails du patient';
 
-     if (patientTypeSelect.value == 'kid'|| patientTypeSelect.value=='young') {
-            kidSection.classList.remove('d-none');
-            parentSection.classList.remove('d-none');
-            parentSectionTitle.textContent = 'Détails du parent';
+                kidFirstName.removeAttribute('required');
+                kidLastName.removeAttribute('required');
+                kidEcole.removeAttribute('required');
+                kidSystem.removeAttribute('required');
+            }
 
-            kidFirstName.setAttribute("required", "");
-            kidLastName.setAttribute("required", "");
-            kidEcole.setAttribute("required", "");
-            kidSystem.setAttribute("required", "");
-        }
-        else{
-            kidSection.classList.add('d-none');
-            parentSection.classList.remove('d-none');
-            parentSectionTitle.textContent = 'Détails du patient';
+        patientTypeSelect.addEventListener('change', function() {
+            const selectedType = this.value;
+            if (selectedType === 'young') {
+                kidYoungDetailsTitle.textContent = 'Détails du jeune';
+            } 
+            else {
+                kidYoungDetailsTitle.textContent = 'Détails de l\'enfant';
+            }
+            if (selectedType === 'kid' || selectedType === 'young') {
+                kidFirstName.setAttribute("required", "");
+                kidLastName.setAttribute("required", "");
+                kidEcole.setAttribute("required", "");
+                kidSystem.setAttribute("required", "");
 
-            kidFirstName.removeAttribute('required');
-            kidLastName.removeAttribute('required');
-            kidEcole.removeAttribute('required');
-            kidSystem.removeAttribute('required');
-        }
+                kidSection.classList.remove('d-none');
+                parentSection.classList.remove('d-none');
+                parentSectionTitle.textContent = 'Détails du parent';
+            } 
+            else  {
+                kidFirstName.removeAttribute('required');
+                kidLastName.removeAttribute('required');
+                kidEcole.removeAttribute('required');
+                kidSystem.removeAttribute('required');
 
-    patientTypeSelect.addEventListener('change', function() {
-        const selectedType = this.value;
-        if (selectedType === 'young') {
-            kidYoungDetailsTitle.textContent = 'Détails du jeune';
-        } 
-        else {
-            kidYoungDetailsTitle.textContent = 'Détails de l\'enfant';
-        }
-        if (selectedType === 'kid' || selectedType === 'young') {
-            kidFirstName.setAttribute("required", "");
-            kidLastName.setAttribute("required", "");
-            kidEcole.setAttribute("required", "");
-            kidSystem.setAttribute("required", "");
-
-            kidSection.classList.remove('d-none');
-            parentSection.classList.remove('d-none');
-            parentSectionTitle.textContent = 'Détails du parent';
-        } 
-        else  {
-            kidFirstName.removeAttribute('required');
-            kidLastName.removeAttribute('required');
-            kidEcole.removeAttribute('required');
-            kidSystem.removeAttribute('required');
-
-            kidSection.classList.add('d-none');
-            parentSection.classList.remove('d-none');
-            parentSectionTitle.textContent = 'Détails du patient';
-        } 
-        });
-    
-        initPriorities();
+                kidSection.classList.add('d-none');
+                parentSection.classList.remove('d-none');
+                parentSectionTitle.textContent = 'Détails du patient';
+            } 
+            });
+        
+            initPriorities();
     });
     document.addEventListener('DOMContentLoaded', function() {
     // Initialize SortableJS on the coach container
@@ -554,7 +674,7 @@
     console.log("Priorités initiales :", prioritiesData);
    
     function addEventToPriorities(priorityChoice, date, eventId, startTime, endTime) {
-    var priorityKey = "priorité " + priorityChoice;    
+    var priorityKey = "priority " + priorityChoice;    
     if (!prioritiesData[priorityKey]) {
         prioritiesData[priorityKey] = {};
     }
@@ -574,7 +694,7 @@
     // Extract the priority from the event title ("Priority 1", etc.)
     var parts = event.title.split(" ");
     var priorityChoice = parts[1]; // e.g., "1"
-    var priorityKey = "priorité " + priorityChoice;
+    var priorityKey = "priority " + priorityChoice;
     // New date and time (use ISO string, then extract needed parts)
     var newStart = event.start;
     var newEnd = event.end ? event.end : event.start;
@@ -611,7 +731,7 @@
     function deleteEventFromPriorities(event) {
     var parts = event.title.split(" ");
     var priorityChoice = parts[1];
-    var priorityKey = "priorité " + priorityChoice;
+    var priorityKey = "priority " + priorityChoice;
     for (var date in prioritiesData[priorityKey]) {
         var arr = prioritiesData[priorityKey][date];
         for (var i = 0; i < arr.length; i++) {
@@ -683,7 +803,7 @@
                 
                     var eventObj = {
                         id: eventId,
-                        title: "Priorité " + priorityChoice,
+                        title: "priority " + priorityChoice,
                         start: startDateTime,
                         end: endDateTime,
                         backgroundColor: colors[priorityChoice]
@@ -829,20 +949,7 @@
             .catch(error => console.error('Error fetching coaches:', error));
     }
 
-    // document.getElementById('specialtySelect').addEventListener('change', function() {
-    //     const selectedSpeciality = this.value;
-
-    //     console.log(selectedSpeciality);
-        
-    //     if (selectedSpeciality) {
-    //         fetchCoachesBySpeciality(selectedSpeciality);
-    //         document.getElementById('caochesSectionAlert').classList.add('d-none');
-    //     }else{
-    //         document.getElementById('caochesSectionAlert').classList.remove('d-none');
-    //         const coachSection = document.querySelector('.coach-section');
-    //         coachSection.innerHTML = ''; 
-    //     }
-    // });
+  
     function previewImage(event) {
         const input = event.target;
         const previewContainer = document.getElementById("image-preview");
