@@ -351,11 +351,7 @@
                         <!-- Nom complet enfant/jeune -->
                         <td>
                             <div class="d-flex align-items-center">
-                                <!-- <div class="avatar-sm me-3">
-                                    <div class="avatar-title bg-light rounded-circle">
-                                        <i class="fas fa-user text-primary"></i>
-                                    </div>
-                                </div> -->
+
                                 @if ($patient->image_path)
                                     <div class="patient-avatar-initials me-2">
                                         <img src="{{ asset('storage/' . $patient->image_path) }}" alt="Image Previe" class="patient-img-avatar">

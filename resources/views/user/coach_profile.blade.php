@@ -84,7 +84,19 @@
                             @if ($coachAppointments!=null)
                                 @foreach ($coachAppointments as $appointment)
                                     <tr>
-                                        <td>
+                                        <td class="d-flex align-items-center me-2">
+                                            @if ($appointment->patient->image_path)
+                                                <div class="patient-avatar-initials me-2">
+                                                    <img src="{{ asset('storage/' . $appointment->patient->image_path) }}" alt="Image Previe" class="patient-img-avatar">
+                                                    
+                                                </div>
+                                            @else
+                                                <div class="patient-avatar me-2">
+                                                    {{ strtoupper(substr($appointment->patient->patient_type=='adult'? $appointment->patient->parent_first_name : $patient->first_name, 0, 1)) }}
+                                                </div>
+                                            
+                                            @endif
+
                                             @if ($appointment->patient->first_name==null)
                                             {{ $appointment->patient->parent_first_name}} {{ $appointment->patient->parent_last_name }}
                                             @else
@@ -98,7 +110,8 @@
                                         <td>
                                             @if(is_array($appointmentDate))
                                                 @foreach ($appointmentDate as $date => $time)
-                                                    <span>{{ $date }} - </span>
+                                                    <span>{{ $date }}</span>
+                                                    <br
                                                     @foreach ($time as $slot)
                                                         <span>{{ $slot }} </span>
                                                     @endforeach
@@ -117,12 +130,12 @@
                                         @endphp
                                         <td><span class="status-badge {{$color}}">{{ $appointment->status }}</span></td>
                                         @if ($appointment->report_path)
-                                        <td>
-                                            <a href="{{ route('appointments.viewReport', $appointment->id) }}" target="_blank" class="action-btn me-2">
-                                                <i class="fas fa-file-alt"></i>
+                                        <td class="d-flex justify-content-between ">
+                                            <a href="{{ route('appointments.viewReport', $appointment->id) }}" target="_blank" class="view-btn action-btn">
+                                                <i class="fas fa-file-alt "></i>
                                             </a>
-                                            <a href="{{ route('appointments.downloadReport', $appointment->id) }}" class="action-btn">
-                                                <i class="fas fa-cloud-download-alt"></i>
+                                            <a href="{{ route('appointments.downloadReport', $appointment->id) }}" class="download-btn action-btn">
+                                                <i class="fas fa-cloud-download-alt "></i>
                                             </a>
                                         </td>
                                         @else
@@ -174,11 +187,17 @@
                                         <!-- kidd full name -->
                                         <td>
                                             <div class="d-flex align-items-center">
-                                                <div class="avatar-sm me-3">
-                                                    <div class="avatar-title bg-light rounded-circle">
-                                                        <i class="fas fa-user text-primary"></i>
+                                                @if ($appointment->patient->image_path)
+                                                    <div class="patient-avatar-initials me-2">
+                                                        <img src="{{ asset('storage/' . $appointment->patient->image_path) }}" alt="Image Previe" class="patient-img-avatar">
+                                                        
                                                     </div>
-                                                </div>
+                                                @else
+                                                    <div class="patient-avatar me-2">
+                                                        {{ strtoupper(substr($appointment->patient->patient_type=='adult'? $appointment->patient->parent_first_name : $patient->first_name, 0, 1)) }}
+                                                    </div>
+                                                
+                                                @endif
                                             
                                             @if ($appointment->patient->first_name==null)
                                             &ndash;
@@ -196,9 +215,9 @@
                                         </td>
                                         <!--  parent/adult full name -->
                                         <td>
-                                        <div class="fw-bold">{{ $appointment->patient->parent_first_name }} {{ $appointment->patient->parent_last_name }}</div>
-                                    
-                                    </td>
+                                            <div class="fw-bold">{{ $appointment->patient->parent_first_name }} {{ $appointment->patient->parent_last_name }}</div>
+                                        
+                                        </td>
                                     <!-- age -->
                                     <td>{{ $appointment->patient->age }}</td>
                                     <!-- contact -->
@@ -242,7 +261,7 @@
                                         <!-- subscription -->
                                         <td>{{  $appointment->patient->subscription }}</td>
                                         <!-- actions -->
-                                        <td class="action-buttons">
+                                        <td class="">
                                             <a href="{{ route('patient.show', $appointment->patient->id) }}" 
                                             class="btn btn-outline-secondary btn-sm me-1"
                                             data-bs-toggle="tooltip" title="Voir les détails">
@@ -496,7 +515,7 @@
         font-weight: 500;
     }
 
-    .action-buttons .btn {
+    .action-buttons {
         width: 40px;
         height: 40px;
         display: inline-flex;
@@ -698,6 +717,15 @@
             background: rgb(238, 169, 67);
 
         }
+        .fc-event.cancel {
+            
+            background:rgb(255, 38, 38) !important;
+            color:rgb(255, 38, 38) !important;
+        }
+        .fc-event.cancel::before {
+            background: rgb(247, 79, 79) ;
+            /* background:rgb(255, 38, 38); */
+        }
     .cancel .fc-event-title,
     .cancel .fc-event-time {
     color:rgb(255, 255, 255) !important; 
@@ -746,71 +774,15 @@
         display: flex;
         gap: 1rem;
     }
-
-/* Medium devices (tablets, 768px and up) */
-@media (min-width: 768px) {
-  .coach-profile-header {
-    flex-direction: row;
-    align-items: center;
-    text-align: left;
-  };
-  
-  .coach-info-wrapper {
-    text-align: left;
-    padding-left: 20px;
-  }
-  
-  .coach-meta {
-    justify-content: flex-start;
-  }
-  
-  .coach-contact-info {
-    justify-content: flex-start;
- 
-  }
-  
-  .edit-profile-button {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    width: auto;
-    margin-top: 0;
-  }
-  
-  .switch-btn,
-  .table-switch-btn {
-    flex: 0 1 auto;
-  }
-}
-
-@media (max-width: 768px) {
-  .coach-header-card {
-    display: block; /* Override for smaller screens */
-  }
-}
-
-/* Small devices (landscape phones, 576px and up) */
-@media (min-width: 576px) {
-  .coach-meta {
-    flex-direction: row;
-    justify-content: center;
-    flex-wrap: wrap;
-  }
-  
-  .coach-contact-info {
-    flex-direction: row;
-    justify-content: center;
-    flex-wrap: wrap;
-  };
-
-}
-
-
-
-
-
-
+    .coach-avatar {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 3px solid var(--primary-color);
+    }
 </style>
+
 
 <script>
 

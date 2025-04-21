@@ -455,8 +455,12 @@
 /* Action button styles */
 .action-buttons {
     display: flex;
+<<<<<<< HEAD
     gap: 0.5rem;
     flex-wrap: wrap;
+=======
+    gap: 0.2rem;
+>>>>>>> 5c42dbee2462d4ee9de33f328d088d813db4169f
 }
 
 .action-btn {
@@ -479,6 +483,15 @@
 
 .view-btn:hover {
     background: #3b82f6;
+    color: white;
+}
+.show-btn {
+    background: rgba(59, 130, 246, 0.1);
+    color: grey;
+}
+
+.show-btn:hover {
+    background:grey;
     color: white;
 }
 
