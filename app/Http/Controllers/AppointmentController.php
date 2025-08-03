@@ -392,14 +392,15 @@ class AppointmentController extends Controller
         for ($i = 0; $i < 7; $i++) {
             $days[] = $currentWeekStart->copy()->addDays($i)->format('Y-m-d');
         }
-        // dd($days);
 
         // Define 1-hour time slots from 12:00 to 20:00.
         $timeSlots = [];
         for ($hour = 12; $hour < 20; $hour++) {
+            $startTime = sprintf("%02d:00", $hour);
+            $endTime = sprintf("%02d:00", $hour + 1);
             $timeSlots[] = [
-                'start' => sprintf("%02d:00", $hour),
-                'end'   => sprintf("%02d:00", $hour + 1),
+                'start' => $startTime,
+                'end' => $endTime
             ];
         }
 
@@ -411,18 +412,15 @@ class AppointmentController extends Controller
         foreach ($appointments as $appointment) {
             // Decode the appointment_planning JSON field.
             $planning = json_decode($appointment->appointment_planning, true);
-            // dd($planning);
+            
             if (is_array($planning)) {
                 foreach ($planning as $date => $times) {
-
-                        if (!empty($date)) {  
+                    if (!empty($date)) {  
                         $coachId = $appointment->coach_id;
                         $patient_full_name = $appointment->patient->first_name != null ? 
                         ($appointment->patient->first_name." ".$appointment->patient->last_name)
                         : 
                         ( $appointment->patient->parent_first_name." ".$appointment->patient->parent_last_name) ;
-
-                        // dd($appointment);
 
                         $organizedAppointments[$date][$coachId][] = [
                             'id'         => $appointment->id,
@@ -434,17 +432,32 @@ class AppointmentController extends Controller
                             'patient_id'=>$appointment->patient->id
                         ];
                     }
-      
                 }
             }
         }
-        // Retrieve all coaches (adjust the query to your schema; here assuming a flag "is_coach")
-        // $coaches = User::all();
+
+        // Retrieve all coaches
         $coaches = User::select('id', 'full_name')->get();
+        
         // Calculate previous and next week start dates for navigation.
         $prevWeekStart = $currentWeekStart->copy()->subWeek()->format('Y-m-d');
         $nextWeekStart = $currentWeekStart->copy()->addWeek()->format('Y-m-d');
 
+        // Calculate dashboard statistics
+        $totalAppointments = Appointment::count();
+        $activeCoaches = User::where('role', 'coach')->count();
+        $totalPatients = \App\Models\Patient::count();
+        $pendingReports = Appointment::where('status', 'passed')->whereNull('report_path')->count();
+        
+        // Format current week for display
+        $currentWeek = $currentWeekStart->format('M d') . ' - ' . $currentWeekStart->copy()->addDays(6)->format('M d, Y');
+        
+        // Get recent appointments
+        $recentAppointments = Appointment::with(['coach', 'patient'])
+            ->orderBy('created_at', 'desc')
+            ->limit(5)
+            ->get();
+        
         return view('admin/global_dashboard', compact(
             'days',
             'timeSlots',
@@ -452,7 +465,13 @@ class AppointmentController extends Controller
             'organizedAppointments',
             'currentWeekStart',
             'prevWeekStart',
-            'nextWeekStart'
+            'nextWeekStart',
+            'currentWeek',
+            'totalAppointments',
+            'activeCoaches',
+            'totalPatients',
+            'pendingReports',
+            'recentAppointments'
         ));
     }
 

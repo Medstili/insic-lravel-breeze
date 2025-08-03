@@ -1,559 +1,312 @@
 @extends('layouts.coach_app')
+
+@section('header')
+<div class="flex items-center justify-between">
+    <div>
+        <h1 class="page-title">My Appointments</h1>
+        <p class="page-subtitle">Manage and track your patient appointments</p>
+    </div>
+    <div class="flex items-center gap-4">
+        <a href="{{ route('appointment.create') }}" class="btn btn-primary">
+            <i class="fas fa-plus"></i>
+            New Appointment
+        </a>
+    </div>
+</div>
+@endsection
+
 @section('content')
-    <div class="appointments-container">
-        <div class="page-header">
-            <h1>Liste des Rendez-vous</h1>
+<div class="space-y-6">
+    <!-- Search and Filters -->
+    <div class="card">
+        <div class="card-body">
+            <form action="{{ route('appointments_list', Auth::user()->id) }}" method="GET" class="space-y-4">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div class="form-group">
+                        <label for="search" class="form-label">Search Patient</label>
+                        <input type="text" 
+                               id="search" 
+                               name="q" 
+                               value="{{ request('q') }}" 
+                               placeholder="Enter patient name..." 
+                               class="form-input">
         </div>
         
-        <!-- Search Form -->
-        <form action="{{ route('appointments_list', Auth::user()->id) }}" method="GET" class="search-form">
-            <div class="search-grid">
                 <div class="form-group">
-                    <input type="text" name="q" value="{{ request('q') }}" placeholder="Rechercher par Patient" title="Rechercher par nom" class="form-control">
-                </div>
-                <div class="form-group">
-                    <select name="status" class="form-select" title="Rechercher par statut">
-                        <option value="">Tous les Statuts</option>
-                        <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>En attente</option>
-                        <option value="passed" {{ request('status') == 'passed' ? 'selected' : '' }}>Passé</option>
-                        <option value="cancel" {{ request('status') == 'cancel' ? 'selected' : '' }}>Annulé</option>
+                        <label for="status" class="form-label">Status</label>
+                        <select id="status" name="status" class="form-select">
+                            <option value="">All Statuses</option>
+                            <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Pending</option>
+                            <option value="passed" {{ request('status') == 'passed' ? 'selected' : '' }}>Completed</option>
+                            <option value="cancel" {{ request('status') == 'cancel' ? 'selected' : '' }}>Cancelled</option>
                     </select>
                 </div>
+                    
                 <div class="form-group">
-                    <input type="date" name="date" value="{{ request('date') }}" placeholder="Rechercher par date" title="Rechercher par date" class="form-control">
+                        <label for="date" class="form-label">Date</label>
+                        <input type="date" 
+                               id="date" 
+                               name="date" 
+                               value="{{ request('date') }}" 
+                               class="form-input">
                 </div>
+                    
                 <div class="form-group">
-                    <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-search"></i> <span class="btn-text">Rechercher</span>
+                        <label class="form-label">&nbsp;</label>
+                        <button type="submit" class="btn btn-primary w-full">
+                            <i class="fas fa-search"></i>
+                            Search
                     </button>
                 </div>
             </div>
         </form>
+        </div>
+    </div>
+
+    <!-- Appointments Table -->
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">Appointments List</h2>
+            <div class="flex items-center gap-2">
+                <span class="text-sm text-gray-500">{{ $coachAppointments->total() }} appointments</span>
+            </div>
+        </div>
         
-        <!-- Appointments Table (Desktop) -->
-        <div class="appointments-table-container desktop-view">
-            <div class="table-responsive">   
-                <table class="appointments-table">
+        <div class="card-body p-0">
+            <div class="table-container">
+                <table class="table">
                     <thead>
                         <tr>
                             <th>Patient</th>
-                            <th>Date &amp; Heure</th>
-                            <th>Statut</th>
-                            <th>Rapport</th>
+                            <th>Date & Time</th>
+                            <th>Status</th>
+                            <th>Report</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @if ($coachAppointments!=null)
-                            @foreach ($coachAppointments as $appointment)
-                                <tr>
-                                    <td>
-                                        @if ($appointment->patient->first_name==null)
-                                        {{ $appointment->patient->parent_first_name}} {{ $appointment->patient->parent_last_name }}
+                        @forelse($coachAppointments as $appointment)
+                        <tr class="hover:bg-gray-50">
+                            <td>
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 bg-primary-100 rounded-full flex items-center justify-center">
+                                        <i class="fas fa-user text-primary-600"></i>
+                                    </div>
+                                    <div>
+                                        <p class="font-medium text-gray-900">
+                                            @if ($appointment->patient->first_name)
+                                                {{ $appointment->patient->first_name }} {{ $appointment->patient->last_name }}
                                         @else
-                                            {{ $appointment->patient->first_name}} {{ $appointment->patient->last_name }}
+                                                {{ $appointment->patient->parent_first_name }} {{ $appointment->patient->parent_last_name }}
                                         @endif
+                                        </p>
+                                        <p class="text-sm text-gray-500">
+                                            {{ $appointment->patient->email ?? 'No email' }}
+                                        </p>
+                                    </div>
+                                </div>
                                     </td>
                                 
+                            <td>
                                     @php
                                     $appointmentDate = json_decode($appointment->appointment_planning, true);
                                     @endphp
-                                    <td>
+                                <div class="text-sm">
                                         @if(is_array($appointmentDate))
                                             @foreach ($appointmentDate as $date => $time)
-                                                <span>{{ $date }} - </span>
+                                            <div class="font-medium text-gray-900">
+                                                {{ \Carbon\Carbon::parse($date)->format('M d, Y') }}
+                                            </div>
+                                            <div class="text-gray-600">
                                                 @foreach ($time as $slot)
-                                                    <span>{{ $slot }} </span>
+                                                    <span class="inline-block bg-gray-100 px-2 py-1 rounded text-xs mr-1 mb-1">
+                                                        {{ $slot }}
+                                                    </span>
                                                 @endforeach
+                                            </div>
                                             @endforeach
                                         @endif
+                                </div>
                                     </td>
-                                    @php
-                                        $color = '';
-                                        if ($appointment->status == 'pending') {
-                                            $color = 'pending';
-                                        } elseif ($appointment->status == 'passed') {
-                                            $color = 'passed';
-                                        } elseif ($appointment->status == 'cancel') {
-                                            $color = 'cancel';
+                            
+                            <td>
+                                @php
+                                    $statusColor = '';
+                                    $statusText = '';
+                                    switch($appointment->status) {
+                                        case 'pending':
+                                            $statusColor = 'warning';
+                                            $statusText = 'Pending';
+                                            break;
+                                        case 'passed':
+                                            $statusColor = 'success';
+                                            $statusText = 'Completed';
+                                            break;
+                                        case 'cancel':
+                                            $statusColor = 'error';
+                                            $statusText = 'Cancelled';
+                                            break;
                                         }
                                     @endphp
-                                    <td><span class="status-badge {{$color}}">{{ $appointment->status }}</span></td>
+                                <span class="badge badge-{{ $statusColor }}">{{ $statusText }}</span>
+                            </td>
 
+                            <td>
                                     @if ($appointment->report_path)
-                                    <td>
-                                        <div class="report-actions">
-                                            <a href="{{ route('appointments.viewReport', $appointment->id) }}" target="_blank" class="action-btn view-btn" title="Voir le rapport">
-                                                <i class="fas fa-file-alt"></i>
-                                            </a>
-                                            <a href="{{ route('coach-appointments.downloadReport', $appointment->id)}}" class="action-btn download-btn" title="Télécharger le rapport">
-                                                <i class="fas fa-cloud-download-alt"></i>
+                                    <div class="flex items-center gap-2">
+                                        <a href="{{ route('appointments.viewReport', $appointment->id) }}" 
+                                           target="_blank" 
+                                           class="btn btn-outline btn-sm"
+                                           title="View Report">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        <a href="{{ route('coach-appointments.downloadReport', $appointment->id) }}" 
+                                           class="btn btn-outline btn-sm"
+                                           title="Download Report">
+                                            <i class="fas fa-download"></i>
                                             </a>
                                         </div>
-                                    </td>
                                     @else
-                                    <td><span class="no-report">Pas de Rapport</span></td>
+                                    <span class="text-gray-400 text-sm">No Report</span>
                                     @endif
+                            </td>
                                         
                                     <td>
-                                        <div class="action-buttons">
+                                <div class="flex items-center gap-2">
                                             @if ($appointment->status == "pending")
-                                                <form action="{{ route('appointment_edit',$appointment->id) }}">
-                                                    @csrf
-                                                    @method('PATCH')
-                                                    <button type="submit" class="action-btn cancel-btn" title="Annuler">
-                                                        <i class="fas fa-archive"></i>
+                                        <a href="{{ route('appointment.edit', $appointment->id) }}" 
+                                           class="btn btn-warning btn-sm"
+                                           title="Edit Appointment">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <button onclick="cancelAppointment({{ $appointment->id }})" 
+                                                class="btn btn-error btn-sm"
+                                                title="Cancel Appointment">
+                                            <i class="fas fa-times"></i>
                                                     </button>
-                                                </form>
-
-                                                <form action="{{ route('coach-update-appointment-status', [$appointment->id, 'passed']) }}" method="POST">
-                                                    @csrf
-                                                    @method('PATCH')
-                                                    <button type="submit" class="action-btn complete-btn" title="Marquer comme terminé">
-                                                        <i class="bi bi-check-circle-fill"></i>
-                                                    </button>
-                                                </form>
                                             @endif
                                             
-                                            <a href="{{route('appointment_details', $appointment->id)  }}" class="action-btn view-details-btn" title="Voir les détails">
+                                    <a href="{{ route('appointment.show', $appointment->id) }}" 
+                                       class="btn btn-primary btn-sm"
+                                       title="View Details">
                                                 <i class="fas fa-eye"></i>
                                             </a>
                                         </div>
                                     </td>
                                 </tr>
-                            @endforeach
-                        @endif
+                        @empty
+                        <tr>
+                            <td colspan="5" class="text-center py-12">
+                                <div class="flex flex-col items-center">
+                                    <i class="fas fa-calendar-times text-4xl text-gray-300 mb-4"></i>
+                                    <p class="text-gray-500 text-lg mb-2">No appointments found</p>
+                                    <p class="text-gray-400">Try adjusting your search criteria</p>
+                                </div>
+                            </td>
+                        </tr>
+                        @endforelse
                     </tbody>
                 </table>
             </div>
         </div>
         
-        <!-- Mobile Cards View -->
-        <div class="mobile-appointments">
-            @if ($coachAppointments!=null)
-                @foreach ($coachAppointments as $appointment)
-                    <div class="appointment-card">
-                        <div class="card-header">
-                            <div class="patient-name">
-                                @if ($appointment->patient->first_name==null)
-                                {{ $appointment->patient->parent_first_name}} {{ $appointment->patient->parent_last_name }}
-                                @else
-                                    {{ $appointment->patient->first_name}} {{ $appointment->patient->last_name }}
-                                @endif
+        @if($coachAppointments->hasPages())
+        <div class="card-footer">
+            <div class="flex items-center justify-between">
+                <div class="text-sm text-gray-500">
+                    Showing {{ $coachAppointments->firstItem() }} to {{ $coachAppointments->lastItem() }} 
+                    of {{ $coachAppointments->total() }} results
+                </div>
+                <div class="flex items-center gap-2">
+                    {{ $coachAppointments->links() }}
+                </div>
                             </div>
-                            @php
-                                $color = '';
-                                if ($appointment->status == 'pending') {
-                                    $color = 'pending';
-                                } elseif ($appointment->status == 'passed') {
-                                    $color = 'passed';
-                                } elseif ($appointment->status == 'cancel') {
-                                    $color = 'cancel';
-                                }
-                            @endphp
-                            <span class="status-badge {{$color}}">{{ $appointment->status }}</span>
                         </div>
-                        
-                        <div class="card-body">
-                            <div class="info-row">
-                                <div class="info-label">Date & Heure:</div>
-                                <div class="info-value">
-                                    @php
-                                    $appointmentDate = json_decode($appointment->appointment_planning, true);
-                                    @endphp
-                                    @if(is_array($appointmentDate))
-                                        @foreach ($appointmentDate as $date => $time)
-                                            <span>{{ $date }} - </span>
-                                            @foreach ($time as $slot)
-                                                <span>{{ $slot }} </span>
-                                            @endforeach
-                                        @endforeach
                                     @endif
                                 </div>
                             </div>
                             
-                            <div class="info-row">
-                                <div class="info-label">Rapport:</div>
-                                <div class="info-value">
-                                    @if ($appointment->report_path)
-                                        <div class="report-actions">
-                                            <a href="{{ route('appointments.viewReport', $appointment->id) }}" target="_blank" class="action-btn view-btn" title="Voir le rapport">
-                                                <i class="fas fa-file-alt"></i>
-                                            </a>
-                                            <a href="{{ route('coach-appointments.downloadReport', $appointment->id)}}" class="action-btn download-btn" title="Télécharger le rapport">
-                                                <i class="fas fa-cloud-download-alt"></i>
-                                            </a>
+<!-- Cancel Appointment Modal -->
+<div id="cancelModal" class="modal-overlay hidden">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 class="text-lg font-semibold text-gray-900">Cancel Appointment</h3>
+            <button onclick="closeCancelModal()" class="text-gray-400 hover:text-gray-600">
+                <i class="fas fa-times"></i>
+            </button>
                                         </div>
-                                    @else
-                                        <span class="no-report">Pas de Rapport</span>
-                                    @endif
+        <div class="modal-body">
+            <p class="text-gray-600 mb-4">
+                Are you sure you want to cancel this appointment? This action cannot be undone.
+            </p>
+            <form id="cancelForm" method="POST">
+                @csrf
+                @method('DELETE')
+                <div class="form-group">
+                    <label for="cancellation_reason" class="form-label">Cancellation Reason (Optional)</label>
+                    <textarea id="cancellation_reason" 
+                              name="cancellation_reason" 
+                              class="form-textarea" 
+                              rows="3"
+                              placeholder="Please provide a reason for cancellation..."></textarea>
                                 </div>
+            </form>
                             </div>
-                        </div>
-                        
-                        <div class="card-footer">
-                            <div class="action-buttons">
-                                @if ($appointment->status == "pending")
-                                    <form action="{{ route('appointment_edit',$appointment->id) }}">
-                                        @csrf
-                                        @method('PATCH')
-                                        <button type="submit" class="action-btn cancel-btn" title="Annuler">
-                                            <i class="fas fa-archive"></i>
+        <div class="modal-footer">
+            <button onclick="closeCancelModal()" class="btn btn-secondary">
+                Cancel
                                         </button>
-                                    </form>
-
-                                    <form action="{{ route('coach-update-appointment-status', [$appointment->id, 'passed']) }}" method="POST">
-                                        @csrf
-                                        @method('PATCH')
-                                        <button type="submit" class="action-btn complete-btn" title="Marquer comme terminé">
-                                            <i class="bi bi-check-circle-fill"></i>
+            <button onclick="confirmCancellation()" class="btn btn-error">
+                <i class="fas fa-times"></i>
+                Confirm Cancellation
                                         </button>
-                                    </form>
-                                @endif
-                                
-                                <a href="{{route('appointment_details', $appointment->id)  }}" class="action-btn view-details-btn" title="Voir les détails">
-                                    <i class="fas fa-eye"></i>
-                                </a>
-                            </div>
-                        </div>
                     </div>
-                @endforeach
-            @endif
         </div>
     </div>
     
+<script>
+function cancelAppointment(appointmentId) {
+    const modal = document.getElementById('cancelModal');
+    const form = document.getElementById('cancelForm');
     
-    <style>
-        :root {
- 
-            --primary-color: #6366f1; 
-            --secondary-color: #4f46e5;
-            --success-color: #4cc9f0;
-            --warning-color: #f72585;
-            --danger-color: #e63946;
-            --light-bg: #f8f9fa;
-            --border-color: #e2e8f0;
-            --text-dark: #1e293b;
-            --text-muted: #64748b;
-            --pending-color: #ffc107;
-            --passed-color: #198754;
-            --cancel-color: #dc3545;
-            --shadow-sm: 0 2px 4px rgba(0,0,0,0.1);
-            --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
-            --radius-sm: 6px;
-            --radius-md: 8px;
-            --radius-lg: 12px;
+    form.action = `/appointment/${appointmentId}`;
+    modal.classList.remove('hidden');
+}
+
+function closeCancelModal() {
+    const modal = document.getElementById('cancelModal');
+    modal.classList.add('hidden');
+    document.getElementById('cancellation_reason').value = '';
+}
+
+function confirmCancellation() {
+    document.getElementById('cancelForm').submit();
+}
+
+// Close modal when clicking outside
+document.getElementById('cancelModal').addEventListener('click', function(e) {
+    if (e.target === this) {
+        closeCancelModal();
+    }
+});
+
+// Auto-submit form when pressing Enter in search
+document.getElementById('search').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+        e.preventDefault();
+        this.closest('form').submit();
+    }
+});
+
+// Real-time search (optional)
+let searchTimeout;
+document.getElementById('search').addEventListener('input', function() {
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(() => {
+        if (this.value.length >= 3 || this.value.length === 0) {
+            this.closest('form').submit();
         }
-        
-        /* Base styles */
-        .appointments-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 1.5rem;
-        }
-        
-        .page-header {
-            text-align: center;
-            margin-bottom: 1.5rem;
-        }
-        
-        .page-header h1 {
-            font-size: 1.875rem;
-            font-weight: 700;
-            color: var(--text-dark);
-        }
-        
-        /* Search form styles */
-        .search-form {
-            background-color: white;
-            border-radius: var(--radius-md);
-            box-shadow: var(--shadow-sm);
-            padding: 1.5rem;
-            margin-bottom: 1.5rem;
-        }
-        
-        .search-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 1rem;
-        }
-        
-        .form-group {
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .form-control, .form-select {
-            padding: 0.75rem;
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-sm);
-            font-size: 0.875rem;
-            width: 100%;
-        }
-        
-        .form-control:focus, .form-select:focus {
-            border-color: var(--primary-color);
-            outline: none;
-            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
-        }
-        
-        .btn-primary {
-            background: linear-gradient(195deg, var(--primary-color), var(--secondary-color));
-            color: white;
-            border: none;
-            padding: 0.75rem 1rem;
-            border-radius: var(--radius-sm);
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-            width: 100%;
-        }
-        
-        .btn-primary:hover {
-            transform: translateY(-1px);
-            box-shadow: var(--shadow-md);
-        }
-        
-        /* Table styles */
-        .appointments-table-container {
-            background: white;
-            border-radius: var(--radius-md);
-            box-shadow: var(--shadow-sm);
-            overflow: hidden;
-        }
-        
-        .table-responsive {
-            overflow-x: auto;
-            max-height: 70vh;
-        }
-        
-        .appointments-table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        
-        .appointments-table thead th {
-            background: linear-gradient(195deg, var(--primary-color), var(--secondary-color));
-            color: white;
-            padding: 1rem;
-            font-weight: 500;
-            text-align: left;
-            position: sticky;
-            top: 0;
-            z-index: 2;
-        }
-        
-        .appointments-table tbody td {
-            padding: 1rem;
-            border-bottom: 1px solid var(--border-color);
-            vertical-align: middle;
-        }
-        
-        .appointments-table tbody tr:hover {
-            background-color: rgba(67, 97, 238, 0.05);
-        }
-        
-        /* Status badge styles */
-        .status-badge {
-            display: inline-block;
-            padding: 0.25rem 0.75rem;
-            border-radius: 20px;
-            font-size: 0.875rem;
-            font-weight: 500;
-            text-transform: capitalize;
-        }
-        
-        .pending {
-            background-color: rgba(255, 193, 7, 0.2);
-            color: var(--pending-color);
-        }
-        
-        .passed {
-            background-color: rgba(25, 135, 84, 0.2);
-            color: var(--passed-color);
-        }
-        
-        .cancel {
-            background-color: rgba(220, 53, 69, 0.2);
-            color: var(--cancel-color);
-        }
-        
-        /* Action buttons styles */
-        .action-buttons {
-            display: flex;
-            gap: 0.5rem;
-            justify-content: center;
-        }
-        
-        .action-btn {
-            width: 36px;
-            height: 36px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: var(--radius-sm);
-            transition: all 0.3s ease;
-            border: none;
-            cursor: pointer;
-            color: white;
-            text-decoration: none;
-        }
-        
-        .cancel-btn {
-            background-color: var(--cancel-color);
-        }
-        
-        .complete-btn {
-            background-color: var(--passed-color);
-        }
-        
-        .view-details-btn {
-            background-color: var(--text-muted);
-        }
-        
-        .view-btn {
-            background-color: var(--primary-color);
-        }
-        
-        .download-btn {
-            background-color: var(--success-color);
-        }
-        
-        .action-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-sm);
-        }
-        
-        .report-actions {
-            display: flex;
-            gap: 0.5rem;
-        }
-        
-        .no-report {
-            color: var(--text-muted);
-            font-style: italic;
-        }
-        
-        /* Mobile card styles */
-        .mobile-appointments {
-            display: none;
-        }
-        
-        .appointment-card {
-            background: white;
-            border-radius: var(--radius-md);
-            box-shadow: var(--shadow-sm);
-            margin-bottom: 1rem;
-            overflow: hidden;
-        }
-        
-        .card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1rem;
-            background: linear-gradient(195deg, var(--primary-color), var(--secondary-color));
-            color: white;
-        }
-        
-        .patient-name {
-            font-weight: 600;
-            font-size: 1rem;
-        }
-        
-        .card-body {
-            padding: 1rem;
-        }
-        
-        .info-row {
-            margin-bottom: 0.75rem;
-        }
-        
-        .info-row:last-child {
-            margin-bottom: 0;
-        }
-        
-        .info-label {
-            font-weight: 600;
-            color: var(--text-dark);
-            margin-bottom: 0.25rem;
-        }
-        
-        .info-value {
-            color: var(--text-dark);
-        }
-        
-        .card-footer {
-            padding: 1rem;
-            background-color: var(--light-bg);
-            border-top: 1px solid var(--border-color);
-        }
-        
-        /* Responsive styles */
-        @media (max-width: 1200px) {
-            .appointments-container {
-                padding: 1rem;
-            }
-        }
-        
-        @media (max-width: 991px) {
-            .search-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-        
-        @media (max-width: 768px) {
-            .page-header h1 {
-                font-size: 1.5rem;
-            }
-            
-            .search-form {
-                padding: 1rem;
-            }
-            
-            .search-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .btn-text {
-                display: none;
-            }
-            
-            .desktop-view {
-                display: none;
-            }
-            
-            .mobile-appointments {
-                display: block;
-            }
-            
-            .action-buttons {
-                justify-content: flex-end;
-            }
-        }
-        
-        @media (max-width: 480px) {
-            .appointments-container {
-                padding: 0.75rem;
-            }
-            
-            .page-header h1 {
-                font-size: 1.25rem;
-            }
-            
-            .card-header {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 0.5rem;
-            }
-            
-            .status-badge {
-                align-self: flex-start;
-            }
-        }
-    </style>
+    }, 500);
+});
+</script>
 @endsection

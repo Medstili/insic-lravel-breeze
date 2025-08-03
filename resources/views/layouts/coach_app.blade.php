@@ -4,346 +4,486 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="csrf-token" content="{{ csrf_token() }}" />
-  <title>Insic Coach Profil</title>
+  
+  <title>Insic - Coach Dashboard</title>
 
-  <!-- Polices & Icônes -->
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <!-- Fonts & Icons -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 
   <!-- Scripts -->
   @vite(['resources/css/app.css', 'resources/js/app.js'])
   <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
-
   <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
-
   <script src="https://cdn.jsdelivr.net/npm/tailwindcss@3.3.2/dist/tailwind.min.js"></script>
 
-  <link rel="preconnect" href="https://fonts.bunny.net">
-  <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
-   <!-- Scripts  -->
-   @vite(['resources/css/app.css', 'resources/js/app.js']) 
-
-   <!--  bootstrap Scripts and links-->
-
-     <!-- liens  -->
-
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"rel="stylesheet"/>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"/>
-
-   <!-- scripts -->
-
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
-
-  <!-- Styles personnalisés -->
-  <style>
+  <!-- <style>
     :root {
-      --primary-color: #6366f1; 
-      --secondary-color: #4f46e5;
-      --accent-color: #818cf8;
-      --light-bg: #f8fafc;
-      --dark-text: #1e293b;
+      /* Modern Color Palette */
+      --primary-50: #eff6ff;
+      --primary-100: #dbeafe;
+      --primary-200: #bfdbfe;
+      --primary-300: #93c5fd;
+      --primary-400: #60a5fa;
+      --primary-500: #3b82f6;
+      --primary-600: #2563eb;
+      --primary-700: #1d4ed8;
+      --primary-800: #1e40af;
+      --primary-900: #1e3a8a;
+      
+      /* Neutral Colors */
+      --gray-50: #f9fafb;
+      --gray-100: #f3f4f6;
+      --gray-200: #e5e7eb;
+      --gray-300: #d1d5db;
+      --gray-400: #9ca3af;
+      --gray-500: #6b7280;
+      --gray-600: #4b5563;
+      --gray-700: #374151;
+      --gray-800: #1f2937;
+      --gray-900: #111827;
+      
+      /* Semantic Colors */
+      --success-50: #f0fdf4;
+      --success-500: #22c55e;
+      --success-600: #16a34a;
+      --warning-50: #fffbeb;
+      --warning-500: #f59e0b;
+      --warning-600: #d97706;
+      --error-50: #fef2f2;
+      --error-500: #ef4444;
+      --error-600: #dc2626;
+      
+      /* Shadows */
+      --shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+      --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+      --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+      --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+      --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+      
+      /* Border Radius */
+      --radius-sm: 0.375rem;
+      --radius-md: 0.5rem;
+      --radius-lg: 0.75rem;
+      --radius-xl: 1rem;
+      --radius-2xl: 1.5rem;
+      
+      /* Spacing */
+      --space-1: 0.25rem;
+      --space-2: 0.5rem;
+      --space-3: 0.75rem;
+      --space-4: 1rem;
+      --space-5: 1.25rem;
+      --space-6: 1.5rem;
+      --space-8: 2rem;
+      --space-10: 2.5rem;
+      --space-12: 3rem;
+      --space-16: 4rem;
+      --space-20: 5rem;
+    }
+
+    * {
+      box-sizing: border-box;
     }
 
     body {
-      font-family: 'Poppins', sans-serif;
-      background-color: var(--light-bg);
-      color: var(--dark-text);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background-color: var(--gray-50);
+      color: var(--gray-900);
+      line-height: 1.6;
+      margin: 0;
+      padding: 0;
     }
 
-    /* Contenu principal */
-    .main-content {
-      width: calc(100% - 280px);
-      margin-left: 280px;
-      padding: 2rem;
-      position: relative;
-      top: 60px; /* Pousser le contenu en dessous de la barre de navigation fixe */
-      height: calc(100vh - 80px); /* Hauteur totale moins la barre de navigation */
-      overflow-y: auto; /* Ajouter un défilement si le contenu déborde */
-}
- 
-  /* Barre latérale */
-    .sidebar {
+    /* Sidebar */
+    /* .sidebar {
       width: 280px;
-      background: linear-gradient(195deg, var(--primary-color), var(--secondary-color));
-      box-shadow: 4px 0 15px rgba(0, 0, 0, 0.1);
-      transition: all 0.3s ease;
+      background: linear-gradient(135deg, var(--success-600) 0%, var(--success-700) 100%);
+      box-shadow: var(--shadow-xl);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: fixed;
+      height: 100vh;
+      z-index: 50;
+      overflow-y: auto;
     }
 
     .sidebar .logo {
-      font-size: 1.75rem;
-      font-weight: 700;
+      font-size: 1.875rem;
+      font-weight: 800;
       color: white;
-      padding: 1.5rem;
+      padding: var(--space-6);
       text-align: center;
-      letter-spacing: 1px;
+      letter-spacing: -0.025em;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .sidebar .logo::before {
+      content: "👨‍⚕️";
+      margin-right: var(--space-2);
+      font-size: 1.5rem;
     }
 
     .menu-item {
       display: flex;
       align-items: center;
-      padding: 1rem 2rem;
-      color: rgba(255, 255, 255, 0.9);
+      padding: var(--space-4) var(--space-6);
+      color: rgba(255, 255, 255, 0.8);
       text-decoration: none;
-      transition: all 0.3s ease;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
       position: relative;
+      font-weight: 500;
+      font-size: 0.875rem;
+      border-radius: var(--radius-md);
+      margin: var(--space-1) var(--space-4);
     }
 
     .menu-item i {
-      width: 30px;
-      font-size: 1.1rem;
+      width: 20px;
+      font-size: 1rem;
+      margin-right: var(--space-3);
+      opacity: 0.9;
     }
 
     .menu-item:hover {
       background: rgba(255, 255, 255, 0.1);
       color: white;
-      transform: translateX(8px);
+      transform: translateX(4px);
     }
-      /* Barre de navigation */
-    .custom-navbar {
+
+    .menu-item.active {
+      background: rgba(255, 255, 255, 0.15);
+      color: white;
+      box-shadow: var(--shadow-md);
+    }
+
+    .menu-item.active::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 4px;
+      height: 20px;
       background: white;
-      box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
-      padding:  3rem;
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    } */
+
+    /* Navbar */
+    /* .navbar {
+      background: white;
+      box-shadow: var(--shadow-sm);
+      padding: var(--space-4) var(--space-6);
       height: 80px;
       width: calc(100% - 280px);
       position: fixed;
       top: 0;
       left: 280px;
-      z-index: 1000;
-    }
-    /* Style de table */
-    .table-wrapper {
-        overflow-x: auto;
-        border-radius: 8px;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        background-color: #fff;
-    }
-    table {
-        width: 100%;
-        border-collapse: collapse;
-    }
-    table thead {
-        background-color: #f4f4f4;
-    }
-    table th, table td {
-        padding: 12px 15px;
-        border: 1px solid #ddd;
-        text-align: left;
-        font-size: 0.9rem;
-    }
-    table tbody tr:hover {
-        background-color: #f9f9f9;
+      z-index: 40;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
     }
 
+    .navbar-brand {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--gray-900);
+    }
 
-    /* Responsive styles only - to be added at the end of existing CSS */
+    .navbar-actions {
+      display: flex;
+      align-items: center;
+      gap: var(--space-4);
+    }
 
-/* Mobile devices (phones, less than 768px) */
-@media (max-width: 767.98px) {
-    /* Sidebar adjustments */
-    .sidebar {
-        width: 100%;
-        height: auto !important;
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        top: auto;
-        z-index: 1000;
+    .notification-btn {
+      position: relative;
+      background: none;
+      border: none;
+      padding: var(--space-2);
+      border-radius: var(--radius-md);
+      color: var(--gray-600);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .notification-btn:hover {
+      background: var(--gray-100);
+      color: var(--gray-900);
+    }
+
+    .notification-badge {
+      position: absolute;
+      top: -4px;
+      right: -4px;
+      background: var(--error-500);
+      color: white;
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 2px 6px;
+      border-radius: 9999px;
+      min-width: 18px;
+      text-align: center;
+    } */
+
+    .user-menu {
         display: flex;
-        flex-direction: row;
         align-items: center;
-        padding: 0.5rem;
+      gap: var(--space-3);
+      padding: var(--space-2) var(--space-3);
+      border-radius: var(--radius-lg);
+      background: var(--gray-50);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .user-menu:hover {
+      background: var(--gray-100);
     }
     
-    .sidebar .logo {
-        display: none;
+    .user-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--success-500), var(--success-600));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 600;
+      font-size: 0.875rem;
     }
-    
-    .sidebar .mt-4 {
+
+    .user-info {
         display: flex;
-        width: 100%;
-        margin-top: 0 !important;
+      flex-direction: column;
+    }
+
+    .user-name {
+      font-weight: 600;
+      font-size: 0.875rem;
+      color: var(--gray-900);
     }
     
-    .sidebar .mt-4 form {
-        flex: 1;
+    .user-role {
+      font-size: 0.75rem;
+      color: var(--gray-500);
     }
     
-    .menu-item {
-        padding: 0.75rem;
-        justify-content: center;
-        flex-direction: column;
-        font-size: 0.8rem;
+    /* Main Content */
+    .main-content {
+      /* width: calc(100% - 280px); */
+      /* margin-left: 280px; */
+      padding: var(--space-8);
+      min-height: 100vh;
+      background: var(--gray-50);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .content-header {
+      margin-bottom: var(--space-8);
+    }
+
+    .page-title {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--gray-900);
+      margin-bottom: var(--space-2);
+      letter-spacing: -0.025em;
+    }
+
+    .page-subtitle {
+      color: var(--gray-600);
+      font-size: 1rem;
     }
     
-    .menu-item i {
-        width: auto;
-        margin-bottom: 0.25rem;
+    /* Mobile Menu Button */
+    .mobile-menu-btn {
+      display: none;
+      position: fixed;
+      top: var(--space-4);
+      left: var(--space-4);
+      z-index: 60;
+      background: var(--success-600);
+      color: white;
+      border: none;
+      padding: var(--space-3);
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      box-shadow: var(--shadow-md);
     }
     
-    .menu-item:hover {
-        transform: none;
+    /* Responsive Design */
+    @media (max-width: 1024px) {
+      .sidebar {
+        transform: translateX(-100%);
     }
     
-    /* Navbar adjustments */
-    .custom-navbar {
+      .sidebar.active {
+        transform: translateX(0);
+      }
+
+      .navbar {
         width: 100%;
         left: 0;
-        padding: 0.75rem;
-        height: 60px;
     }
     
-    /* Main content adjustments */
     .main-content {
         width: 100%;
         margin-left: 0;
-        padding: 1rem;
-        top: 60px;
-        height: calc(100vh - 120px); /* Account for top navbar and bottom sidebar */
-        padding-bottom: 80px; /* Add padding to avoid content being hidden by bottom sidebar */
-    }
-    
-    /* Table adjustments */
-    .table-wrapper {
-        overflow-x: auto;
-    }
-    
-    table th, table td {
-        padding: 8px 10px;
-        font-size: 0.8rem;
-    }
-}
+        padding: var(--space-4);
+      }
 
-/* Small devices (landscape phones) */
-@media (min-width: 576px) and (max-width: 767.98px) {
-    .menu-item {
-        padding: 0.75rem 1rem;
+      .mobile-menu-btn {
+        display: block;
     }
-}
+    }
 
-/* Medium devices (tablets) */
-@media (min-width: 768px) and (max-width: 991.98px) {
-    /* Sidebar adjustments */
-    .sidebar {
-        width: 220px;
-    }
-    
-    .sidebar .logo {
-        font-size: 1.5rem;
-        padding: 1.25rem;
-    }
-    
-    .menu-item {
-        padding: 0.75rem 1.5rem;
-    }
-    
-    /* Navbar adjustments */
-    .custom-navbar {
-        width: calc(100% - 220px);
-        left: 220px;
-    }
-    
-    /* Main content adjustments */
-    .main-content {
-        width: calc(100% - 220px);
-        margin-left: 220px;
-        padding: 1.5rem;
-    }
-}
+        @media (max-width: 768px) {
+          .navbar {
+            padding: var(--space-3) var(--space-4);
+          }
 
-/* Large devices (desktops) */
-@media (min-width: 992px) and (max-width: 1199.98px) {
-    /* Sidebar adjustments */
-    .sidebar {
-        width: 250px;
+          .user-info {
+            display: none;
+        }
+        
+          .page-title {
+            font-size: 1.5rem;
+        }
     }
-    
-    /* Navbar adjustments */
-    .custom-navbar {
-        width: calc(100% - 250px);
-        left: 250px;
+
+        @media (max-width: 480px) {
+        .sidebar {
+            width: 100%;
+        }
+        
+        .main-content {
+            padding: var(--space-3);
+        }
     }
-    
-    /* Main content adjustments */
-    .main-content {
-        width: calc(100% - 250px);
-        margin-left: 250px;
-    }
-}
-
-
-
-  </style>
-
+  </style> -->
 </head>
-<body>
+<body class="overflow-x-hidden" x-data="{ sidebarOpen: false, notificationsOpen: false }">
+  <!-- Mobile Menu Button -->
+  <button class="mobile-menu-btn" @click="sidebarOpen = !sidebarOpen">
+    <i class="fas fa-bars"></i>
+  </button>
 
-  <!-- Barre latérale -->
+  <!-- Navbar -->
 
-  <div class="sidebar fixed h-full">
-    <div class="logo">Insic</div>
-    <div class="mt-4">
-      <form action="{{ route('appointments_list',auth()->user()->id) }}" method="get">
-        <button class="menu-item w-full text-left">
-          <i class="fas fa-calendar-check"></i>
-          <span>Rendez-vous</span>
-        </button>
-      </form>
-      <form action="{{ route('patients_list',Auth::user()->id) }}" method="get">
-        <button class="menu-item w-full text-left">
-          <i class="fas fa-lightbulb"></i>
-          <span>Patients</span>
-        </button>
-      </form>
-    </div>
-  </div>
-
-
-  <nav x-data="{ open: false }" class="custom-navbar z-50">
-            <div class="d-flex justify-content-end align-items-center space-x-4">
-                <x-dropdown align="right" width="48" class="cursor-pointer">
-                  <x-slot name="trigger">
-                    <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none transition ease-in-out duration-150">
-                      <div>{{ Auth::user()->full_name }}</div>
-                      <div class="ms-1">
-                        <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                          <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-                        </svg>
-                      </div>
-                    </button>
-                  </x-slot>
-
-                  <x-slot name="content">
-                    <x-dropdown-link :href="route('coach_profile',Auth::user()->id)">
-                    <i class="fas fa-user text-sm me-2"></i>
-                      {{ __('Profil') }}
-                    </x-dropdown-link> 
-
-                    <!-- Authentification -->
-                    <form method="POST" action="{{ route('logout') }}">
-                      @csrf
-
-                      <x-dropdown-link :href="route('logout')" onclick="event.preventDefault(); this.closest('form').submit();">
-                      <i class="fas fa-sign-out-alt text-sm me-2"></i>
-                        {{ __('Déconnexion') }}
-                      </x-dropdown-link>
-                    </form>
-
-                  </x-slot>
-                </x-dropdown>
+  <nav class="coach_navbar  bg-cyan-500 text-white shadow-md">
+    <div class="navbar-brand text-white font-bold">Insic</div>
+    
+    <div class="navbar-actions">
+      <div class="relative">
+      <!-- User Menu -->
+        <x-dropdown align="right" width="48">
+          <x-slot name="trigger">
+          <div class="user-menu bg-cyan-100 text-cyan-900 hover:bg-cyan-200">
+            <div class="user-avatar bg-gradient-to-br from-cyan-500 to-sky-500">
+              {{ strtoupper(substr(Auth::user()->full_name, 0, 1)) }}
             </div>
+            <div class="user-info">
+              <div class="user-name">{{ Auth::user()->full_name }}</div>
+              <div class="user-role">Entraîneur</div>
+            </div>
+            <i class="fas fa-chevron-down text-gray-400"></i>
+              </div>
+          </x-slot>
+        
+          <x-slot name="content">
+          <x-dropdown-link :href="route('coach_profile',Auth::user()->id)" class="flex items-center">
+            <i class="fas fa-user text-sm mr-2"></i>
+            {{ __('Profile') }}
+            </x-dropdown-link>
+            <form method="POST" action="{{ route('logout') }}">
+              @csrf
+            <x-dropdown-link :href="route('logout')" onclick="event.preventDefault(); this.closest('form').submit();" class="flex items-center">
+              <i class="fas fa-sign-out-alt text-sm mr-2"></i>
+              {{ __('Logout') }}
+              </x-dropdown-link>
+            </form>
+          </x-slot>
+        </x-dropdown>
+    </div>
   </nav>
 
+  <!-- Main Content -->
+  <main class="coach_main-content">
+    <div class="content-header">
+      @yield('header')
+    </div>
   
-  <!-- Contenu principal -->
-  <div class="main-content">
+    <div class="fade-in">
     @yield('content')
   </div>
+  </main>
 
-  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Alpine.js -->
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+  <script>
+    // Menu active state
+    const currentPath = window.location.pathname;
+    document.querySelectorAll('.menu-item').forEach(item => {
+      if (item.href && item.href.includes(currentPath)) {
+        item.classList.add('active');
+      }
+    });
+
+    // Mark notification as read
+    function markAsRead(notificationId) {
+      fetch('{{ route("notifications.mark-as-read") }}', {
+        method: 'POST',
+        headers: {
+          'X-CSRF-TOKEN': '{{ csrf_token() }}',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ id: notificationId })
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          const notificationItem = document.querySelector(`[data-id="${notificationId}"]`);
+          notificationItem.classList.remove('unread');
+          
+          const badge = document.querySelector('.notification-badge');
+          if (badge) {
+            let count = parseInt(badge.textContent);
+            if (count > 0) count--;
+            badge.textContent = count;
+            if (count === 0) badge.style.display = 'none';
+          }
+        }
+      });
+    }
+
+    // Close notifications when clicking outside
+    document.addEventListener('click', function(event) {
+      const notificationBtn = document.querySelector('.notification-btn');
+      const notificationDropdown = document.querySelector('.notification-dropdown');
+      
+      if (!notificationBtn.contains(event.target) && !notificationDropdown.contains(event.target)) {
+        Alpine.store('notificationsOpen', false);
+      }
+    });
+
+    // Smooth scrolling
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          target.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+          });
+        }
+      });
+    });
+  </script>
 </body>
 </html>

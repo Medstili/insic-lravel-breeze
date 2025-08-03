@@ -1,655 +1,356 @@
-@extends('layouts.app') {{-- Étendre votre mise en page principale --}}
-
+@extends('layouts.app')
 @section('content')
+<!-- FullCalendar CSS and JS -->
+<link href='https://cdn.jsdelivr.net/npm/@fullcalendar/core@6.1.10/main.min.css' rel='stylesheet' />
+<link href='https://cdn.jsdelivr.net/npm/@fullcalendar/daygrid@6.1.10/main.min.css' rel='stylesheet' />
+<link href='https://cdn.jsdelivr.net/npm/@fullcalendar/timegrid@6.1.10/main.min.css' rel='stylesheet' />
+<script src='https://cdn.jsdelivr.net/npm/@fullcalendar/core@6.1.10/main.min.js'></script>
+<script src='https://cdn.jsdelivr.net/npm/@fullcalendar/daygrid@6.1.10/main.min.js'></script>
+<script src='https://cdn.jsdelivr.net/npm/@fullcalendar/timegrid@6.1.10/main.min.js'></script>
+<script src='https://cdn.jsdelivr.net/npm/@fullcalendar/interaction@6.1.10/main.min.js'></script>
+
 <style>
-    :root {
-        --primary-color: #6366f1;
-        --secondary-color: #4f46e5;
-        --accent-color: #818cf8;
-        --light-bg: #f8fafc;
-        --dark-text: #1e293b;
-        --glass-bg: rgba(255, 255, 255, 0.9);
-    }
+/* Custom calendar styling to match the theme */
+.fc-header-toolbar {
+    background: linear-gradient(195deg, #06b6d4, #0891b2, #0ea5e9) !important;
+    color: white !important;
+    padding: 1rem !important;
+    border-radius: 12px 12px 0 0 !important;
+    margin-bottom: 0 !important;
+}
 
-    .creation-container {
-        background: var(--light-bg);
-        padding: 2rem;
-        border-radius: 12px;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-    }
+.fc-button-primary {
+    background-color: rgba(255, 255, 255, 0.2) !important;
+    border-color: rgba(255, 255, 255, 0.3) !important;
+    color: white !important;
+}
 
-    .form-header {
-        color: var(--secondary-color);
-        font-weight: 600;
-        margin-bottom: 2rem;
-        padding-bottom: 1rem;
-        border-bottom: 2px solid var(--primary-color);
-    }
+.fc-button-primary:hover {
+    background-color: rgba(255, 255, 255, 0.3) !important;
+    border-color: rgba(255, 255, 255, 0.4) !important;
+}
 
-    .glass-card {
-        background: var(--glass-bg);
-        backdrop-filter: blur(10px);
-        border-radius: 12px;
-        padding: 1.5rem;
-        margin-bottom: 1.5rem;
-        border: 1px solid rgba(255, 255, 255, 0.3);
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-    }
-
-    .form-floating label {
-        color: #64748b;
-        transition: all 0.3s ease;
-    }
-
-    .form-control, .form-select {
-        border-radius: 8px;
-        border: 1px solid #e2e8f0;
-        transition: all 0.3s ease;
-        padding: 0.75rem 1rem;
-    }
-
-    .form-control:focus, .form-select:focus {
-        border-color: var(--primary-color);
-        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
-    }
-
-    .section-title {
-        color: var(--secondary-color);
-        font-weight: 500;
-        margin: 1.5rem 0;
-        padding-left: 0.5rem;
-        border-left: 3px solid var(--primary-color);
-    }
-
-    #calendar {
-        background: white;
-        border-radius: 12px;
-        padding: 1rem;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-        height: 500px;
+.fc-button-active {
+    background-color: rgba(255, 255, 255, 0.4) !important;
+    border-color: rgba(255, 255, 255, 0.5) !important;
     }
     
     .priority1 .fc-event-title,
     .priority1 .fc-event-time {
-    color:rgb(206, 1, 1) !important; 
+    color: rgb(206, 1, 1) !important; 
     }
 
     .priority2 .fc-event-title,
     .priority2 .fc-event-time {
-    color:rgb(251, 145, 6) !important; 
+    color: rgb(251, 145, 6) !important; 
     }
 
     .priority3 .fc-event-title,
     .priority3 .fc-event-time {
-    color:rgb(1, 174, 27) !important;
-    }
-    .priority1 { background: rgba(255, 76, 76, 0.1) !important; border-left: 4px solid #ff4c4c !important; }
-    .priority2 { background: rgba(255, 152, 0, 0.1) !important; border-left: 4px solid #ff9800 !important; }
-    .priority3 { background: rgba(76, 175, 80, 0.1) !important; border-left: 4px solid #4caf50 !important; }
-
-    .fc-header-toolbar {
-        background: linear-gradient(195deg, var(--primary-color), var(--secondary-color));
-        color: white;
-        padding: 1rem;
-        border-radius: 8px 8px 0 0;
-    }
-
-    .fc-button-primary {
-        background-color: var(--primary-color) !important;
-        border-color: var(--primary-color) !important;
-    }
-
-    .priority-marker {
-        display: inline-block;
-        width: 12px;
-        height: 12px;
-        border-radius: 50%;
-        margin-right: 0.5rem;
-    }
-
-    .btn-primary {
-        background: var(--primary-color);
-        border: none;
-        padding: 0.75rem 2rem;
-        transition: all 0.3s ease;
-    }
-
-    .btn-primary:hover {
-        background: var(--secondary-color);
-        transform: translateY(-2px);
-    }
-
-    .alert-danger {
-        background: rgba(239, 68, 68, 0.1);
-        border: none;
-        color: #ef4444;
-        border-radius: 8px;
-    }
-
-    .is-invalid {
-        border-color: #ef4444 !important;
-    }
-
-    .invalid-feedback {
-        font-size: 0.875rem;
-        margin-top: 0.25rem;
-    }
-
-    .coach-section {
-    background: var(--glass-bg);
-    padding: 1rem;
-    border-radius: 12px;
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    color: rgb(1, 174, 27) !important;
 }
-.coach-section .form-check {
-    margin-bottom: 0.5rem;
-}
-.coach-section .form-check-input {
-    cursor: pointer;
-}
-.coach-section .form-check-label {
-    color: var(--dark-text);
-    cursor: pointer;
-}
-/* Responsive styles only - to be added at the end of existing CSS */
 
-/* Mobile devices (phones, less than 768px) */
-@media (max-width: 767.98px) {
-    .creation-container {
-        padding: 1rem;
-    }
-    
-    .glass-card {
-        padding: 1rem;
-    }
-    
-    .form-header {
-        font-size: 1.5rem;
-        margin-bottom: 1.5rem;
-    }
-    
-    .row.g-3 {
-        row-gap: 0.75rem !important;
-    }
-    
-    .col-md-4, .col-md-6 {
-        width: 100%;
-    }
-    
-    .section-title {
-        font-size: 1.25rem;
-        margin: 1.25rem 0;
-    }
-    
-    /* Make calendar responsive */
+.priority1 { 
+    background: rgba(255, 76, 76, 0.1) !important; 
+    border-left: 4px solid #ff4c4c !important; 
+}
+
+.priority2 { 
+    background: rgba(255, 152, 0, 0.1) !important; 
+    border-left: 4px solid #ff9800 !important; 
+}
+
+.priority3 { 
+    background: rgba(76, 175, 80, 0.1) !important; 
+    border-left: 4px solid #4caf50 !important; 
+}
+
     #calendar {
-        overflow-x: auto;
-        height: auto;
-        min-height: 400px;
-    }
-    
-    /* Make toolbar buttons more touch-friendly */
-    .fc-button {
-        padding: 0.5rem !important;
-        min-height: 44px !important;
-        min-width: 44px !important;
-        margin: 2px !important;
-    }
-    
-    /* Improve calendar toolbar layout on small screens */
-    .fc-header-toolbar {
-        flex-wrap: wrap;
-    }
-    
-    .fc-toolbar-chunk {
-        margin-bottom: 0.5rem;
-    }
-    
-    /* Ensure form inputs have good touch targets */
-    .form-control, .form-select, input[type="number"] {
-        min-height: 44px;
-        font-size: 16px; /* Prevent zoom on iOS */
-    }
-    
-    /* Improve coach selection on mobile */
-    .coach-section {
-        max-height: 250px !important; /* Adjust scrollable area height for mobile */
-    }
-    
-    .coach-section .form-check {
-        padding: 0.5rem;
-    }
-    
-    .coach-capacity {
-        width: 80px !important;
-    }
-    
-    /* Improve image upload section */
-    label[for="image-input"] {
-        min-height: 44px;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-    }
-    
-    /* Make submit button more touch-friendly */
-    .btn-primary {
-        min-height: 44px;
-        width: 100%;
-        max-width: 300px;
-    }
-    
-    /* Improve priority events display on mobile */
-    .priority1, .priority2, .priority3 {
-        margin: 2px 0;
-    }
+    border-radius: 0 0 12px 12px !important;
+    overflow: hidden !important;
 }
-
-/* Small devices (landscape phones) */
-@media (min-width: 576px) and (max-width: 767.98px) {
-    .creation-container {
-        padding: 1.25rem;
-    }
-    
-    .glass-card {
-        padding: 1.25rem;
-    }
-}
-
-/* Medium devices (tablets) */
-@media (min-width: 768px) and (max-width: 991.98px) {
-    /* Ensure calendar is responsive but maintains functionality */
-    #calendar {
-        overflow-x: auto;
-    }
-    
-    .coach-section {
-        max-height: 300px; /* Maintain scrollable area */
-    }
-}
-
-
 </style>
-
-<div class="creation-container">
-    <div class="glass-card">
-        <h3 class="form-header">✨ Mettre à jour le profil du patient</h3>Patient</h3>
-        
-        <form action=" {{ route('patient.update', $patient->id) }}" onsubmit=" storePriorities()" enctype="multipart/form-data"  method="post"  class="row g-3">
+<div class="min-h-screen bg-gradient-to-br from-cyan-50 via-sky-50 to-blue-50 p-6 mt-24">
+    <div class="max-w-3xl mx-auto">
+        <div class="bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 p-8">
+            <h3 class="text-2xl font-bold text-center mb-8 bg-gradient-to-r from-cyan-500 via-sky-500 to-blue-500 text-white py-4 rounded-2xl shadow-lg">✨ Mettre à jour le profil du patient</h3>
+            <form action="{{ route('patient.update', $patient->id) }}" onsubmit="storePriorities()" enctype="multipart/form-data" method="post" class="space-y-8">
             @csrf
             @method('PUT')
-
             @error('patient_exists')
-                <div class="alert alert-danger">
-                    {{ $message }}
-            </div>
+                    <div class="bg-red-100 text-red-700 px-4 py-3 rounded-xl mb-4">{{ $message }}</div>
             @enderror
-            <!-- Sélection du type de patient -->
-            <div class="col-12">
-                <div class="form-floating">
-                    <select id="patientType" name="patient_type" class="form-select bg-transparent" required>
+                <!-- Type de patient -->
+                <div>
+                    <label for="patientType" class="block text-sm font-semibold text-cyan-700 mb-2">Type de patient</label>
+                    <select id="patientType" name="patient_type" class="form-select w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-all duration-200 bg-white/50 backdrop-blur-sm" required>
                         <option value="" selected disabled>Sélectionner le type de patient</option>
                         <option value="kid" {{  $patient->patient_type == 'kid' ? 'selected' : '' }}>Enfant</option>
                         <option value="young" {{ $patient->patient_type == 'young' ? 'selected' : '' }}>Jeune</option>
                         <option value="adult" {{ $patient->patient_type == 'adult' ? 'selected' : '' }}>Adulte</option>
                     </select>
-                    <label for="patientType">Type de patient</label>
                 </div>
+                <!-- Âge, sexe, spécialité -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div>
+                        <label class="block text-sm font-semibold text-cyan-700 mb-2">Âge</label>
+                        <input type="number" name="age" id="kidAge" class="form-control w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-all duration-200 bg-white/50 backdrop-blur-sm" value="{{ $patient->age}}" placeholder="Âge" required>
             </div>
-
-            <!-- Âge et sexe -->
-            <div class="col-md-4">
-                <div class="form-floating">
-                    <input type="number" name="age" id="kidAge" class="form-control" value="{{ $patient->age}}" placeholder="Âge" required>
-                    <label for="kidAge">Âge</label>
-                </div>
-            </div>
-            <!-- sexe -->
-            <div class="col-md-4">
-                <div class="form-floating">
-                    <select name="PatientGender" id="PatientGender" class="form-select " required>
+                    <div>
+                        <label class="block text-sm font-semibold text-cyan-700 mb-2">Sexe</label>
+                        <select name="PatientGender" id="PatientGender" class="form-select w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-all duration-200 bg-white/50 backdrop-blur-sm" required>
                             <option value="M" {{ $patient->gender == 'M' ? 'selected' : '' }}>Masculin</option>
                             <option value="F" {{ $patient->gender == 'F' ? 'selected' : ''}}>Féminin</option>
                         </select>
-                        <label for="PatientGender">Sexe du patient</label>
                 </div>
-            </div>
-            <!-- spécialité -->
-            <div class="col-md-4">
-                <div class="form-floating">
-                    <select class="form-select" id="specialtySelect" name="speciality_id" required>
+                    <div>
+                        <label class="block text-sm font-semibold text-cyan-700 mb-2">Spécialité</label>
+                        <select class="form-select w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-all duration-200 bg-white/50 backdrop-blur-sm" id="specialtySelect" name="speciality_id" required>
                         <option value="">Toutes les spécialités</option>
                     @foreach($specialities as $speciality)
                         <option value="{{ $speciality->id }}"  {{ $patient->speciality_id ==$speciality->id ? 'selected' :''}}>{{ $speciality->name }}</option>
                     @endforeach
                     </select>
-                    <label>Sélectionner une spécialité</label>
                 </div>
-
             </div>
             <!-- Section Enfant/Jeune -->
-            <div id="kidSection" class="d-none">
-                <h4 class="section-title kid-title ">Informations sur l'enfant</h4>                          
-
-
-                <div class="row g-3">
-                    <div class="col-md-6">
-                        <div class="form-floating">
-                            <input type="text" id="kidLastName" name="kid_last_name" class="form-control"  value="{{ ($patient->patient_type=='kid'||$patient->patient_type=='young') ? $patient->last_name : ''}}" placeholder="Nom de famille">
-                            <label>Nom de famille</label>
+                <div id="kidSection" class="hidden">
+                    <h4 class="text-lg font-semibold text-cyan-700 border-l-4 border-cyan-400 pl-3 mb-4 kid-title">Informations sur l'enfant</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-semibold text-cyan-700 mb-2">Nom de famille</label>
+                            <input type="text" id="kidLastName" name="kid_last_name" class="form-control w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-all duration-200 bg-white/50 backdrop-blur-sm" value="{{ ($patient->patient_type=='kid'||$patient->patient_type=='young') ? $patient->last_name : ''}}" placeholder="Nom de famille">
                         </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="form-floating">
-                            <input type="text" id="kidFirstName" name="kid_first_name" class="form-control"  value="{{ ($patient->patient_type=='kid'||$patient->patient_type=='young') ? $patient->first_name : ''}}" placeholder="Prénom">
-                            <label>Prénom</label>
+                        <div>
+                            <label class="block text-sm font-semibold text-cyan-700 mb-2">Prénom</label>
+                            <input type="text" id="kidFirstName" name="kid_first_name" class="form-control w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-all duration-200 bg-white/50 backdrop-blur-sm" value="{{ ($patient->patient_type=='kid'||$patient->patient_type=='young') ? $patient->first_name : ''}}" placeholder="Prénom">
                         </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="form-floating">
-                            <input type="text" id="kidEcole" name="kid_ecole" class="form-control" value="{{ ($patient->patient_type=='kid'||$patient->patient_type=='young') ? $patient->ecole : ''}}"placeholder="École">
-                            <label>École</label>
+                        <div>
+                            <label class="block text-sm font-semibold text-cyan-700 mb-2">École</label>
+                            <input type="text" id="kidEcole" name="kid_ecole" class="form-control w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-all duration-200 bg-white/50 backdrop-blur-sm" value="{{ ($patient->patient_type=='kid'||$patient->patient_type=='young') ? $patient->ecole : ''}}" placeholder="École">
                         </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="form-floating">
-                            <select id="kidSystem" name="kid_system" class="form-select">
+                        <div>
+                            <label class="block text-sm font-semibold text-cyan-700 mb-2">Système</label>
+                            <select id="kidSystem" name="kid_system" class="form-select w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-all duration-200 bg-white/50 backdrop-blur-sm">
                                 <option value="" selected disabled>Sélectionner le système</option>
                                 <option value="moroccan" {{ $patient->system == 'moroccan' ? 'selected' :'' }}>Système marocain</option>
                                 <option value="mission" {{ $patient->system == 'mission' ? 'selected' :'' }}>Système mission</option>
                             </select>
-                            <label>Système éducatif</label>
                         </div>
                     </div>
                 </div>
-            </div>
-
             <!-- Section Parent -->
-            <div id="parentSection" class="d-none">
-                <h4 class="section-title parent-title">Informations sur le parent</h4>
-                <div class="row g-3">
-                    <div class="col-md-6">
-                        <div class="form-floating">
-                            <input type="text" name="parent_last_name" class="form-control" id="parentLastName" placeholder="Nom de famille" 
-                            value = '{{ $patient->parent_last_name }}' required>
-                            <label>Nom de famille</label>
+                <div id="parentSection" class="hidden">
+                    <h4 class="text-lg font-semibold text-cyan-700 border-l-4 border-cyan-400 pl-3 mb-4 parent-title">Informations sur le parent</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-semibold text-cyan-700 mb-2">Nom de famille</label>
+                            <input type="text" name="parent_last_name" class="form-control w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-all duration-200 bg-white/50 backdrop-blur-sm" id="parentLastName" placeholder="Nom de famille" value = '{{ $patient->parent_last_name }}' required>
                         </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="form-floating">
-                            <input type="text" name="parent_first_name" class="form-control" id="parentFirstName" placeholder="Prénom" value = '{{$patient->parent_first_name }}' required>
-                            <label>Prénom</label>
+                        <div>
+                            <label class="block text-sm font-semibold text-cyan-700 mb-2">Prénom</label>
+                            <input type="text" name="parent_first_name" class="form-control w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-all duration-200 bg-white/50 backdrop-blur-sm" id="parentFirstName" placeholder="Prénom" value = '{{$patient->parent_first_name }}' required>
                         </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="form-floating">
-                            <input type="tel" name="parent_phone" class="form-control" id="parentPhone"  placeholder="Téléphone" 
-                            value = '{{ $patient->phone }}' required>
-                            <label>Numéro de téléphone</label>
+                        <div>
+                            <label class="block text-sm font-semibold text-cyan-700 mb-2">Numéro de téléphone</label>
+                            <input type="tel" name="parent_phone" class="form-control w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-all duration-200 bg-white/50 backdrop-blur-sm" id="parentPhone" placeholder="Téléphone" value = '{{ $patient->phone }}' required>
                         </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="form-floating">
-                            <input type="email" id="parentEmail" name="parent_email" class="form-control @error('parent_email') is-invalid @enderror" 
-                            value = '{{ $patient->email }}'  placeholder="Email">
-                            <label>Adresse e-mail</label>
+                        <div>
+                            <label class="block text-sm font-semibold text-cyan-700 mb-2">Adresse e-mail</label>
+                            <input type="email" id="parentEmail" name="parent_email" class="form-control w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-all duration-200 bg-white/50 backdrop-blur-sm @error('parent_email') border-red-500 @enderror" value = '{{ $patient->email }}'  placeholder="Email">
                             @error('parent_email')
-                                <div class="invalid-feedback">{{ $message }}</div>
+                                <div class="text-red-500 text-xs mt-1">{{ $message }}</div>
                             @enderror
                         </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="form-floating">
-                            <input type="text" name="parent_profession" class="form-control" id="parentProfession"
-                            value = '{{ $patient->profession }}'  placeholder="Profession" required>
-
-                            <label>Profession</label>
+                        <div>
+                            <label class="block text-sm font-semibold text-cyan-700 mb-2">Profession</label>
+                            <input type="text" name="parent_profession" class="form-control w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-all duration-200 bg-white/50 backdrop-blur-sm" id="parentProfession" value = '{{ $patient->profession }}'  placeholder="Profession" required>
                         </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="form-floating">
-                            <input type="text" name="parent_etablissement" id="parentEtablissement" class="form-control bg-transparent" 
-                            value = '{{ $patient->etablissment }} '  placeholder="Établissement" required>
-                            <label for="parentEtablissement">Établissement</label>
+                        <div>
+                            <label class="block text-sm font-semibold text-cyan-700 mb-2">Établissement</label>
+                            <input type="text" name="parent_etablissement" id="parentEtablissement" class="form-control w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-all duration-200 bg-white/50 backdrop-blur-sm" value = '{{ $patient->etablissment }} '  placeholder="Établissement" required>
                         </div>
-                    </div>
-            
-                    <div class="col-12">
-                        <div class="form-floating">
-                            <input type="text" name="parent_adresse" class="form-control" id="parentAdresse"
-                            value = '{{ $patient->address }}'  placeholder="Adresse" required>
-                            <label>Adresse</label>
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-semibold text-cyan-700 mb-2">Adresse</label>
+                            <input type="text" name="parent_adresse" class="form-control w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-all duration-200 bg-white/50 backdrop-blur-sm" id="parentAdresse" value = '{{ $patient->address }}'  placeholder="Adresse" required>
                         </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="form-floating">
-                            <select name="mode" class="form-select" required>
+                        <div>
+                            <label class="block text-sm font-semibold text-cyan-700 mb-2">Mode de consultation</label>
+                            <select name="mode" class="form-select w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-all duration-200 bg-white/50 backdrop-blur-sm" required>
                             <option value="A Distance" {{ $patient->mode =='A Distance' ? 'selected' :''}}>À distance</option>
                             <option value="Presentiel" {{ $patient->mode =='Presentiel' ? 'selected' :''}}>En présentiel</option>
                             </select>
-                            <label>Mode de consultation</label>
                         </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="form-floating">
-                            <select name="abonnement" class="form-select" required>
+                        <div>
+                            <label class="block text-sm font-semibold text-cyan-700 mb-2">Type d'abonnement</label>
+                            <select name="abonnement" class="form-select w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-all duration-200 bg-white/50 backdrop-blur-sm" required>
                                 <option value="seance" {{ $patient->subscription =='seance' ? 'selected' :''}}>Par séance</option>
                                 <option value="mois"  {{ $patient->subscription =='mois' ? 'selected' :''}}>Mensuel</option>
                                 <option value="pack"  {{ $patient->subscription =='pack' ? 'selected' :''}}>Pack</option>
                             </select>
-                            <label>Type d'abonnement</label>
                         </div>
                     </div>
                 </div>
-            </div>
-
             <!-- Section des coachs -->
-            <div class="col-12">
-                <h4 class="section-title">Sélectionner les coachs</h4>
+                <div>
+                    <h4 class="text-lg font-semibold text-cyan-700 border-l-4 border-cyan-400 pl-3 mb-4">Sélectionner les coachs</h4>
                 @error('coaches')
-                    <div class="alert alert-danger">
-                        <i class="fas fa-exclamation-circle me-2"></i>{{ $message }}
-                    </div>	
+                        <div class="bg-red-100 text-red-700 px-4 py-3 rounded-xl mb-4"><i class="fas fa-exclamation-circle mr-2"></i>{{ $message }}</div>
                 @enderror
-                <!-- Conteneur défilant pour les coachs -->
-                <div class="coach-section" id="coachContainer" style="max-height: 300px; overflow-y: auto;">
+                    <div id="coachContainer" class="grid grid-cols-1 md:grid-cols-2 gap-4 bg-white/60 rounded-xl p-4 border border-cyan-100" style="max-height: 300px; overflow-y: auto;">
                     @foreach ($orderedCoaches as $coach)
                         @php
-                            // Check if this coach is already assigned to the patient.
                             $assigned = $patient->coaches->firstWhere('id', $coach->id);
                         @endphp
-                        <div class="form-check coach-item" data-coach-id="{{ $coach->id }}">
-                            <input type="checkbox" name="coaches[]" id="coachCheckbox{{ $coach->id }}" class="form-check-input" value="{{ $coach->id }}" 
-                                {{ $assigned ? 'checked' : '' }} onchange="maxCountDisplay('{{ $coach->id }}', this)">
-                            <label class="form-check-label" for="coachCheckbox{{ $coach->id }}">
-                                {{ $coach->full_name }}
-                            </label>
+                            <div class="flex items-center gap-3 coach-item" data-coach-id="{{ $coach->id }}">
+                                <input type="checkbox" name="coaches[]" id="coachCheckbox{{ $coach->id }}" class="form-checkbox h-5 w-5 text-cyan-600 focus:ring-cyan-500" value="{{ $coach->id }}" {{ $assigned ? 'checked' : '' }} onchange="maxCountDisplay('{{ $coach->id }}', this)">
+                                <label for="coachCheckbox{{ $coach->id }}" class="text-gray-700 font-medium">{{ $coach->full_name }}</label>
                             @if($assigned)
-                                <!-- Show the capacity input with the value from pivot -->
-                                <input type="number" id="coach{{ $coach->id }}" name="coach{{ $coach->id }}" class="coach-capacity" min="1" max="3" style="width: 100px;" value="{{ $assigned->pivot->max_appointments }}">
+                                    <input type="number" id="coach{{ $coach->id }}" name="coach{{ $coach->id }}" class="ml-2 w-20 border border-cyan-200 rounded-lg px-2 py-1" min="1" max="3" value="{{ $assigned->pivot->max_appointments }}">
                             @else
-                                <input type="number" id="coach{{ $coach->id }}" name="coach{{ $coach->id }}" class="d-none coach-capacity" min="1" max="3" style="width: 100px;">
+                                    <input type="number" id="coach{{ $coach->id }}" name="coach{{ $coach->id }}" class="hidden ml-2 w-20 border border-cyan-200 rounded-lg px-2 py-1" min="1" max="3">
                             @endif
                         </div>
                     @endforeach
                 </div>
-                <!-- Hidden input to store the order -->
                 <input type="hidden" name="coach_order" id="coach_order">
             </div>
-
-            <!-- max appointments on a week -->
-            <div class="col-md-4">
-            <h4 class="section-title" >Rendez-vous par semaine</h4>
-                <div class="form-floating">
-                    <input type="number" min="1" max="3" name="max_appointments" class="form-control" value="{{ $patient->weekly_quota}}" required >
-                    <label>Nombre maximum de rendez-vous par semaine</label>
+                <!-- Max appointments per week -->
+                <div>
+                    <h4 class="text-lg font-semibold text-cyan-700 border-l-4 border-cyan-400 pl-3 mb-4">Rendez-vous par semaine</h4>
+                    <input type="number" min="1" max="3" name="max_appointments" class="form-control w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-all duration-200 bg-white/50 backdrop-blur-sm" value="{{ $patient->weekly_quota}}" required placeholder="Nombre maximum de rendez-vous par semaine">
                 </div>
-            </div>
-
-            
-            <div class="form-group text-center mt-4">
-                    <label class="form-label fw-bold mb-2">Choisir une image :</label>
-
-                    <!-- Hidden File Input -->
+                <!-- Image upload section -->
+                <div class="text-center mt-4">
+                    <label class="block text-sm font-semibold text-cyan-700 mb-2">Choisir une image</label>
                     <input type="file" name="image" id="image-input" accept="image/*" hidden onchange="previewImage(event)">
-
-                    <!-- Custom Button -->
-                    <label for="image-input" class="btn btn-primary">
-                      <i class="fas fa-upload me-2"></i> Télécharger l'image
+                    <label for="image-input" class="inline-block bg-gradient-to-r from-cyan-500 to-sky-600 text-white px-6 py-2 rounded-xl font-semibold cursor-pointer hover:from-cyan-600 hover:to-sky-700 transition-all duration-200 shadow-lg">
+                        <i class="fas fa-upload mr-2"></i> Télécharger l'image
                     </label>
-
-                    <!-- Image Preview (Circle or Square) -->
-                    <div id="image-preview" class="mt-3 {{  $patient->image_path ==null ? 'd-none': ''}} ">
-                      <img src="{{ asset('storage/' . $patient->image_path) }}" alt="Aperçu de l'image" id="image-preview-img" class="rounded-circle shadow img-thumbnail" style="width: 80px; height: 80px; object-fit: cover;">
+                    <p class="text-xs text-gray-500 mt-2">Image max size: 2MB. Formats: JPG, PNG, etc.</p>
+                    <div id="image-size-error" class="text-red-600 text-sm mt-2 hidden"></div>
+                    <div id="image-preview" class="mt-3 {{  $patient->image_path ==null ? 'hidden': ''}} ">
+                        <img src="{{ asset('storage/' . $patient->image_path) }}" alt="Aperçu de l'image" id="image-preview-img" class="rounded-full shadow-lg border-4 border-cyan-200 mx-auto" style="width: 80px; height: 80px; object-fit: cover;">
                     </div>
                 </div>
-
-            <!-- Section Calendrier -->
-            <div class="col-12">
-                <h4 class="section-title mt-4">Priorités de l'emploi du temps</h4>
-                <div class="col-md-6">
-                    <div class="form-floating">
-                        <select id="priorityChoice" name="priority_choice" class="form-select">
+                <!-- Calendar Section -->
+                <div>
+                    <h4 class="text-lg font-semibold text-cyan-700 border-l-4 border-cyan-400 pl-3 mb-4 mt-4">Priorités de l'emploi du temps</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-semibold text-cyan-700 mb-2">Choisir une priorité</label>
+                            <select id="priorityChoice" name="priority_choice" class="form-select w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-all duration-200 bg-white/50 backdrop-blur-sm">
                             <option value="1" selected>Priorité 1</option>
-                            <option value="2" >Priorité 2</option>
-                            <option value="3" >Priorité 3</option>
+                                <option value="2">Priorité 2</option>
+                                <option value="3">Priorité 3</option>
                         </select>
-                        <label>Choisir une priorité</label>
+                        </div>
+                        <div>
+                            @error('priorities')
+                                <div class="bg-red-100 text-red-700 px-4 py-3 rounded-xl mb-4">
+                                    <i class="fas fa-exclamation-circle mr-2"></i>{{ $message }}
+                                </div>
+                            @enderror
+                        </div>
                     </div>
+                    <div id="calendar" class="mt-4 bg-white rounded-2xl shadow-lg border border-cyan-100 p-4"></div>
                 </div>
-                @error('priorities')
-                    <div class="alert alert-danger">
-                        <i class="fas fa-exclamation-circle me-2"></i>{{ $message }}
-                    </div>
-                @enderror
-
-                <div class="calendar-container">
-                    <div id="calendar"></div>
-                </div> 
-            </div>
-
             <!-- Hidden Input & Submit -->
-            <div class="col-12 text-center mt-4">
+                <div class="text-center mt-8">
                 <input type="hidden" name="priorities" id="prioritiesInput">
-                <button type="submit" class="btn btn-primary px-5 py-2">
-                    <i class="fas fa-save me-2"></i>Mettre à jour le profil du Patient
+                    <button type="submit" class="bg-gradient-to-r from-cyan-500 to-sky-600 text-white px-8 py-3 rounded-2xl font-semibold hover:from-cyan-600 hover:to-sky-700 transform hover:-translate-y-1 transition-all duration-200 flex items-center justify-center gap-3 shadow-lg hover:shadow-2xl mx-auto">
+                        <i class="fas fa-save mr-2"></i>Mettre à jour le profil du Patient
                 </button>
             </div>
         </form>
     </div>
 </div>
-
-
+</div>
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 <script>
-     function  maxCountDisplay(id,event) {
+function maxCountDisplay(id, event) {
+    var input = document.querySelector(`#coach${id}`);
+    if (input) {
         if (event.checked) {
-            document.querySelector(`#coach${id}`).classList.remove('d-none'); 
-            console.log(id);
-            
-            
-        }else{
-        document.querySelector(`#coach${id}`).classList.add('d-none');
-        document.querySelector(`#coach${id}`).value = ''; 
+            input.classList.remove('hidden');
+        } else {
+            input.classList.add('hidden');
+            input.value = '';
         }
-
+    }
     }
     document.addEventListener("DOMContentLoaded", function() {
     const patientTypeSelect = document.getElementById('patientType');
     const kidSection = document.getElementById('kidSection');
     const parentSection = document.getElementById('parentSection');
-    const parentSectionTitle = document.getElementsByClassName('parent-title');
-    const kidYoungDetailsTitle =document.querySelector('.kid-title');
+    const parentTitle = document.querySelector('.parent-title');
+    const kidTitle = document.querySelector('.kid-title');
     const kidLastName = document.querySelector('#kidLastName');
     const kidFirstName = document.querySelector('#kidFirstName');
     const kidEcole = document.querySelector('#kidEcole');
     const kidSystem = document.querySelector('#kidSystem');
-    const calendarEl = document.querySelector('#calendar');
+        const calendarEl = document.querySelector('#calendar')
+    const parentEmail = document.querySelector('#parentEmail');
 
-    document.querySelectorAll('.form-check-input').forEach(function(checkbox) {
-       
-        checkbox.addEventListener('change', function() {
-                let coachId = this.value;
-                let input = document.getElementById('coach' + coachId);
-                if (this.checked) {
-                    // Show the input if checked.
-                    if(input) {
-                        input.classList.remove('d-none');
-                    }
-                } 
-                else {
-                    // Hide the input if unchecked.
-                    if(input) {
-                        input.classList.add('d-none');
-                    }
-                }
-            });
-        });
+    // Initialize calendar
+    initPriorities();
 
         if (patientTypeSelect.value == 'kid'|| patientTypeSelect.value=='young') {
-                kidSection.classList.remove('d-none');
-                parentSection.classList.remove('d-none');
-                parentSectionTitle.textContent = 'Détails du parent';
-
+        kidSection.classList.remove('hidden');
+        parentSection.classList.remove('hidden');
+        if (parentTitle) parentTitle.textContent = 'Détails du parent';
                 kidFirstName.setAttribute("required", "");
                 kidLastName.setAttribute("required", "");
                 kidEcole.setAttribute("required", "");
                 kidSystem.setAttribute("required", "");
-            }
-            else{
-                kidSection.classList.add('d-none');
-                parentSection.classList.remove('d-none');
-                parentSectionTitle.textContent = 'Détails du patient';
-
+    } else {
+        kidSection.classList.add('hidden');
+        parentSection.classList.remove('hidden');
+        if (parentTitle) parentTitle.textContent = 'Détails du patient';
                 kidFirstName.removeAttribute('required');
                 kidLastName.removeAttribute('required');
                 kidEcole.removeAttribute('required');
                 kidSystem.removeAttribute('required');
             }
-
         patientTypeSelect.addEventListener('change', function() {
             const selectedType = this.value;
             if (selectedType === 'young') {
-                kidYoungDetailsTitle.textContent = 'Détails du jeune';
-            } 
-            else {
-                kidYoungDetailsTitle.textContent = 'Détails de l\'enfant';
+            if (kidTitle) kidTitle.textContent = 'Détails du jeune';
+        } else {
+            if (kidTitle) kidTitle.textContent = 'Détails de l\'enfant';
             }
             if (selectedType === 'kid' || selectedType === 'young') {
                 kidFirstName.setAttribute("required", "");
                 kidLastName.setAttribute("required", "");
                 kidEcole.setAttribute("required", "");
                 kidSystem.setAttribute("required", "");
-
-                kidSection.classList.remove('d-none');
-                parentSection.classList.remove('d-none');
-                parentSectionTitle.textContent = 'Détails du parent';
-            } 
-            else  {
+            kidSection.classList.remove('hidden');
+            parentSection.classList.remove('hidden');
+            if (parentTitle) parentTitle.textContent = 'Détails du parent';
+        } else {
                 kidFirstName.removeAttribute('required');
                 kidLastName.removeAttribute('required');
                 kidEcole.removeAttribute('required');
                 kidSystem.removeAttribute('required');
-
-                kidSection.classList.add('d-none');
-                parentSection.classList.remove('d-none');
-                parentSectionTitle.textContent = 'Détails du patient';
-            } 
-            });
-        
-            initPriorities();
+            kidSection.classList.add('hidden');
+            parentSection.classList.remove('hidden');
+            if (parentTitle) parentTitle.textContent = 'Détails du patient';
+        }
+    });
+    if (parentEmail && parentEmail.classList.contains('is-invalid')) {
+        parentSection.classList.remove('hidden');
+    }
     });
     document.addEventListener('DOMContentLoaded', function() {
-    // Initialize SortableJS on the coach container
     var coachContainer = document.getElementById('coachContainer');
+    if (coachContainer && typeof Sortable !== 'undefined') {
     Sortable.create(coachContainer, {
-        animation: 150, // smooth animation during sorting
+            animation: 150,
         onEnd: function(evt) {
             updateCoachOrder();
         }
     });
-
-    // Function to update the hidden input with the current order of coach IDs
+    }
     function updateCoachOrder() {
         const coachItems = document.querySelectorAll('#coachContainer .coach-item');
         const order = [];
@@ -657,21 +358,18 @@
             order.push(item.getAttribute('data-coach-id'));
         });
         document.getElementById('coach_order').value = JSON.stringify(order);
-        console.log("Ordre actuel des coachs :", order);
     }
-    
-    // Update the order initially
     updateCoachOrder();
 });
 
+// Calendar functionality
     var prioritiesData = {};
-    var storedPriorities =<?php echo $patient->priorities ?> ; 
+var storedPriorities = <?php echo $patient->priorities ?>; 
     for (var key in storedPriorities) {        
         if (storedPriorities.hasOwnProperty(key)) {
             prioritiesData[key] = storedPriorities[key];
         }
     }
-    console.log("Priorités initiales :", prioritiesData);
    
     function addEventToPriorities(priorityChoice, date, eventId, startTime, endTime) {
     var priorityKey = "priority " + priorityChoice;    
@@ -686,29 +384,24 @@
     startTime: startTime,
     endTime: endTime
     };
-
     prioritiesData[priorityKey][date].push(eventData);
-    console.log("Après ajout :", prioritiesData);
     }
+
     function updateEventInPriorities(event) {
-    // Extract the priority from the event title ("Priority 1", etc.)
     var parts = event.title.split(" ");
-    var priorityChoice = parts[1]; // e.g., "1"
+    var priorityChoice = parts[1];
     var priorityKey = "priority " + priorityChoice;
-    // New date and time (use ISO string, then extract needed parts)
     var newStart = event.start;
     var newEnd = event.end ? event.end : event.start;
     var newDate = newStart.toISOString().split("T")[0];
     var newStartTime = newStart.toISOString().split("T")[1].substring(0,5);
     var newEndTime = newEnd.toISOString().split("T")[1].substring(0,5);
     
-    // Remove the event from every date in its priority group.
     for (var date in prioritiesData[priorityKey]) {
         var arr = prioritiesData[priorityKey][date];
         for (var i = 0; i < arr.length; i++) {
         if (arr[i].id === event.id) {
             arr.splice(i, 1);
-            // If no events remain on that date, remove the date key.
             if (arr.length === 0) {
             delete prioritiesData[priorityKey][date];
             }
@@ -717,7 +410,6 @@
         }
     }
     
-    // Add the event to the new date.
     if (!prioritiesData[priorityKey][newDate]) {
         prioritiesData[priorityKey][newDate] = [];
     }
@@ -726,8 +418,8 @@
         startTime: newStartTime,
         endTime: newEndTime
     });
-    console.log("Après mise à jour :", prioritiesData);
     }
+
     function deleteEventFromPriorities(event) {
     var parts = event.title.split(" ");
     var priorityChoice = parts[1];
@@ -743,28 +435,26 @@
             if (Object.keys(prioritiesData[priorityKey]).length === 0) {
                     delete prioritiesData[priorityKey];
                 }
-            console.log("Après suppression :", prioritiesData);
             return;
         }
         }
     }
     }
+
     function storePriorities() {
-    // Update the hidden input with the stringified JSON.
     document.getElementById("prioritiesInput").value = JSON.stringify(prioritiesData);
-    // Return true to allow the form submission to proceed.
     return true;
 }
+
     function initPriorities() { 
-        let initialDate ='';
+    let initialDate = '';
         const calendarEl = document.querySelector('#calendar');
         var colors = { "1": "red", "2": "orange", "3": "green" };
        
-        const calendar = new FullCalendar.Calendar(calendarEl,{
-            
+    const calendar = new FullCalendar.Calendar(calendarEl, {
             initialView: "timeGridWeek",
             editable: true,
-            selectable:true,
+        selectable: true,
             headerToolbar: {
                 left: 'prev,next today',
                 center: 'title',
@@ -774,23 +464,19 @@
             hiddenDays: [0], 
             slotMinTime: '12:00:00',
             slotMaxTime: '20:00:00',
-            slotDuration: '01:00:00', // Set the slot duration to 1 hour
-            slotLabelInterval: '01:00:00', // Set the interval for slot labels to 1 hour
+        slotDuration: '01:00:00',
+        slotLabelInterval: '01:00:00',
             allDaySlot: false,
             nowIndicator: true,
             expandRows: true,
+        height: 500,
                 select: function(info) {
-    
                     var startDateTime = info.startStr; 
                     var endDateTime = info.endStr;      
-                    
                     var date = startDateTime.split("T")[0]; 
                     var startTime = startDateTime.split("T")[1] ? startDateTime.split("T")[1].substring(0,5) : "00:00";
                     var endTime = endDateTime ? (endDateTime.split("T")[1] ? endDateTime.split("T")[1].substring(0,5) : "23:59") : "23:59";
     
-                    
-                  
-                    // var priorityChoice = prompt("Enter priority (1=High, 2=Medium, 3=Low):");
                     var priorityChoice = document.querySelector('#priorityChoice').value;
                     if (!priorityChoice || !["1","2","3"].includes(priorityChoice)) {
                         alert("Priorité sélectionnée invalide.");
@@ -798,9 +484,7 @@
                         return;
                     }
                     
-                    // Create a unique event ID.
                     var eventId = String(Date.now());
-                
                     var eventObj = {
                         id: eventId,
                         title: "priority " + priorityChoice,
@@ -809,12 +493,9 @@
                         backgroundColor: colors[priorityChoice]
                     };
                     calendar.addEvent(eventObj);
-           
-                    // var isRecurring = confirm("Do you want this event to repeat every week on this day?");
                     addEventToPriorities(priorityChoice, date, eventId, startTime, endTime);
                     calendar.unselect();
                 },
-
                 eventDidMount: function(arg) {
                     arg.el.addEventListener('mouseenter', function() {
                         arg.el.style.zIndex = '999';
@@ -834,18 +515,16 @@
                         deleteEventFromPriorities(info.event);
                         info.event.remove();
                     };
-                
             }
         });
 
         calendar.render();        
-        var allEvents = 
-            <?php
+    var allEvents = <?php
                 $patientPriorities = json_decode($patient->priorities, true);
                 $allPriorities = [];
+        if ($patientPriorities) {
                 foreach ($patientPriorities as $priorityKey => $data) {
-                        // dd($priorityKey,$data);
-                        $priorityClass ='';
+                $priorityClass = '';
                         switch ($priorityKey) {
                             case 'priority 1':
                                 $priorityClass = 'priority1';
@@ -858,12 +537,10 @@
                                 break;
                         }
                     foreach ($data as $day => $slots) {
-                            // dd($slots[0]['startTime']);
                             foreach ($slots as $slot) {
-                                // dd($slot);
                                 $startTime = $slot['startTime'].':00';
                                 $endTime = $slot['endTime'].':00';
-                                $allPriorities[]=[
+                        $allPriorities[] = [
                                     'id' => $slot['id'],
                                     'title' => $priorityKey,
                                     'start'=> $day.'T'.$startTime,
@@ -874,7 +551,7 @@
                                     ]                       
                                 ];
                             }
-
+                }
                     }
                 }
                 echo json_encode($allPriorities);
@@ -882,88 +559,36 @@
 
         calendar.addEventSource(allEvents);
 
-        initialDate = allEvents.length > 0 ? allEvents[0].start : null;
-        initialDate = initialDate.split('T')[0]
+    if (allEvents.length > 0) {
+        initialDate = allEvents[0].start;
+        initialDate = initialDate.split('T')[0];
         calendar.gotoDate(initialDate);
-        console.log(initialDate);
-        
-
     }
-
-    function fetchCoachesBySpeciality(specialityId) {
-        fetch("{{ route('getCoachesBySpeciality') }}",{
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': "{{ csrf_token() }}"
-            },
-            body: JSON.stringify({ specialityId })
-        })
-            .then(response => response.json())
-            .then(data => {
-                const coaches = data.coaches || [];
-
-                const coachSection = document.querySelector('.coach-section');
-                coachSection.innerHTML = ''; 
-                
-    
-                    if (coaches.length === 0) {
-                        document.getElementById('caochesSectionWarning').classList.remove('d-none');
-                        return; 
-                    }else{
-                        document.getElementById('caochesSectionWarning').classList.add('d-none');
-                    }
-                coaches.forEach(coach => {
-                    const coachDiv = document.createElement('div');
-                    coachDiv.classList.add('form-check');
-
-                    const checkbox = document.createElement('input');
-                    checkbox.type = 'checkbox';
-                    checkbox.classList.add('form-check-input');
-                    checkbox.id = `coachCheckbox${coach.id}`;
-                    checkbox.name = 'coaches[]';
-                    checkbox.value = coach.id;
-                    checkbox.setAttribute('onchange', `maxCountDisplay('${coach.id}', this)`);
-
-                    const label = document.createElement('label');
-                    label.classList.add('form-check-label');
-                    label.setAttribute('for', `coachCheckbox${coach.id}`);
-                    label.textContent = coach.full_name;
-
-                    const inputNumber = document.createElement('input');
-                    inputNumber.type = 'number';
-                    inputNumber.id = `coach${coach.id}`;
-                    inputNumber.name = `coach${coach.id}`;
-                    inputNumber.classList.add('d-none');
-                    inputNumber.min = '1';
-                    inputNumber.style.width = '100px';
-
-                    coachDiv.appendChild(checkbox);
-                    coachDiv.appendChild(label);
-                    coachDiv.appendChild(inputNumber);
-
-                    coachSection.appendChild(coachDiv);
-                });
-                
-            })
-            .catch(error => console.error('Error fetching coaches:', error));
-    }
-
+}
   
     function previewImage(event) {
         const input = event.target;
         const previewContainer = document.getElementById("image-preview");
         const previewImage = document.getElementById("image-preview-img");
-
+    const errorDiv = document.getElementById("image-size-error");
         if (input.files && input.files[0]) {
+        const file = input.files[0];
+        if (file.size > 2 * 1024 * 1024) { // 2MB
+            errorDiv.textContent = "L'image sélectionnée dépasse la taille maximale de 2 Mo.";
+            errorDiv.classList.remove("hidden");
+            previewContainer.classList.add("hidden");
+            input.value = ""; // Reset the input
+            return;
+        } else {
+            errorDiv.classList.add("hidden");
+        }
             const reader = new FileReader();
             reader.onload = function (e) {
                 previewImage.src = e.target.result;
-                previewContainer.classList.remove("d-none"); // Show preview
+            previewContainer.classList.remove("hidden"); // Show preview
             };
-            reader.readAsDataURL(input.files[0]);
+        reader.readAsDataURL(file);
         }
     }
- 
 </script>
 @endsection

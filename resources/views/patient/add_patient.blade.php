@@ -1,525 +1,219 @@
 @extends('layouts.app')
 
 @section('content')
-<style>
-    :root {
-        --primary-color: #6366f1;
-        --secondary-color: #4f46e5;
-        --accent-color: #818cf8;
-        --light-bg: #f8fafc;
-        --dark-text: #1e293b;
-        --glass-bg: rgba(255, 255, 255, 0.9);
-    }
 
-    .creation-container {
-        background: var(--light-bg);
-        padding: 2rem;
-        border-radius: 12px;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-    }
-
-    .form-header {
-        color: var(--secondary-color);
-        font-weight: 600;
-        margin-bottom: 2rem;
-        padding-bottom: 1rem;
-        border-bottom: 2px solid var(--primary-color);
-    }
-
-    .glass-card {
-        background: var(--glass-bg);
-        backdrop-filter: blur(10px);
-        border-radius: 12px;
-        padding: 1.5rem;
-        margin-bottom: 1.5rem;
-        border: 1px solid rgba(255, 255, 255, 0.3);
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-    }
-
-    .form-floating label {
-        color: #64748b;
-        transition: all 0.3s ease;
-    }
-
-    .form-control, .form-select {
-        border-radius: 8px;
-        border: 1px solid #e2e8f0;
-        transition: all 0.3s ease;
-        padding: 0.75rem 1rem;
-    }
-
-    .form-control:focus, .form-select:focus {
-        border-color: var(--primary-color);
-        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
-    }
-
-    .section-title {
-        color: var(--secondary-color);
-        font-weight: 500;
-        margin: 1.5rem 0;
-        padding-left: 0.5rem;
-        border-left: 3px solid var(--primary-color);
-    }
-
-    #calendar {
-        background: white;
-        border-radius: 12px;
-        padding: 1rem;
-        height: 500px;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-    }
-
-    .fc-header-toolbar {
-        background: linear-gradient(195deg, var(--primary-color), var(--secondary-color));
-        color: white;
-        padding: 1rem;
-        border-radius: 8px 8px 0 0;
-    }
-
-    .fc-button-primary {
-        background-color: var(--primary-color) !important;
-        border-color: var(--primary-color) !important;
-    }
-
-    .priority-marker {
-        display: inline-block;
-        width: 12px;
-        height: 12px;
-        border-radius: 50%;
-        margin-right: 0.5rem;
-    }
-
-    .btn-primary {
-        background: var(--primary-color);
-        border: none;
-        padding: 0.75rem 2rem;
-        transition: all 0.3s ease;
-    }
-
-    .btn-primary:hover {
-        background: var(--secondary-color);
-        transform: translateY(-2px);
-    }
-
-    .alert-danger {
-        background: rgba(239, 68, 68, 0.1);
-        border: none;
-        color: #ef4444;
-        border-radius: 8px;
-    }
-
-    .is-invalid {
-        border-color: #ef4444 !important;
-    }
-
-
-    .coach-section {
-    background: var(--glass-bg);
-    padding: 1rem;
-    border-radius: 12px;
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-}
-.coach-section .form-check {
-    margin-bottom: 0.5rem;
-}
-.coach-section .form-check-input {
-    cursor: pointer;
-}
-.coach-section .form-check-label {
-    color: var(--dark-text);
-    cursor: pointer;
-}
-
-.invalid-feedback {
-        color: #ef4444;
-        font-size: 0.875rem;
-        margin-top: 0.5rem;
-    }
-
-/* Responsive styles only - to be added at the end of existing CSS */
-
-/* Mobile devices (phones, less than 768px) */
-@media (max-width: 767.98px) {
-    .creation-container {
-        padding: 1rem;
-    }
-    
-    .glass-card {
-        padding: 1rem;
-    }
-    
-    .form-header {
-        font-size: 1.5rem;
-        margin-bottom: 1.5rem;
-    }
-    
-    .row.g-3 {
-        row-gap: 0.75rem !important;
-    }
-    
-    .col-md-4, .col-md-6 {
-        width: 100%;
-    }
-    
-    .section-title {
-        font-size: 1.25rem;
-        margin: 1.25rem 0;
-    }
-    
-    /* Make calendar responsive */
-    #calendar {
-        overflow-x: auto;
-    }
-    
-    /* Make toolbar buttons more touch-friendly */
-    .fc-button {
-        padding: 0.5rem !important;
-        min-height: 44px !important;
-        min-width: 44px !important;
-        margin: 2px !important;
-    }
-    
-    /* Improve calendar toolbar layout on small screens */
-    .fc-header-toolbar {
-        flex-wrap: wrap;
-    }
-    
-    .fc-toolbar-chunk {
-        margin-bottom: 0.5rem;
-    }
-    
-    /* Ensure form inputs have good touch targets */
-    .form-control, .form-select, input[type="number"] {
-        min-height: 44px;
-        font-size: 16px; /* Prevent zoom on iOS */
-    }
-    
-    /* Improve coach selection on mobile */
-    .coach-section .form-check {
-        padding: 0.5rem;
-    }
-    
-    /* Improve image upload section */
-    label[for="image-input"] {
-        min-height: 44px;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-    }
-    
-    /* Make submit button more touch-friendly */
-    .btn-primary {
-        min-height: 44px;
-    }
-}
-
-/* Small devices (landscape phones) */
-@media (min-width: 576px) and (max-width: 767.98px) {
-    .creation-container {
-        padding: 1.25rem;
-    }
-    
-    .glass-card {
-        padding: 1.25rem;
-    }
-}
-
-/* Medium devices (tablets) */
-@media (min-width: 768px) and (max-width: 991.98px) {
-    /* Ensure calendar is responsive but maintains functionality */
-    #calendar {
-        overflow-x: auto;
-    }
-}
-
-
-
-</style>
-
-<div class="creation-container">
-    <div class="glass-card">
-        <h3 class="form-header">✨ Nouveau Profil Patient</h3>
-        
-        <form action="{{ route('patient.store') }}" method="POST" enctype="multipart/form-data" onsubmit="storePriorities()" class="row g-3">
-            @csrf
-
-            @error('patient_exists')
-                <div class="alert alert-danger">{{ $message }}</div>
-            @enderror
-            <!-- Patient Type Selection -->
-            <div class="col-12">
-                <div class="form-floating">
-                    <select id="patientType" name="patient_type" class="form-select" required>
+<div class="min-h-screen bg-gradient-to-br from-cyan-50 via-sky-50 to-blue-50 p-6 mt-24">
+    <div class="max-w-3xl mx-auto">
+        <div class="bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 p-8">
+            <h3 class="text-2xl font-bold text-center mb-8 bg-gradient-to-r from-cyan-500 via-sky-500 to-blue-500 text-white py-4 rounded-2xl shadow-lg">✨ Nouveau Profil Patient</h3>
+            <form action="{{ route('patient.store') }}" method="POST" enctype="multipart/form-data" onsubmit="storePriorities()" class="space-y-8">
+                @csrf
+                @error('patient_exists')
+                    <div class="bg-red-100 text-red-700 px-4 py-3 rounded-xl mb-4">{{ $message }}</div>
+                @enderror
+                <!-- Patient Type Selection -->
+                <div>
+                    <label for="patientType" class="block text-sm font-semibold text-cyan-700 mb-2">Type de Patient</label>
+                    <select id="patientType" name="patient_type" class="form-select w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-all duration-200 bg-white/50 backdrop-blur-sm" required>
                         <option value="" selected disabled>Sélectionner le Type de Patient</option>
                         <option value="kid">Enfant</option>
                         <option value="young">Jeune</option>
                         <option value="adult">Adulte</option>
                     </select>
-                    <label for="patientType">Patient Type</label>
                 </div>
-            </div>
-
-            <!-- Age & Gender -->
-            <div class="col-md-4">
-                <div class="form-floating">
-                    <input type="number" name="age" class="form-control" placeholder="Age" required>
-                    <label>Âge</label>
-                </div>
-            </div>
-            <!-- gender -->
-            <div class="col-md-4">
-                <div class="form-floating">
-                    <select name="PatientGender" class="form-select" required>
-                        <option value="M">Homme</option>
-                        <option value="F">Femme</option>
-                    </select>
-                    <label for="PatientGender">Genre</label>
-                </div>
-            </div>
-            <!-- speciality -->
-            <div class="col-md-4">
-                <div class="form-floating">
-                    <select class="form-select" id="specialtySelect" name="speciality_id"  required>
-                        <option value="">All Specialties</option>
-                        @foreach($specialities as $speciality)
-                            <option value="{{ $speciality->id }}">{{ $speciality->name }}</option>
-                        @endforeach
-                    </select>
-                    <label>Sélectionner la Spécialité</label>
-                </div>
-            </div>
-            <!-- Kid/Young Section -->
-            <div id="kidSection" class="d-none">
-                <h4 class="section-title kid-title ">Informations sur l'Enfant</h4>
-                <div class="row g-3">
-                    <div class="col-md-6">
-                        <div class="form-floating">
-                            <input type="text" id="kidLastName" name="kid_last_name" class="form-control" placeholder="Last Name">
-                            <label>Nom</label>
-                           
-                        </div>
+                <!-- Age & Gender & Speciality -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div>
+                        <label class="block text-sm font-semibold text-cyan-700 mb-2">Âge</label>
+                        <input type="number" name="age" class="form-control w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-all duration-200 bg-white/50 backdrop-blur-sm" placeholder="Age" required>
                     </div>
-                    <div class="col-md-6">
-                        <div class="form-floating">
-                            <input type="text" id="kidFirstName" name="kid_first_name" class="form-control" placeholder="First Name">
-                            <label>Prénom</label>
-                            <!-- @error('kid_first_name')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror -->
-                        </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-cyan-700 mb-2">Genre</label>
+                        <select name="PatientGender" class="form-select w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-all duration-200 bg-white/50 backdrop-blur-sm" required>
+                            <option value="M">Homme</option>
+                            <option value="F">Femme</option>
+                        </select>
                     </div>
-                    <div class="col-md-6">
-                        <div class="form-floating">
-                            <input type="text" id="kidEcole" name="kid_ecole" class="form-control" placeholder="School">
-                            <label>École</label>
-                        </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-cyan-700 mb-2">Spécialité</label>
+                        <select class="form-select w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-all duration-200 bg-white/50 backdrop-blur-sm" id="specialtySelect" name="speciality_id" required>
+                            <option value="">Toutes les spécialités</option>
+                            @foreach($specialities as $speciality)
+                                <option value="{{ $speciality->id }}">{{ $speciality->name }}</option>
+                            @endforeach
+                        </select>
                     </div>
-                    <div class="col-md-6">
-                        <div class="form-floating">
-                            <select id="kidSystem" name="kid_system" class="form-select">
+                </div>
+                <!-- Kid/Young Section -->
+                <div id="kidSection" class="hidden">
+                    <h4 class="text-lg font-semibold text-cyan-700 border-l-4 border-cyan-400 pl-3 mb-4">Informations sur l'Enfant</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-semibold text-cyan-700 mb-2">Nom</label>
+                            <input type="text" id="kidLastName" name="kid_last_name" class="form-control w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-all duration-200 bg-white/50 backdrop-blur-sm" placeholder="Nom">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-cyan-700 mb-2">Prénom</label>
+                            <input type="text" id="kidFirstName" name="kid_first_name" class="form-control w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-all duration-200 bg-white/50 backdrop-blur-sm" placeholder="Prénom">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-cyan-700 mb-2">École</label>
+                            <input type="text" id="kidEcole" name="kid_ecole" class="form-control w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-all duration-200 bg-white/50 backdrop-blur-sm" placeholder="École">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-cyan-700 mb-2">Système</label>
+                            <select id="kidSystem" name="kid_system" class="form-select w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-all duration-200 bg-white/50 backdrop-blur-sm">
                                 <option value="" disabled selected>Sélectionner un Système</option>
                                 <option value="moroccan">Système Marocain</option>
                                 <option value="mission">Système Mission</option>
                             </select>
-                            <label>Education System</label>
                         </div>
                     </div>
                 </div>
-            </div>
-
-            <!-- Guardian Section -->
-            <div id="parentSection" class="d-none">
-                <h4 class="section-title parent-title">Information adulte</h4>
-                <div class="row g-3">
-                    <div class="col-md-6">
-                        <div class="form-floating">
-                            <input type="text" name="parent_last_name" class="form-control" placeholder="Last Name" required>
-                            <label>Nom</label>
+                <!-- Guardian Section -->
+                <div id="parentSection" class="hidden">
+                    <h4 class="text-lg font-semibold text-cyan-700 border-l-4 border-cyan-400 pl-3 mb-4">Information adulte</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-semibold text-cyan-700 mb-2">Nom</label>
+                            <input type="text" name="parent_last_name" class="form-control w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-all duration-200 bg-white/50 backdrop-blur-sm" placeholder="Nom" required>
                         </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="form-floating">
-                            <input type="text" name="parent_first_name" class="form-control" placeholder="First Name" required>
-                            <label>Prénom</label>
-                            <!-- @error('parent_first_name')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror -->
+                        <div>
+                            <label class="block text-sm font-semibold text-cyan-700 mb-2">Prénom</label>
+                            <input type="text" name="parent_first_name" class="form-control w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-all duration-200 bg-white/50 backdrop-blur-sm" placeholder="Prénom" required>
                         </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="form-floating">
-                            <input type="tel" name="parent_phone" class="form-control" placeholder="Phone" required>
-                            <label>Numéro de Téléphone</label>
+                        <div>
+                            <label class="block text-sm font-semibold text-cyan-700 mb-2">Numéro de Téléphone</label>
+                            <input type="tel" name="parent_phone" class="form-control w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-all duration-200 bg-white/50 backdrop-blur-sm" placeholder="Téléphone" required>
                         </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="form-floating">
-                            <input type="email" id="parentEmail" name="parent_email" class="form-control @error('parent_email') is-invalid @enderror" placeholder="Email">
-                            <label>Adresse Email</label>
+                        <div>
+                            <label class="block text-sm font-semibold text-cyan-700 mb-2">Adresse Email</label>
+                            <input type="email" id="parentEmail" name="parent_email" class="form-control w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-all duration-200 bg-white/50 backdrop-blur-sm @error('parent_email') border-red-500 @enderror" placeholder="Email">
                             @error('parent_email')
-                                <div class="invalid-feedback">{{ $message }}</div>
+                                <div class="text-red-500 text-xs mt-1">{{ $message }}</div>
                             @enderror
                         </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="form-floating">
-                            <input type="text" name="parent_profession" class="form-control" placeholder="Profession" required>
-                            <label>Profession</label>
+                        <div>
+                            <label class="block text-sm font-semibold text-cyan-700 mb-2">Profession</label>
+                            <input type="text" name="parent_profession" class="form-control w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-all duration-200 bg-white/50 backdrop-blur-sm" placeholder="Profession" required>
                         </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="form-floating">
-                            <input type="text" name="parent_etablissement" id="parentEtablissement" class="form-control bg-transparent" placeholder="Etablissement" required>
-                            <label for="parentEtablissement">Établissement</label>
+                        <div>
+                            <label class="block text-sm font-semibold text-cyan-700 mb-2">Établissement</label>
+                            <input type="text" name="parent_etablissement" id="parentEtablissement" class="form-control w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-all duration-200 bg-white/50 backdrop-blur-sm" placeholder="Établissement" required>
                         </div>
-                    </div>
-            
-                    <div class="col-12">
-                        <div class="form-floating">
-                            <input type="text" name="parent_adresse" class="form-control" placeholder="Address" required>
-                            <label>Adresse</label>
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-semibold text-cyan-700 mb-2">Adresse</label>
+                            <input type="text" name="parent_adresse" class="form-control w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-all duration-200 bg-white/50 backdrop-blur-sm" placeholder="Adresse" required>
                         </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="form-floating">
-                            <select name="mode" class="form-select" required>
+                        <div>
+                            <label class="block text-sm font-semibold text-cyan-700 mb-2">Mode de Consultation</label>
+                            <select name="mode" class="form-select w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-all duration-200 bg-white/50 backdrop-blur-sm" required>
                                 <option value="A Distance">À Distance</option>
                                 <option value="Presentiel">Présentiel</option>
                             </select>
-                            <label>Mode de Consultation</label>
                         </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="form-floating">
-                            <select name="abonnement" class="form-select" required>
+                        <div>
+                            <label class="block text-sm font-semibold text-cyan-700 mb-2">Type d'Abonnement</label>
+                            <select name="abonnement" class="form-select w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-all duration-200 bg-white/50 backdrop-blur-sm" required>
                                 <option value="seance">Par Séance</option>
                                 <option value="mois">Mensuel</option>
                                 <option value="pack">Pack</option>
                             </select>
-                            <label>Type d'Abonnement</label>
                         </div>
                     </div>
                 </div>
-            </div>
-            
-            <!-- Coaches Section -->
-            <div class="col-12">
-                <h4 class="section-title">Sélectionner les Coachs</h4>
-                @error('no_coaches')
-                <div class="alert alert-danger">{{$message}}</div>
-                @enderror
-                <div class="coach-section" id="coachContainer">
-                    @foreach ($coaches as $coach)
-                        <div class="form-check coach-item" data-coach-id="{{ $coach->id }}">
-                            <input type="checkbox" name="coaches[]" id="coachCheckBox{{ $coach->id }}" class="form-check-input" value="{{ $coach->id }}" onchange="maxCountDisplay('{{ $coach->id }}', this)">
-                            <label class="form-check-label" for="coachCheckBox{{ $coach->id }}">
-                                {{ $coach->full_name }}
-                            </label>
-                            <input type="number" id="coach{{ $coach->id }}" name="coach{{ $coach->id }}" class="d-none" min="1" max="3" style="width: 100px;">
-                        </div>
-                    @endforeach
+                <!-- Coaches Section -->
+                <div>
+                    <h4 class="text-lg font-semibold text-cyan-700 border-l-4 border-cyan-400 pl-3 mb-4 parent-title">Sélectionner les Coachs</h4>
+                    @error('no_coaches')
+                        <div class="bg-red-100 text-red-700 px-4 py-3 rounded-xl mb-4">{{$message}}</div>
+                    @enderror
+                    <div id="coachContainer" class="grid grid-cols-1 md:grid-cols-2 gap-4 bg-white/60 rounded-xl p-4 border border-cyan-100">
+                        @foreach ($coaches as $coach)
+                            <div class="flex items-center gap-3 coach-item" data-coach-id="{{ $coach->id }}">
+                                <input type="checkbox" name="coaches[]" id="coachCheckBox{{ $coach->id }}" class="form-checkbox h-5 w-5 text-cyan-600 focus:ring-cyan-500" value="{{ $coach->id }}" onchange="maxCountDisplay('{{ $coach->id }}', this)">
+                                <label for="coachCheckBox{{ $coach->id }}" class="text-gray-700 font-medium">{{ $coach->full_name }}</label>
+                                <input type="number" id="coach{{ $coach->id }}" name="coach{{ $coach->id }}" class="hidden ml-2 w-20 border border-cyan-200 rounded-lg px-2 py-1" min="1" max="3">
+                            </div>
+                        @endforeach
+                    </div>
+                    <input type="hidden" name="coach_order" id="coach_order">
                 </div>
-                <!-- Hidden input to store the order -->
-                <input type="hidden" name="coach_order" id="coach_order">
-            </div>
-
-            <!-- max appointments on a week -->
-            <div class="col-md-4">
-            <h4 class="section-title" >Rendez-vous par Semaine</h4>
-            @error('max_appointments')
-            <div class="alert alert-danger">{{ $message }}</div>
-            @enderror
-                <div class="form-floating">
-                    <input type="number" min="1" max="3" name="max_appointments" class="form-control" required>
-                    <label >Nombre maximum de rendez-vous par semaine</label>
+                <!-- Max appointments per week -->
+                <div>
+                    <h4 class="text-lg font-semibold text-cyan-700 border-l-4 border-cyan-400 pl-3 mb-4">Rendez-vous par Semaine</h4>
+                    @error('max_appointments')
+                        <div class="bg-red-100 text-red-700 px-4 py-3 rounded-xl mb-4">{{ $message }}</div>
+                    @enderror
+                    <input type="number" min="1" max="3" name="max_appointments" class="form-control w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-all duration-200 bg-white/50 backdrop-blur-sm" required placeholder="Nombre maximum de rendez-vous par semaine">
                 </div>
-            </div>
-
-            <!-- image section -->
-            
-            <div class="form-group text-center mt-4">
-                    <label class="form-label fw-bold mb-2">Choose an Image:</label>
-
-                    <!-- Hidden File Input -->
+                <!-- Image section -->
+                <div class="text-center mt-4">
+                    <label class="block text-sm font-semibold text-cyan-700 mb-2">Choisir une image</label>
                     <input type="file" name="image" id="image-input" accept="image/*" hidden onchange="previewImage(event)">
-
-                    <!-- Custom Button -->
-                    <label for="image-input" class="btn btn-primary">
-                      <i class="fas fa-upload me-2"></i> Upload Image
+                    <label for="image-input" class="inline-block bg-gradient-to-r from-cyan-500 to-sky-600 text-white px-6 py-2 rounded-xl font-semibold cursor-pointer hover:from-cyan-600 hover:to-sky-700 transition-all duration-200 shadow-lg">
+                        <i class="fas fa-upload mr-2"></i> Upload Image
                     </label>
-
-                    <!-- Image Preview (Circle or Square) -->
-                    <div id="image-preview" class="mt-3 d-none ">
-                      <img src="#" alt="Image Preview" id="image-preview-img" class="rounded-circle shadow img-thumbnail" style="width: 80px; height: 80px; object-fit: cover;">
+                    <p class="text-xs text-gray-500 mt-2">Image max size: 2MB. Formats: JPG, PNG, etc.</p>
+                    <div id="image-size-error" class="text-red-600 text-sm mt-2 hidden"></div>
+                    <div id="image-preview" class="mt-3 hidden">
+                        <img src="#" alt="Image Preview" id="image-preview-img" class="rounded-full shadow-lg border-4 border-cyan-200 mx-auto" style="width: 80px; height: 80px; object-fit: cover;">
                     </div>
-            </div>
-
-            
-
-            <!-- Calendar Section -->
-            <div class="col-12">
-                <h4 class="section-title mt-4">Planifier les Priorités</h4>
-                
-                <div class="col-md-6">
-                        <div class="form-floating">
-                            <select id="priorityChoice" name="priority_choice" class="form-select">
-                                <option value="1" selected>Priorité 1</option>
-                                <option value="2" >Priorité 2</option>
-                                <option value="3" >Priorité 3</option>
-                            </select>
-                            <label>Choisir une Priorité</label>
-                        </div>
                 </div>
-                
-                @error('priorities')
-                    <div class="alert alert-danger">
-                        <i class="fas fa-exclamation-circle me-2"></i>{{ $message }}
+                <!-- Calendar Section -->
+                <div>
+                    <h4 class="text-lg font-semibold text-cyan-700 border-l-4 border-cyan-400 pl-3 mb-4 mt-4">Planifier les Priorités</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-semibold text-cyan-700 mb-2">Choisir une Priorité</label>
+                            <select id="priorityChoice" name="priority_choice" class="form-select w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-all duration-200 bg-white/50 backdrop-blur-sm">
+                                <option value="1" selected>Priorité 1</option>
+                                <option value="2">Priorité 2</option>
+                                <option value="3">Priorité 3</option>
+                            </select>
+                        </div>
+                        <div>
+                            @error('priorities')
+                                <div class="bg-red-100 text-red-700 px-4 py-3 rounded-xl mb-4">
+                                    <i class="fas fa-exclamation-circle mr-2"></i>{{ $message }}
+                                </div>
+                            @enderror
+                        </div>
                     </div>
-                @enderror
-                <div id="calendar"></div>
-            </div>
-
-         
-
-            <!-- Hidden Input & Submit -->
-            <div class="col-12 text-center mt-4">
-                <input type="hidden" name="priorities" id="prioritiesInput">
-                <button type="submit" class="btn btn-primary px-5 py-2">
-                    <i class="fas fa-save me-2"></i>Créer le Profil du Patient
-                </button>
-            </div>
-        </form>
+                    <div id="calendar" class="mt-4 bg-white rounded-2xl shadow-lg border border-cyan-100 p-4"></div>
+                </div>
+                <!-- Hidden Input & Submit -->
+                <div class="text-center mt-8">
+                    <input type="hidden" name="priorities" id="prioritiesInput">
+                    <button type="submit" class="bg-gradient-to-r from-cyan-500 to-sky-600 text-white px-8 py-3 rounded-2xl font-semibold hover:from-cyan-600 hover:to-sky-700 transform hover:-translate-y-1 transition-all duration-200 flex items-center justify-center gap-3 shadow-lg hover:shadow-2xl mx-auto">
+                        <i class="fas fa-save mr-2"></i>Créer le Profil du Patient
+                    </button>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 <script>
    
-   function  maxCountDisplay(id,event) {
-        if (event.checked) {
-            document.querySelector(`#coach${id}`).classList.remove('d-none'); 
-            document.querySelector(`#coach-order${id}`).classList.remove('d-none');
-            document.querySelector(`#coach-order-label${id}`).classList.remove('d-none');
-
-            console.log(id);
-            
-            
-        }else{
-        document.querySelector(`#coach${id}`).classList.add('d-none');
-        document.querySelector(`#coach${id}`).value = ''; 
-        document.querySelector(`#coach-order${id}`).classList.add('d-none');
-        document.querySelector(`#coach-order${id}`).value = '';
-        document.querySelector(`#coach-order-label${id}`).classList.add('d-none');
-
+    function  maxCountDisplay(id,event) {
+        var input = document.querySelector(`#coach${id}`);
+        if (input) {
+            if (event.checked) {
+                input.classList.remove('hidden');
+            } else {
+                input.classList.add('hidden');
+                input.value = '';
+            }
         }
-
     }
     var prioritiesData = {};
     document.addEventListener("DOMContentLoaded", function() {
         const patientTypeSelect = document.getElementById('patientType');
         const kidSection = document.getElementById('kidSection');
         const parentSection = document.getElementById('parentSection');
-        const parentTitle = document.getElementsByClassName('parent-title');
+        const parentTitle = document.querySelector('.parent-title');
         const kidTitle = document.querySelector('.kid-title');
         const kidLastName = document.querySelector('#kidLastName');
         const kidFirstName = document.querySelector('#kidFirstName');
@@ -535,10 +229,10 @@
 
         
         if (selectedType === 'young') {
-            kidTitle.textContent = 'Détails du jeune';
+            if (kidTitle) kidTitle.textContent = 'Détails du jeune';
         }
         else {
-            kidTitle.textContent = 'Détails de l\'enfant';
+            if (kidTitle) kidTitle.textContent = 'Détails de l\'enfant';
         }
         if (selectedType === 'kid' || selectedType === 'young') {
 
@@ -548,41 +242,43 @@
             kidLastName.setAttribute("required", "");
             kidEcole.setAttribute("required", "");
             kidSystem.setAttribute("required", "");
-            kidSection.classList.remove('d-none');
-            parentSection.classList.remove('d-none');
-            parentTitle.textContent = 'Détails du parent';
+            kidSection.classList.remove('hidden');
+            parentSection.classList.remove('hidden');
+            if (parentTitle) parentTitle.textContent = 'Détails du parent';
         } 
         else if (selectedType === 'adult') {
             kidFirstName.removeAttribute('required');
             kidLastName.removeAttribute('required');
             kidEcole.removeAttribute('required');
             kidSystem.removeAttribute('required');
-            kidSection.classList.add('d-none');
-            parentSection.classList.remove('d-none');
-            parentTitle.textContent = 'Information adulte';
+            kidSection.classList.add('hidden');
+            parentSection.classList.remove('hidden');
+            if (parentTitle) parentTitle.textContent = 'Information adulte';
         } 
         else {
-            kidSection.classList.add('d-none');
-            parentSection.classList.add('d-none');
+            kidSection.classList.add('hidden');
+            parentSection.classList.add('hidden');
           
         }
         });
-        if (parentEmail.classList.contains('is-invalid')) {
-            parentSection.classList.remove('d-none');
+        if (parentEmail && parentEmail.classList.contains('is-invalid')) {
+            parentSection.classList.remove('hidden');
         }
 
         console.log(parentTitle.innerHTML);
         
     }); 
     document.addEventListener('DOMContentLoaded', function() {
-    // Initialize SortableJS on the coach container
-    var coachContainer = document.getElementById('coachContainer');
-    Sortable.create(coachContainer, {
-        animation: 150, // Smooth animation
-        onEnd: function(evt) {
-            updateCoachOrder();
+        // Initialize SortableJS on the coach container
+        var coachContainer = document.getElementById('coachContainer');
+        if (coachContainer && typeof Sortable !== 'undefined') {
+            Sortable.create(coachContainer, {
+                animation: 150, // Smooth animation
+                onEnd: function(evt) {
+                    updateCoachOrder();
+                }
+            });
         }
-    });
 
     // Function to update the hidden input with the current order of coach IDs
     function updateCoachOrder() {
@@ -597,173 +293,183 @@
     
     // Update order initially
     updateCoachOrder();
-});
+    });
 
     function addEventToPriorities(priorityChoice, date, eventId, startTime, endTime) {
-    var priorityKey = "priority " + priorityChoice;
-    if (!prioritiesData[priorityKey]) {
-        prioritiesData[priorityKey] = {};
-    }
-    if (!prioritiesData[priorityKey][date]) {
-        prioritiesData[priorityKey][date] = [];
-    }
-    var eventData = {
-    id: eventId,
-    startTime: startTime,
-    endTime: endTime
-    };
-  
-    prioritiesData[priorityKey][date].push(eventData);
-    console.log("After addition:", prioritiesData);
+        var priorityKey = "priority " + priorityChoice;
+        if (!prioritiesData[priorityKey]) {
+            prioritiesData[priorityKey] = {};
+        }
+        if (!prioritiesData[priorityKey][date]) {
+            prioritiesData[priorityKey][date] = [];
+        }
+        var eventData = {
+        id: eventId,
+        startTime: startTime,
+        endTime: endTime
+        };
+    
+        prioritiesData[priorityKey][date].push(eventData);
+        console.log("After addition:", prioritiesData);
     }
     function updateEventInPriorities(event) {
-    // Extract the priority from the event title ("Priority 1", etc.)
-    var parts = event.title.split(" ");
-    var priorityChoice = parts[1]; // e.g., "1"
-    var priorityKey = "priority " + priorityChoice;
-    
-    // New date and time (use ISO string, then extract needed parts)
-    var newStart = event.start;
-    var newEnd = event.end ? event.end : event.start;
-    var newDate = newStart.toISOString().split("T")[0];
-    var newStartTime = newStart.toISOString().split("T")[1].substring(0,5);
-    var newEndTime = newEnd.toISOString().split("T")[1].substring(0,5);
-    
-    // Remove the event from every date in its priority group.
-    for (var date in prioritiesData[priorityKey]) {
-        var arr = prioritiesData[priorityKey][date];
-        for (var i = 0; i < arr.length; i++) {
-        if (arr[i].id === event.id) {
-            arr.splice(i, 1);
-            // If no events remain on that date, remove the date key.
-            if (arr.length === 0) {
-            delete prioritiesData[priorityKey][date];
-            }
-            break;
-        }
-        }
-    }
-    
-    // Add the event to the new date.
-    if (!prioritiesData[priorityKey][newDate]) {
-        prioritiesData[priorityKey][newDate] = [];
-    }
-    prioritiesData[priorityKey][newDate].push({
-        id: event.id,
-        startTime: newStartTime,
-        endTime: newEndTime
-    });
-    console.log("After update:", prioritiesData);
-    }
-    function deleteEventFromPriorities(event) {
-    var parts = event.title.split(" ");
-    var priorityChoice = parts[1];
-    var priorityKey = "priority " + priorityChoice;
-    
-    // If there's no data for that priority, exit early.
-    if (!prioritiesData[priorityKey]) return;
-
-    for (var date in prioritiesData[priorityKey]) {
-        var arr = prioritiesData[priorityKey][date];
-        for (var i = 0; i < arr.length; i++) {
+        // Extract the priority from the event title ("Priority 1", etc.)
+        var parts = event.title.split(" ");
+        var priorityChoice = parts[1]; // e.g., "1"
+        var priorityKey = "priority " + priorityChoice;
+        
+        // New date and time (use ISO string, then extract needed parts)
+        var newStart = event.start;
+        var newEnd = event.end ? event.end : event.start;
+        var newDate = newStart.toISOString().split("T")[0];
+        var newStartTime = newStart.toISOString().split("T")[1].substring(0,5);
+        var newEndTime = newEnd.toISOString().split("T")[1].substring(0,5);
+        
+        // Remove the event from every date in its priority group.
+        for (var date in prioritiesData[priorityKey]) {
+            var arr = prioritiesData[priorityKey][date];
+            for (var i = 0; i < arr.length; i++) {
             if (arr[i].id === event.id) {
                 arr.splice(i, 1);
+                // If no events remain on that date, remove the date key.
                 if (arr.length === 0) {
-                    delete prioritiesData[priorityKey][date];
+                delete prioritiesData[priorityKey][date];
                 }
-                if (Object.keys(prioritiesData[priorityKey]).length === 0) {
-                    delete prioritiesData[priorityKey];
+                break;
+            }
+            }
+        }
+        
+        // Add the event to the new date.
+        if (!prioritiesData[priorityKey][newDate]) {
+            prioritiesData[priorityKey][newDate] = [];
+        }
+        prioritiesData[priorityKey][newDate].push({
+            id: event.id,
+            startTime: newStartTime,
+            endTime: newEndTime
+        });
+        console.log("After update:", prioritiesData);
+    }
+    function deleteEventFromPriorities(event) {
+        var parts = event.title.split(" ");
+        var priorityChoice = parts[1];
+        var priorityKey = "priority " + priorityChoice;
+        
+        // If there's no data for that priority, exit early.
+        if (!prioritiesData[priorityKey]) return;
+
+        for (var date in prioritiesData[priorityKey]) {
+            var arr = prioritiesData[priorityKey][date];
+            for (var i = 0; i < arr.length; i++) {
+                if (arr[i].id === event.id) {
+                    arr.splice(i, 1);
+                    if (arr.length === 0) {
+                        delete prioritiesData[priorityKey][date];
+                    }
+                    if (Object.keys(prioritiesData[priorityKey]).length === 0) {
+                        delete prioritiesData[priorityKey];
+                    }
+                    console.log("After deletion:", prioritiesData);
+                    return;
                 }
-                console.log("After deletion:", prioritiesData);
-                return;
             }
         }
     }
-}
     document.addEventListener("DOMContentLoaded", function() {
-    var calendarEl = document.getElementById("calendar");
-    var colors = { "1": "red", "2": "orange", "3": "green" };
+        var calendarEl = document.getElementById("calendar");
+        var colors = { "1": "red", "2": "orange", "3": "green" };
 
-    var calendar = new FullCalendar.Calendar(calendarEl, {
-        initialView: "timeGridWeek",
-        selectable: true,
-        editable: true,
-        firstDay: 1, 
-        hiddenDays: [0], 
-        slotMinTime: '12:00:00',
-        slotMaxTime: '20:00:00',
-        slotDuration: '01:00:00',
-        slotLabelInterval: '01:00:00', 
-        allDaySlot: false,
-        nowIndicator: true,
-        expandRows: true,
-        select: function(info) {
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: "timeGridWeek",
+            selectable: true,
+            editable: true,
+            firstDay: 1, 
+            hiddenDays: [0], 
+            slotMinTime: '12:00:00',
+            slotMaxTime: '20:00:00',
+            slotDuration: '01:00:00',
+            slotLabelInterval: '01:00:00', 
+            allDaySlot: false,
+            nowIndicator: true,
+            expandRows: true,
+            select: function(info) {
 
-        var startDateTime = info.startStr; 
-        var endDateTime = info.endStr;      
-        
-        var date = startDateTime.split("T")[0]; 
-        var startTime = startDateTime.split("T")[1] ? startDateTime.split("T")[1].substring(0,5) : "00:00";
-        var endTime = endDateTime ? (endDateTime.split("T")[1] ? endDateTime.split("T")[1].substring(0,5) : "23:59") : "23:59";
-        
-        // Prompt user to choose a priority.
-        // var priorityChoice = prompt("Enter priority (1=High, 2=Medium, 3=Low):");
-        var priorityChoice = document.querySelector('#priorityChoice').value;
-        
-        if (!priorityChoice || !["1","2","3"].includes(priorityChoice)) {
-            alert("Priorité sélectionnée invalide.");
+            var startDateTime = info.startStr; 
+            var endDateTime = info.endStr;      
+            
+            var date = startDateTime.split("T")[0]; 
+            var startTime = startDateTime.split("T")[1] ? startDateTime.split("T")[1].substring(0,5) : "00:00";
+            var endTime = endDateTime ? (endDateTime.split("T")[1] ? endDateTime.split("T")[1].substring(0,5) : "23:59") : "23:59";
+            
+            // Prompt user to choose a priority.
+            // var priorityChoice = prompt("Enter priority (1=High, 2=Medium, 3=Low):");
+            var priorityChoice = document.querySelector('#priorityChoice').value;
+            
+            if (!priorityChoice || !["1","2","3"].includes(priorityChoice)) {
+                alert("Priorité sélectionnée invalide.");
+                calendar.unselect();
+                return;
+            }
+            
+            // Create a unique event ID.
+            var eventId = String(Date.now());
+            
+            // Add the event to the calendar.
+            var eventObj = {
+                id: eventId,
+                title: "Priority " + priorityChoice,
+                start: startDateTime,
+                end: endDateTime,
+                backgroundColor: colors[priorityChoice]
+            };
+            calendar.addEvent(eventObj);
+            addEventToPriorities(priorityChoice, date, eventId, startTime, endTime);
             calendar.unselect();
-            return;
-        }
-        
-        // Create a unique event ID.
-        var eventId = String(Date.now());
-        
-        // Add the event to the calendar.
-        var eventObj = {
-            id: eventId,
-            title: "Priority " + priorityChoice,
-            start: startDateTime,
-            end: endDateTime,
-            backgroundColor: colors[priorityChoice]
-        };
-        calendar.addEvent(eventObj);
-        addEventToPriorities(priorityChoice, date, eventId, startTime, endTime);
-        calendar.unselect();
-        },
-        eventDrop: function(info) {
-        updateEventInPriorities(info.event);
-        },
-        eventResize: function(info) {
-        updateEventInPriorities(info.event);
-        },
-        eventClick: function(info) {
-        if (confirm("Voulez-vous supprimer cet événement ?")) {
-            deleteEventFromPriorities(info.event);
-            info.event.remove();
-        }
-        }
-   
+            },
+            eventDrop: function(info) {
+            updateEventInPriorities(info.event);
+            },
+            eventResize: function(info) {
+            updateEventInPriorities(info.event);
+            },
+            eventClick: function(info) {
+            if (confirm("Voulez-vous supprimer cet événement ?")) {
+                deleteEventFromPriorities(info.event);
+                info.event.remove();
+            }
+            }
+    
+        });
+        calendar.render();
     });
-    calendar.render();
-});
     function storePriorities() {
-    document.getElementById("prioritiesInput").value = JSON.stringify(prioritiesData);
-    return true;
-}
-
+        document.getElementById("prioritiesInput").value = JSON.stringify(prioritiesData);
+        return true;
+    }
     function previewImage(event) {
         const input = event.target;
         const previewContainer = document.getElementById("image-preview");
         const previewImage = document.getElementById("image-preview-img");
+        const errorDiv = document.getElementById("image-size-error");
 
         if (input.files && input.files[0]) {
+            const file = input.files[0];
+            if (file.size > 2 * 1024 * 1024) { // 2MB
+                errorDiv.textContent = "L'image sélectionnée dépasse la taille maximale de 2 Mo.";
+                errorDiv.classList.remove("hidden");
+                previewContainer.classList.add("hidden");
+                input.value = ""; // Reset the input
+                return;
+            } else {
+                errorDiv.classList.add("hidden");
+            }
             const reader = new FileReader();
             reader.onload = function (e) {
                 previewImage.src = e.target.result;
-                previewContainer.classList.remove("d-none"); // Show preview
+                previewContainer.classList.remove("hidden"); // Show preview
             };
-            reader.readAsDataURL(input.files[0]);
+            reader.readAsDataURL(file);
         }
     }
  

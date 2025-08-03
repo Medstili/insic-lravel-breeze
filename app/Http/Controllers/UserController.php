@@ -45,15 +45,11 @@ class UserController extends Controller
     
         return view('user/coaches', compact('users', 'specialities'));
     }
-    public function create()
-    {
-        
-        $specialities = Speciality::all();
-        return view('user/add_coach', compact('specialities'));
-
-    }
     public function store(Request $request) {
         // dd($request->all());
+        // if ($) {
+        //     # code...
+        // }
             $request->validate([
                 'full_name' => 'required|unique:users,full_name',
                 'email' => 'required|email|unique:users,email',
@@ -213,8 +209,6 @@ class UserController extends Controller
         $user->delete();
         return redirect()->route('user.index');   
     }
-    
-    
    
     public function coach_edit(string $id){  
         $user = User::find($id);
@@ -273,7 +267,6 @@ class UserController extends Controller
         $specialities = Speciality::all();
         $coachAppointments = Appointment::with('patient')->where('coach_id', $id)->get();
         $reports = [];
-      // dd($coach->can_see);
         if ($coach->can_see === null) {
             return view('coach/profile', compact('coach','specialities','coachAppointments','reports'));
         }else{

@@ -1,506 +1,149 @@
 @extends('layouts.app')
 
+@section('header')
+<div class="flex items-center justify-between mb-8 mt-24">
+    <div>
+        <h1 class="text-4xl font-bold bg-cyan-500 bg-clip-text text-transparent">Dashboard</h1>
+        <p class="text-gray-600 mt-2 text-lg">Welcome back! Here's what's happening today.</p>
+    </div>
+    <div class="flex items-center gap-6">
+        <div class="text-right">
+            <p class="text-sm text-gray-500 font-medium">Current Week</p>
+            <p class="text-xl font-bold text-gray-900">{{ $currentWeek }}</p>
+        </div>
+        <div class="w-12 h-12 bg-gradient-to-br from-cyan-500 via-sky-500 to-blue-500 rounded-xl flex items-center justify-center shadow-lg">
+            <i class="fas fa-calendar text-white text-lg"></i>
+        </div>
+    </div>
+</div>
+@endsection
+
 @section('content')
-<style>
-    :root {
-        --primary-color: #6366f1;
-        --secondary-color: #4f46e5;
-        --light-bg: #f8fafc;
-        --border-color: #e2e8f0;
-        --text-dark: #1e293b;
-        --text-muted: #64748b;
-        --shadow-sm: 0 4px 6px rgba(0, 0, 0, 0.05);
-        --shadow-md: 0 3px 6px rgba(0, 0, 0, 0.1);
-        --radius-sm: 6px;
-        --radius-md: 8px;
-        --radius-lg: 12px;
-    }
-
-    /* Base styles */
-    .calendar-wrapper {
-        padding: 1rem;
-        min-height: calc(100vh - 80px);
-        background: var(--light-bg);
-    }
-
-    .calendar-container {
-        background: white;
-        border-radius: var(--radius-lg);
-        box-shadow: var(--shadow-sm);
-        padding: 1rem;
-        overflow: hidden;
-    }
-
-    .calendar-header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        margin-bottom: 1.5rem;
-        padding-bottom: 1rem;
-        border-bottom: 1px solid var(--border-color);
-    }
-
-    .calendar-title {
-        font-size: 1.4rem;
-        font-weight: 600;
-        color: var(--text-dark);
-        margin: 0;
-    }
-
-    .week-navigation {
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-        flex-wrap: wrap;
-    }
-
-    .nav-button {
-        padding: 0.5rem 1rem;
-        border-radius: var(--radius-md);
-        background: var(--primary-color);
-        color: white;
-        transition: all 0.2s ease;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        text-decoration: none;
-        font-size: 0.9rem;
-    }
-
-    .nav-button:hover {
-        background: var(--secondary-color);
-        transform: translateY(-1px);
-        color: white;
-    }
-
-    .current-week {
-        font-weight: 500;
-        color: var(--text-muted);
-        text-align: center;
-    }
-
-    /* Responsive table container */
-    .table-container {
-        border: 1px solid var(--border-color);
-        border-radius: var(--radius-md);
-        position: relative;
-        overflow: hidden;
-    }
-
-    /* Desktop view */
-    .calendar-table {
-        width: 100%;
-        border-collapse: collapse;
-    }
-
-    .calendar-table th {
-        background: linear-gradient(195deg, var(--primary-color), var(--secondary-color));
-        color: white;
-        padding: 0.75rem;
-        font-weight: 500;
-        position: sticky;
-        top: 0;
-        z-index: 3;
-    }
-
-    .calendar-table td {
-        padding: 0.2rem;
-        border: 1px solid var(--border-color);
-        vertical-align: top;
-    }
-
-    .day-header, .date-day-header {
-        background: var(--light-bg);
-        font-weight: 600;
-        color: var(--text-dark);
-        position: sticky;
-        top: 55px;
-        left: 0;
-    }
-    
-    .day-header {
-        z-index: 4;
-    }
-    
-    .date-day-header {
-        height: 50px;
-        text-align: center;
-        z-index: 2;
-    }
-    
-    .coach-name {
-        font-weight: 500;
-        color: var(--text-dark);
-        text-align: center;
-        white-space: nowrap;
-        position: sticky;
-        left: 0;
-        background: white;
-        z-index: 1;
-    }
-
-    .appointment-card {
-        padding: 0.2em;
-        border-radius: var(--radius-sm);
-        margin: 1px 0;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        position: relative;
-    }
-
-    .appointment-card:hover {
-        transform: translateY(-2px);
-        box-shadow: var(--shadow-md);
-    }
-
-    .appointment-card::before {
-        content: '';
-        position: absolute;
-        left: 0;
-        top: 0;
-        bottom: 0;
-        width: 4px;
-    }
-
-    .pending {
-        background: #fef3c7;
-        border-left: 4px solid #f59e0b;
-    }
-
-    .passed {
-        background: #dcfce7;
-        border-left: 4px solid #22c55e;
-    }
-
-    .cancel {
-        background: #fee2e2;
-        border-left: 4px solid #ef4444;
-    }
-
-    .appointment-actions {
-        display: flex;
-        gap: 0.5rem;
-        justify-content: center;
-    }
-
-    .action-btn {
-        background: none;
-        border: none;
-        color: inherit;
-        opacity: 0.7;
-        transition: all 0.2s ease;
-        padding: 0.25rem;
-    }
-
-    .action-btn:hover {
-        opacity: 1;
-        transform: scale(1.1);
-    }
-
-    /* Mobile calendar view */
-    .mobile-calendar {
-        display: none;
-    }
-
-    .mobile-day-section {
-        margin-bottom: 1.5rem;
-        border: 1px solid var(--border-color);
-        border-radius: var(--radius-md);
-        overflow: hidden;
-    }
-
-    .mobile-day-header {
-        background: linear-gradient(195deg, var(--primary-color), var(--secondary-color));
-        color: white;
-        padding: 0.75rem;
-        font-weight: 500;
-        text-align: center;
-    }
-
-    .mobile-coach-section {
-        border-top: 1px solid var(--border-color);
-    }
-
-    .mobile-coach-header {
-        background: var(--light-bg);
-        padding: 0.5rem;
-        font-weight: 600;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-
-    .mobile-coach-header .toggle-btn {
-        background: none;
-        border: none;
-        color: var(--text-dark);
-        font-size: 1.2rem;
-    }
-
-    .mobile-timeslots {
-        padding: 0.5rem;
-    }
-
-    .mobile-timeslot {
-        margin-bottom: 0.5rem;
-        border-bottom: 1px solid var(--border-color);
-        padding-bottom: 0.5rem;
-    }
-
-    .mobile-timeslot:last-child {
-        margin-bottom: 0;
-        border-bottom: none;
-        padding-bottom: 0;
-    }
-
-    .mobile-timeslot-header {
-        font-weight: 500;
-        margin-bottom: 0.25rem;
-    }
-
-    .mobile-appointments {
-        display: flex;
-        flex-direction: column;
-        gap: 0.5rem;
-    }
-
-    /* Modal styles */
-    .modal {
-        display: none;
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.5);
-        z-index: 1000;
-    }
-
-    .modal-dialog {
-        margin: 10% auto;
-        max-width: 500px;
-        width: 90%;
-    }
-
-    .modal-content {
-        border-radius: var(--radius-lg);
-        border: none;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        background: white;
-    }
-
-    .modal-header {
-        background: var(--light-bg);
-        border-bottom: 1px solid var(--border-color);
-        padding: 1rem;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-
-    .modal-title {
-        font-weight: 600;
-        color: var(--text-dark);
-        margin: 0;
-    }
-
-    .modal-body {
-        padding: 1rem;
-    }
-
-    .modal-footer {
-        padding: 1rem;
-        border-top: 1px solid var(--border-color);
-        display: flex;
-        justify-content: flex-end;
-        gap: 0.5rem;
-    }
-
-    .close {
-        background: none;
-        border: none;
-        font-size: 1.5rem;
-        cursor: pointer;
-    }
-
-    .btn {
-        padding: 0.5rem 1rem;
-        border-radius: var(--radius-md);
-        font-weight: 500;
-        cursor: pointer;
-    }
-
-    .btn-primary {
-        background: var(--primary-color);
-        color: white;
-        border: none;
-    }
-
-    .btn-secondary {
-        background: #e2e8f0;
-        color: var(--text-dark);
-        border: none;
-    }
-
-    .form-control {
-        width: 100%;
-        padding: 0.5rem;
-        border: 1px solid var(--border-color);
-        border-radius: var(--radius-md);
-        margin-bottom: 1rem;
-    }
-
-    .form-label {
-        display: block;
-        margin-bottom: 0.25rem;
-        font-weight: 500;
-    }
-
-    .d-none {
-        display: none !important;
-    }
-
-    .mt-4 {
-        margin-top: 1rem;
-    }
-
-    .alert {
-        padding: 0.75rem 1rem;
-        border-radius: var(--radius-md);
-        margin-bottom: 1rem;
-    }
-
-    .alert-warning {
-        background: #fef3c7;
-        color: #92400e;
-        border: 1px solid #f59e0b;
-    }
-
-    .text-muted {
-        color: var(--text-muted);
-    }
-
-    .buttons {
-        display: flex;
-        gap: 0.5rem;
-    }
-
-    /* Responsive styles */
-    @media (max-width: 1200px) {
-        .calendar-table {
-            min-width: 1000px;
-        }
-        
-        .table-container {
-            overflow-x: auto;
-        }
-    }
-
-    @media (max-width: 991px) {
-        .calendar-header {
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 1rem;
-        }
-        
-        .week-navigation {
-            width: 100%;
-            justify-content: space-between;
-        }
-    }
-
-    @media (max-width: 768px) {
-        .calendar-wrapper {
-            padding: 0.5rem;
-        }
-        
-        .calendar-container {
-            padding: 0.75rem;
-        }
-        
-        .calendar-title {
-            font-size: 1.2rem;
-        }
-        
-        .nav-button {
-            padding: 0.4rem 0.8rem;
-            font-size: 0.85rem;
-        }
-        
-        /* Hide desktop table on mobile */
-        .table-container {
-            display: none;
-        }
-        
-        /* Show mobile calendar */
-        .mobile-calendar {
-            display: block;
-        }
-    }
-
-    @media (max-width: 480px) {
-        .calendar-title {
-            font-size: 1.1rem;
-        }
-        
-        .week-navigation {
-            flex-direction: column;
-            align-items: stretch;
-            width: 100%;
-        }
-        
-        .nav-button {
-            text-align: center;
-            justify-content: center;
-        }
-        
-        .modal-dialog {
-            margin: 5% auto;
-            width: 95%;
-        }
-    }
-</style>
-
-<div class="calendar-wrapper">
-    <div class="calendar-container">
-        <div class="calendar-header">
-            <h1 class="calendar-title">Calendrier des Rendez-vous des Coachs</h1>
-            <div class="week-navigation">
-                <a class="nav-button" href="{{ route('global_dashboard', ['week' => $prevWeekStart]) }}">
-                    ← Précédent
-                </a>
-                <span class="current-week">
-                    {{ \Carbon\Carbon::parse($currentWeekStart)->format('d M, Y') }} - 
-                    {{ \Carbon\Carbon::parse($currentWeekStart)->addDays(5)->format('d M, Y') }}
-                </span>
-                <a class="nav-button" href="{{ route('global_dashboard', ['week' => $nextWeekStart]) }}">
-                    Suivant →
-                </a>
+<div class="space-y-8">
+    <!-- Stats Overview -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="relative overflow-hidden bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 rounded-2xl p-6 text-white shadow-xl transform hover:scale-105 transition-all duration-300">
+            <div class="absolute top-0 right-0 w-32 h-32 bg-white bg-opacity-10 rounded-full -translate-y-16 translate-x-16"></div>
+            <div class="relative z-10">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-indigo-100 text-sm font-medium">Total Appointments</p>
+                        <p class="text-4xl font-bold mt-2">{{ $totalAppointments }}</p>
+                        <div class="flex items-center mt-3">
+                            <i class="fas fa-arrow-up text-green-300 mr-2"></i>
+                            <span class="text-indigo-100 text-sm">+12% this week</span>
+                        </div>
+                    </div>
+                    <div class="w-16 h-16 bg-white bg-opacity-20 rounded-xl flex items-center justify-center backdrop-blur-sm">
+                        <i class="fas fa-calendar-check text-2xl"></i>
+                    </div>
+                </div>
             </div>
         </div>
 
+        <div class="relative overflow-hidden bg-gradient-to-br from-cyan-500 via-sky-500 to-blue-500 rounded-2xl p-6 text-white shadow-xl transform hover:scale-105 transition-all duration-300">
+            <div class="absolute top-0 right-0 w-32 h-32 bg-white bg-opacity-10 rounded-full -translate-y-16 translate-x-16"></div>
+            <div class="relative z-10">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-cyan-100 text-sm font-medium">Active Coaches</p>
+                        <p class="text-4xl font-bold mt-2">{{ $activeCoaches }}</p>
+                        <div class="flex items-center mt-3">
+                            <i class="fas fa-arrow-up text-green-300 mr-2"></i>
+                            <span class="text-cyan-100 text-sm">+5% this month</span>
+                        </div>
+                    </div>
+                    <div class="w-16 h-16 bg-white bg-opacity-20 rounded-xl flex items-center justify-center backdrop-blur-sm">
+                        <i class="fas fa-user-md text-2xl"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="relative overflow-hidden bg-gradient-to-br from-orange-500 via-red-500 to-pink-500 rounded-2xl p-6 text-white shadow-xl transform hover:scale-105 transition-all duration-300">
+            <div class="absolute top-0 right-0 w-32 h-32 bg-white bg-opacity-10 rounded-full -translate-y-16 translate-x-16"></div>
+            <div class="relative z-10">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-orange-100 text-sm font-medium">Total Patients</p>
+                        <p class="text-4xl font-bold mt-2">{{ $totalPatients }}</p>
+                        <div class="flex items-center mt-3">
+                            <i class="fas fa-arrow-up text-green-300 mr-2"></i>
+                            <span class="text-orange-100 text-sm">+8% this month</span>
+                        </div>
+                    </div>
+                    <div class="w-16 h-16 bg-white bg-opacity-20 rounded-xl flex items-center justify-center backdrop-blur-sm">
+                        <i class="fas fa-users text-2xl"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="relative overflow-hidden bg-gradient-to-br from-gray-600 via-gray-700 to-gray-800 rounded-2xl p-6 text-white shadow-xl transform hover:scale-105 transition-all duration-300">
+            <div class="absolute top-0 right-0 w-32 h-32 bg-white bg-opacity-10 rounded-full -translate-y-16 translate-x-16"></div>
+            <div class="relative z-10">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-100 text-sm font-medium">Pending Reports</p>
+                        <p class="text-4xl font-bold mt-2">{{ $pendingReports }}</p>
+                        <div class="flex items-center mt-3">
+                            <i class="fas fa-arrow-down text-red-300 mr-2"></i>
+                            <span class="text-gray-100 text-sm">-3% this week</span>
+                        </div>
+                    </div>
+                    <div class="w-16 h-16 bg-white bg-opacity-20 rounded-xl flex items-center justify-center backdrop-blur-sm">
+                        <i class="fas fa-file-alt text-2xl"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Weekly Appointment Calendar -->
+    <div class="bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 overflow-hidden">
+        <div class="bg-cyan-500 px-8 py-6">
+            <div class="flex items-center justify-between">
+                <h2 class="text-2xl font-bold text-white">Calendrier des Rendez-vous des Coachs</h2>
+                <div class="flex items-center gap-4">
+                    <a href="{{ route('global_dashboard', ['week' => $prevWeekStart]) }}" class="bg-white/20 backdrop-blur-sm text-white px-4 py-2 rounded-xl hover:bg-white/30 transition-all duration-200 flex items-center gap-2">
+                        <i class="fas fa-chevron-left"></i>
+                        Précédent
+                    </a>
+                    <span class="text-white font-medium px-4 py-2 bg-white/10 rounded-xl">
+                    {{ \Carbon\Carbon::parse($currentWeekStart)->format('d M, Y') }} - 
+                    {{ \Carbon\Carbon::parse($currentWeekStart)->addDays(5)->format('d M, Y') }}
+                </span>
+                    <a href="{{ route('global_dashboard', ['week' => $nextWeekStart]) }}" class="bg-white/20 backdrop-blur-sm text-white px-4 py-2 rounded-xl hover:bg-white/30 transition-all duration-200 flex items-center gap-2">
+                        Suivant
+                        <i class="fas fa-chevron-right"></i>
+                </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="p-8">
         <!-- Desktop Table View -->
-        <div class="table-container">
-            <table class="calendar-table">
+            <div class="border border-gray-200 rounded-xl overflow-hidden">
+                <table class="w-full">
                 <thead>
                     <tr>
-                        <th class="day-header">Jour/Coach</th>
+                            <th class="bg-cyan-500 text-white p-4 font-semibold text-left">Jour/Coach</th>
                         @foreach ($timeSlots as $slot)
-                            <th>{{ $slot['start'] }} - {{ $slot['end'] }}</th>
+                                <th class="bg-cyan-500 text-white p-4 font-semibold text-center">{{ $slot['start'] }} - {{ $slot['end'] }}</th>
                         @endforeach
                     </tr>
                 </thead>
                 <tbody>
                     @foreach ($days as $day)
                         <tr>
-                            <td colspan="{{ count($timeSlots) + 1 }}" class="date-day-header">
+                                <td colspan="{{ count($timeSlots) + 1 }}" class="bg-gray-50 p-4 font-semibold text-center text-gray-700 border-b border-gray-200">
                                 {{ \Carbon\Carbon::parse($day)->format('l, d M, Y') }}
                             </td>
                         </tr>
                         
                         @foreach ($coaches as $coach)
-                            <tr>
-                                <td class="coach-name">{{ $coach->full_name }}</td>
+                                <tr class="hover:bg-gray-50/50 transition-colors">
+                                    <td class="p-4 font-medium text-gray-700 text-center border-r border-gray-200 bg-white">{{ $coach->full_name }}</td>
                                 @foreach ($timeSlots as $slot)
                                     @php
                                         $slotStart = strtotime($day . ' ' . $slot['start']);
@@ -518,18 +161,18 @@
                                         }
                                     @endphp
                                     
-                                    <td>
+                                        <td class="p-2 border border-gray-200">
                                         @foreach ($cellAppointments as $appointment)
-                                            <div class="appointment-card {{ $appointment['status'] }}" data-app-id="{{ $appointment['id'] }}" >
-                                                <div class="font-medium text-sm">{{ $appointment['patient'] }}</div>
-                                                <div class="appointment-actions">
-                                                    <a href="{{ route('appointment.edit', $appointment['id']) }}" class="action-btn" title="Annuler le Rendez-vous">
+                                                <div class="appointment-card {{ $appointment['status'] }} bg-gradient-to-r from-cyan-50 to-sky-50 border border-cyan-200 rounded-xl p-3 mb-2 shadow-sm hover:shadow-md transition-all duration-200" data-app-id="{{ $appointment['id'] }}">
+                                                    <div class="font-semibold text-cyan-900 text-sm mb-2">{{ $appointment['patient'] }}</div>
+                                                    <div class="flex gap-1 justify-center">
+                                                        <a href="{{ route('appointment.edit', $appointment['id']) }}" class="w-8 h-8 bg-red-500 text-white rounded-full flex items-center justify-center text-xs hover:bg-red-600 transition-colors" title="Annuler le Rendez-vous">
                                                         <i class="fa-regular fa-rectangle-xmark"></i>
                                                     </a>
-                                                    <button type="button" onclick="openEditModal(this)" class="action-btn">
+                                                        <button type="button" onclick="openEditModal(this)" class="w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center text-xs hover:bg-blue-600 transition-colors" title="Modifier">
                                                         <i class="fa-solid fa-pen-to-square"></i>
                                                     </button>
-                                                    <button type="button" class="action-btn" 
+                                                        <button type="button" class="w-8 h-8 bg-green-500 text-white rounded-full flex items-center justify-center text-xs hover:bg-green-600 transition-colors" title="Changer Patient"
                                                         onclick="openChangeModal(
                                                                 <?php echo $appointment['speciality_id']?>,
                                                                 '<?php echo $day ?>',
@@ -540,7 +183,7 @@
                                                         )">
                                                         <i class="fa-solid fa-arrows-rotate"></i>
                                                     </button>
-                                                    <button type="button" onclick="window.location.href='appointment/<?php echo $appointment['id'] ?>'" class="action-btn">
+                                                        <button type="button" onclick="window.location.href='appointment/<?php echo $appointment['id'] ?>'" class="w-8 h-8 bg-purple-500 text-white rounded-full flex items-center justify-center text-xs hover:bg-purple-600 transition-colors" title="Détails">
                                                         <i class="fa-solid fa-circle-info"></i>
                                                     </button>
                                                 </div>
@@ -556,22 +199,22 @@
         </div>
 
         <!-- Mobile Calendar View -->
-        <div class="mobile-calendar">
+            <div class="mt-8 lg:hidden">
             @foreach ($days as $day)
-                <div class="mobile-day-section">
-                    <div class="mobile-day-header">
-                        {{ \Carbon\Carbon::parse($day)->format('l, d M, Y') }}
+                    <div class="bg-white rounded-2xl shadow-lg border border-gray-200 mb-6 overflow-hidden">
+                        <div class="bg-gradient-to-br from-cyan-500 via-sky-500 to-blue-500 p-4">
+                            <h3 class="text-white font-semibold text-center">{{ \Carbon\Carbon::parse($day)->format('l, d M, Y') }}</h3>
                     </div>
                     
                     @foreach ($coaches as $coach)
-                        <div class="mobile-coach-section">
-                            <div class="mobile-coach-header">
-                                <span>{{ $coach->full_name }}</span>
-                                <button type="button" class="toggle-btn" onclick="toggleCoachTimeslots(this)">
+                            <div class="border-t border-gray-200">
+                                <div class="bg-gray-50 p-4 flex justify-between items-center">
+                                    <span class="font-semibold text-gray-700">{{ $coach->full_name }}</span>
+                                    <button type="button" class="text-gray-500 hover:text-gray-700" onclick="toggleCoachTimeslots(this)">
                                     <i class="fa-solid fa-chevron-down"></i>
                                 </button>
                             </div>
-                            <div class="mobile-timeslots">
+                                <div class="mobile-timeslots p-4" style="display: none;">
                                 @foreach ($timeSlots as $slot)
                                     @php
                                         $slotStart = strtotime($day . ' ' . $slot['start']);
@@ -589,22 +232,22 @@
                                     @endphp
                                     
                                     @if(count($slotAppointments) > 0)
-                                        <div class="mobile-timeslot">
-                                            <div class="mobile-timeslot-header">
+                                            <div class="mb-4 pb-4 border-b border-gray-200 last:border-b-0">
+                                                <div class="font-medium text-gray-700 mb-2">
                                                 {{ $slot['start'] }} - {{ $slot['end'] }}
                                             </div>
-                                            <div class="mobile-appointments">
+                                                <div class="space-y-2">
                                                 @foreach ($slotAppointments as $appointment)
-                                                    <div class="appointment-card {{ $appointment['status'] }}" data-app-id="{{ $appointment['id'] }}">
-                                                        <div class="font-medium text-sm">{{ $appointment['patient'] }}</div>
-                                                        <div class="appointment-actions">
-                                                            <a href="{{ route('appointment.edit', $appointment['id']) }}" class="action-btn" title="Annuler le Rendez-vous">
+                                                        <div class="appointment-card {{ $appointment['status'] }} bg-gradient-to-r from-cyan-50 to-sky-50 border border-cyan-200 rounded-xl p-3" data-app-id="{{ $appointment['id'] }}">
+                                                            <div class="font-semibold text-cyan-900 text-sm mb-2">{{ $appointment['patient'] }}</div>
+                                                            <div class="flex gap-1 justify-center">
+                                                                <a href="{{ route('appointment.edit', $appointment['id']) }}" class="w-8 h-8 bg-red-500 text-white rounded-full flex items-center justify-center text-xs hover:bg-red-600 transition-colors" title="Annuler le Rendez-vous">
                                                                 <i class="fa-regular fa-rectangle-xmark"></i>
                                                             </a>
-                                                            <button type="button" onclick="openEditModal(this)" class="action-btn">
+                                                                <button type="button" onclick="openEditModal(this)" class="w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center text-xs hover:bg-blue-600 transition-colors" title="Modifier">
                                                                 <i class="fa-solid fa-pen-to-square"></i>
                                                             </button>
-                                                            <button type="button" class="action-btn" 
+                                                                <button type="button" class="w-8 h-8 bg-green-500 text-white rounded-full flex items-center justify-center text-xs hover:bg-green-600 transition-colors" title="Changer Patient"
                                                                 onclick="openChangeModal(
                                                                         <?php echo $appointment['speciality_id']?>,
                                                                         '<?php echo $day ?>',
@@ -615,7 +258,7 @@
                                                                 )">
                                                                 <i class="fa-solid fa-arrows-rotate"></i>
                                                             </button>
-                                                            <button type="button" onclick="window.location.href='appointment/<?php echo $appointment['id'] ?>'" class="action-btn">
+                                                                <button type="button" onclick="window.location.href='appointment/<?php echo $appointment['id'] ?>'" class="w-8 h-8 bg-purple-500 text-white rounded-full flex items-center justify-center text-xs hover:bg-purple-600 transition-colors" title="Détails">
                                                                 <i class="fa-solid fa-circle-info"></i>
                                                             </button>
                                                         </div>
@@ -630,79 +273,211 @@
                     @endforeach
                 </div>
             @endforeach
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Activity & Quick Actions -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <!-- Recent Appointments -->
+        <div class="bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 overflow-hidden">
+            <div class="bg-gradient-to-r from-blue-600 to-cyan-600 px-8 py-6">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-xl font-bold text-white">Recent Appointments</h3>
+                    <a href="{{ route('appointment.index') }}" class="bg-white/20 backdrop-blur-sm text-white px-4 py-2 rounded-xl hover:bg-white/30 transition-all duration-200 flex items-center gap-2">
+                        View All
+                        <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+            
+            <div class="p-6">
+                <div class="space-y-4">
+                    @forelse($recentAppointments as $appointment)
+                    <div class="bg-gradient-to-r from-gray-50 to-gray-100 rounded-2xl p-4 hover:shadow-lg transition-all duration-200 border border-gray-200/50">
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-xl flex items-center justify-center">
+                                <i class="fas fa-calendar text-white"></i>
+                            </div>
+                            <div class="flex-1">
+                                <p class="font-semibold text-gray-900">
+                                    @if($appointment->patient->first_name)
+                                        {{ $appointment->patient->first_name }} {{ $appointment->patient->last_name }}
+                                    @else
+                                        {{ $appointment->patient->parent_first_name }} {{ $appointment->patient->parent_last_name }}
+                                    @endif
+                                </p>
+                                <p class="text-sm text-gray-600">
+                                    with {{ $appointment->coach->full_name }}
+                                </p>
+                                <p class="text-xs text-gray-500">
+                                    @php
+                                        $planning = json_decode($appointment->appointment_planning, true);
+                                        $firstDate = $planning ? array_keys($planning)[0] : null;
+                                        $firstTime = $planning ? $planning[array_keys($planning)[0]]['startTime'] : null;
+                                    @endphp
+                                    @if($firstDate && $firstTime)
+                                        {{ \Carbon\Carbon::parse($firstDate . ' ' . $firstTime)->format('M d, Y H:i') }}
+                                    @else
+                                        No date set
+                                    @endif
+                                </p>
+                            </div>
+                            <div class="text-right">
+                                @if($appointment->status === 'pending')
+                                    <span class="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-xs font-medium">Pending</span>
+                                @elseif($appointment->status === 'passed')
+                                    <span class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-xs font-medium">Completed</span>
+                                @else
+                                    <span class="bg-red-100 text-red-800 px-3 py-1 rounded-full text-xs font-medium">Cancelled</span>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                    @empty
+                    <div class="text-center py-12">
+                        <i class="fas fa-calendar-times text-6xl text-gray-300 mb-4"></i>
+                        <p class="text-gray-500 text-lg">No recent appointments</p>
+                    </div>
+                    @endforelse
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 overflow-hidden">
+            <div class="bg-gradient-to-r from-cyan-500 to-sky-600 px-8 py-6">
+                <h3 class="text-xl font-bold text-white">Quick Actions</h3>
+            </div>
+            
+            <div class="p-6">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <a href="{{ route('appointment.create') }}" class="group bg-gradient-to-r from-cyan-50 to-sky-50 border border-cyan-200 rounded-2xl p-4 hover:shadow-lg transition-all duration-200 hover:scale-105">
+                        <div class="flex items-center gap-3">
+                            <div class="w-12 h-12 bg-gradient-to-br from-cyan-500 via-sky-500 to-cyan-500 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                                <i class="fas fa-plus text-white"></i>
+                            </div>
+                            <div>
+                                <p class="font-semibold text-gray-900">New Appointment</p>
+                                <p class="text-sm text-gray-600">Schedule a new session</p>
+                            </div>
+                        </div>
+                    </a>
+
+                    <a href="{{ route('patient.create') }}" class="group bg-gradient-to-r from-cyan-50 to-sky-50 border border-cyan-200 rounded-2xl p-4 hover:shadow-lg transition-all duration-200 hover:scale-105">
+                        <div class="flex items-center gap-3">
+                            <div class="w-12 h-12 bg-gradient-to-br from-cyan-500 to-sky-500 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                                <i class="fas fa-user-plus text-white"></i>
+                            </div>
+                            <div>
+                                <p class="font-semibold text-gray-900">Add Patient</p>
+                                <p class="text-sm text-gray-600">Register new patient</p>
+                            </div>
+                        </div>
+                    </a>
+
+                    <a href="{{ route('user.create') }}" class="group bg-gradient-to-r from-orange-50 to-red-50 border border-orange-200 rounded-2xl p-4 hover:shadow-lg transition-all duration-200 hover:scale-105">
+                        <div class="flex items-center gap-3">
+                            <div class="w-12 h-12 bg-gradient-to-br from-orange-500 to-red-500 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                                <i class="fas fa-user-md text-white"></i>
+                            </div>
+                            <div>
+                                <p class="font-semibold text-gray-900">Add Coach</p>
+                                <p class="text-sm text-gray-600">Register new coach</p>
+                            </div>
+                        </div>
+                    </a>
+
+                    <a href="{{ route('suggested-appointments') }}" class="group bg-gradient-to-r from-indigo-50 to-blue-50 border border-indigo-200 rounded-2xl p-4 hover:shadow-lg transition-all duration-200 hover:scale-105">
+                        <div class="flex items-center gap-3">
+                            <div class="w-12 h-12 bg-gradient-to-br from-indigo-500 to-blue-500 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                                <i class="fas fa-lightbulb text-white"></i>
+                            </div>
+                            <div>
+                                <p class="font-semibold text-gray-900">Suggestions</p>
+                                <p class="text-sm text-gray-600">View appointment suggestions</p>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
         </div>
     </div>
 </div>
 
 <!-- Change Patient Modal -->
-<div id="changePatientModal" class="modal" tabindex="-1" role="dialog">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Changer de Patient</h5>
-                <button type="button" class="close" onclick="closeChangeModal()">×</button>
+<div id="changePatientModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden">
+    <div class="flex items-center justify-center min-h-screen p-4">
+        <div class="bg-white rounded-3xl shadow-2xl max-w-md w-full">
+            <div class="bg-gradient-to-br from-cyan-500 via-sky-500 to-blue-500 p-6 rounded-t-3xl">
+                <div class="flex items-center justify-between">
+                    <h5 class="text-white font-semibold text-lg">Changer de Patient</h5>
+                    <button type="button" class="text-white hover:text-gray-200 text-2xl" onclick="closeChangeModal()">×</button>
+                </div>
             </div>
-            <div id="errorMsg" class="alert alert-warning d-none"></div>
-            <div class="modal-body">
-                <div class="buttons">
-                    <button class="btn btn-primary" 
+            <div id="errorMsg" class="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded mx-4 mt-4 hidden"></div>
+            <div class="p-6">
+                <div class="flex gap-3 mb-6">
+                    <button class="flex-1 bg-gradient-to-br from-cyan-500 via-sky-500 to-blue-500 text-white px-4 py-2 rounded-xl hover:from-cyan-600 hover:via-sky-600 hover:to-blue-600 transition-all duration-200" 
                         onclick="selectRandomAutoPatient()">
                         Automatique
                     </button>
-                    <button class="btn btn-primary" 
+                    <button class="flex-1 bg-gradient-to-br from-cyan-500 via-sky-500 to-blue-500 text-white px-4 py-2 rounded-xl hover:from-cyan-600 hover:via-sky-600 hover:to-blue-600 transition-all duration-200" 
                         onclick="manualPatient()">
                         Manuel
                     </button>
                 </div>
-                <div class="mt-4 d-none" id="autoGeneratedPatientContainer">
-                    <h6>Patients Disponibles</h6>
-                    <small class="text-muted">Patient généré automatiquement en fonction de la date et du créneau</small>
-                    <label class="autoGeneratedPatientLabel form-control text-black"></label>
+                <div class="hidden" id="autoGeneratedPatientContainer">
+                    <h6 class="font-semibold text-gray-700 mb-2">Patients Disponibles</h6>
+                    <p class="text-sm text-gray-600 mb-3">Patient généré automatiquement en fonction de la date et du créneau</p>
+                    <label class="autoGeneratedPatientLabel block bg-gray-50 border border-gray-300 rounded-lg px-3 py-2 text-gray-900"></label>
                     <input type="hidden" id="autoGeneratedPatient" name="autoGeneratedPatient" readonly>
                 </div>
 
-                <div class="mt-4 d-none" id="manualPatient">
-                    <h6>Nom De Patient</h6>
-                    <input type="text" name="manualPatientName" id="manualPatientName" class="form-control">
+                <div class="hidden" id="manualPatient">
+                    <h6 class="font-semibold text-gray-700 mb-2">Nom De Patient</h6>
+                    <input type="text" name="manualPatientName" id="manualPatientName" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
                 </div>
             </div>
 
-            <div class="modal-footer">
-                <button type="button" class="btn btn-primary" onclick="updateSuggestedAppointment()">Mettre à Jour</button>
-                <button type="button" class="btn btn-secondary" onclick="closeChangeModal()">Fermer</button>
+            <div class="bg-gray-50 px-6 py-4 rounded-b-3xl flex gap-3">
+                <button type="button" class="flex-1 bg-gradient-to-br from-cyan-500 via-sky-500 to-blue-500 text-white px-4 py-2 rounded-xl hover:from-cyan-600 hover:via-sky-600 hover:to-blue-600 transition-all duration-200" onclick="updateSuggestedAppointment()">Mettre à Jour</button>
+                <button type="button" class="flex-1 bg-gray-300 text-gray-700 px-4 py-2 rounded-xl hover:bg-gray-400 transition-all duration-200" onclick="closeChangeModal()">Fermer</button>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Modal de modification du rendez-vous -->
-<div class="modal" id="editAppointmentModal" tabindex="-1" role="dialog">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="editAppointmentModalLabel">Modifier le Rendez-vous</h5>
-                <button type="button" class="btn-close" onclick="closeEditModal()">×</button>
+<!-- Edit Appointment Modal -->
+<div id="editAppointmentModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden">
+    <div class="flex items-center justify-center min-h-screen p-4">
+        <div class="bg-white rounded-3xl shadow-2xl max-w-md w-full">
+            <div class="bg-gradient-to-r from-blue-600 to-cyan-600 p-6 rounded-t-3xl">
+                <div class="flex items-center justify-between">
+                    <h5 class="text-white font-semibold text-lg">Modifier le Rendez-vous</h5>
+                    <button type="button" class="text-white hover:text-gray-200 text-2xl" onclick="closeEditModal()">×</button>
+                </div>
             </div>
-            <div class="modal-body">
+            <div class="p-6">
                 <form action="{{ route('update_app_planning')}}" method="post" onsubmit="storeNewPlanning()" id="editAppointmentForm">
                     @csrf
                     @method("Patch")
 
-                    <div class="mb-3">
-                        <label for="appointmentDate" class="form-label">Date</label>
-                        <input type="date" class="form-control" id="appointmentDate" name="date" required>
+                    <div class="mb-4">
+                        <label for="appointmentDate" class="block text-sm font-medium text-gray-700 mb-2">Date</label>
+                        <input type="date" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" id="appointmentDate" name="date" required>
                     </div>
-                    <div class="mb-3">
-                        <label for="startTime" class="form-label">Heure de Début</label>
-                        <input type="time" class="form-control" id="startTime" name="start_time" required>
+                    <div class="mb-4">
+                        <label for="startTime" class="block text-sm font-medium text-gray-700 mb-2">Heure de Début</label>
+                        <input type="time" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" id="startTime" name="start_time" required>
                     </div>
-                    <div class="mb-3">
-                        <label for="endTime" class="form-label">Heure de Fin</label>
-                        <input type="time" class="form-control" id="endTime" name="end_time" required>
+                    <div class="mb-6">
+                        <label for="endTime" class="block text-sm font-medium text-gray-700 mb-2">Heure de Fin</label>
+                        <input type="time" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" id="endTime" name="end_time" required>
                     </div>
                     <input type="hidden" id="new_planning" name="new_planning">
                     <input type="hidden" id="app_id" name="app_id">
-                    <button type="submit" class="btn btn-primary">Enregistrer les Modifications</button>
+                    <button type="submit" class="w-full bg-gradient-to-r from-blue-500 to-cyan-500 text-white px-4 py-2 rounded-xl hover:from-blue-600 hover:to-cyan-600 transition-all duration-200">Enregistrer les Modifications</button>
                 </form>
             </div>
         </div>
@@ -712,21 +487,18 @@
 <script>
    let currentAppointmentElement = null; 
     let autoGeneratedPatients = [];
-    // let all_patients = [];
     let warningMsg = '';    
-
    // chacnge patient modal
     function closeChangeModal() {
-        document.getElementById('autoGeneratedPatientContainer').classList.add('d-none') ;
-        document.getElementById('changePatientModal').style.display = 'none';
-        document.getElementById('manualPatient').classList.add('d-none') ;
-        document.querySelector('#errorMsg').classList.add('d-none')
+        document.getElementById('autoGeneratedPatientContainer').classList.add('hidden');
+        document.getElementById('changePatientModal').classList.add('hidden');
+        document.getElementById('manualPatient').classList.add('hidden');
+        document.querySelector('#errorMsg').classList.add('hidden');
         document.getElementById('autoGeneratedPatient').value = '';	
         document.querySelector('.autoGeneratedPatientLabel').innerHTML = '';     
         document.getElementById('allPatientsSelect').innerHTML = '<option value="">Sélectionnez un patient</option>';
         document.querySelector('#errorMsg').innerHTML = '';
         document.querySelector('#manualPatientName').innerHTML = '';
-
     }    
     function openChangeModal(specialityId, date, startTime, endTime,pateint_id, event) {
         console.log('Speciality ID:', specialityId);
@@ -734,7 +506,7 @@
         console.log('Start Time:', startTime);
         console.log('End Time:', endTime);
         currentAppointmentId = event.closest('.appointment-card');
-        document.getElementById('changePatientModal').style.display = 'block';
+        document.getElementById('changePatientModal').classList.remove('hidden');
 
         const params = new URLSearchParams({
             speciality_id: specialityId,
@@ -758,11 +530,8 @@
 
             if (data.success) {
                 autoGeneratedPatients = data.available_patients;
-                // all_patients = data.all_patients;
-                // console.log('all patinet',all_patients);
             }
             else{    
-                // all_patients = data.all_patients;
                 warningMsg = data.msg;         
                 console.log(data.msg);
             }
@@ -831,14 +600,13 @@
     }
    
     function selectRandomAutoPatient() {
-        document.querySelector('#manualPatient').classList.add('d-none');
-        document.querySelector('#errorMsg').classList.add('d-none');
+        document.querySelector('#manualPatient').classList.add('hidden');
+        document.querySelector('#errorMsg').classList.add('hidden');
         document.querySelector('#errorMsg').innerHTML = '';
-
 
         if (!autoGeneratedPatients || autoGeneratedPatients.length === 0) {
             document.querySelector('#errorMsg').innerHTML = warningMsg;
-            document.querySelector('#errorMsg').classList.remove('d-none')
+            document.querySelector('#errorMsg').classList.remove('hidden');
             return;
         }
 
@@ -849,30 +617,30 @@
         
         const autoGeneratedPatientInput = document.getElementById('autoGeneratedPatient');
         const autoGeneratedPatientLabel = document.querySelector('.autoGeneratedPatientLabel');        
-        document.querySelector('#autoGeneratedPatientContainer').classList.remove('d-none');
+        document.querySelector('#autoGeneratedPatientContainer').classList.remove('hidden');
         autoGeneratedPatientInput.value = randomPatient.id;
         autoGeneratedPatientLabel.textContent = randomPatient.full_name;
 
     }
     
     function manualPatient() {
-        document.querySelector('#manualPatient').classList.remove('d-none');
-        document.querySelector('#autoGeneratedPatientContainer').classList.add('d-none');
+        document.querySelector('#manualPatient').classList.remove('hidden');
+        document.querySelector('#autoGeneratedPatientContainer').classList.add('hidden');
         document.querySelector('#autoGeneratedPatient').innerHTML='';
-        document.querySelector('#errorMsg').classList.add('d-none');
+        document.querySelector('#errorMsg').classList.add('hidden');
         document.querySelector('#errorMsg').innerHTML = '';
     }
 //     edit modal
     function openEditModal(event) {
         currentAppointmentId = event.closest('.appointment-card');
 
-        document.getElementById('editAppointmentModal').style.display = 'block';
+        document.getElementById('editAppointmentModal').classList.remove('hidden');
         document.getElementById('app_id').value= currentAppointmentId.dataset.appId;
         console.log( document.getElementById('app_id').value,currentAppointmentId.dataset.appId);
     }  
    
     function closeEditModal() {
-        document.getElementById('editAppointmentModal').style.display = 'none';
+        document.getElementById('editAppointmentModal').classList.add('hidden');
         document.getElementById('appointmentDate').value = null;
         document.getElementById('startTime').value = null;
         document.getElementById('endTime').value = null;  

@@ -1,522 +1,125 @@
 @extends('layouts.coach_app')
 @section('content')
 @php
-
-
 $patient_first_name = ($patient->patient_type=='kid'|| $patient->patient_type=='young')? $patient->first_name : $patient->parent_first_name ;
 $patient_last_name = ($patient->patient_type=='kid'|| $patient->patient_type=='young')? $patient->last_name : $patient->parent_last_name;
 $patient_full_name = $patient_first_name . ' ' . $patient_last_name;
-
 @endphp
-<style>
-    :root {
-        --primary-color: #6366f1;
-        --secondary-color: #4f46e5;
-        --light-bg: #f8fafc;
-        --dark-text: #1e293b;
-    }
-    .patient-profile {
-        display: grid;
-        grid-template-columns: 300px 1fr;
-        gap: 2rem;
-        padding: 2rem;
-        background: var(--light-bg);
-        min-height: 100vh;
-    }
 
-    .patient-sidebar {
-        background: white;
-        border-radius: 12px;
-        padding: 2rem;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-        height: fit-content;
-    }
-
-    .patient-main {
-        display: flex;
-        flex-direction: column;
-        gap: 2rem;
-    }
-
-    .profile-header {
-        display: flex;
-        flex-direction: column;
-        align-items: start;
-        gap: 1rem;
-        padding-bottom: 1.5rem;
-        border-bottom: 1px solid #e2e8f0;
-    }
-
-    .patient-avatar {
-        width: 80px;
-        height: 80px;
-        border-radius: 50%;
-        background: var(--primary-color);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: white;
-        font-size: 2rem;
-    }
-
-    .patient-stats {
-        display: grid;
-        gap: 1rem;
-    }
-
-    .stat-card {
-        background: var(--light-bg);
-        padding: 1rem;
-        border-radius: 8px;
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-    }
-
-    .stat-icon {
-        width: 40px;
-        height: 40px;
-        border-radius: 8px;
-        background: rgba(99, 102, 241, 0.1);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: var(--primary-color); 
-    }
-
-    .detail-section {
-        background: white;
-        border-radius: 12px;
-        padding: 2rem;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-    }
-
-    .nav-tabs {
-        display: flex;
-        gap: 1rem;
-        border-bottom: 1px solid #e2e8f0;
-        padding-bottom: 1rem;
-        margin-bottom: 1.5rem;
-    }
-
-    .nav-item {
-        padding: 0.5rem 1rem;
-        border-radius: 8px;
-        cursor: pointer;
-        transition: all 0.3s ease;
-    }
-
-    .nav-item.active {
-        background: var(--primary-color);
-        color: white;
-    }
-
-
-    .calendar-container {
-        background: white;
-        border-radius: 12px;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-        height: 500px; 
-        min-height: 350px;
-        display: flex;
-        flex-direction: column;
-    }
-
-    .calendar-nav {
-        display: flex;
-        gap: 1rem;
-        padding: 1rem;
-        border-bottom: 1px solid #e2e8f0;
-    }
-
-
-    #availabilities-calendar {
-        flex: 1;
-        padding: 1rem;
-    }
-
-  
-    .fc {
-        --fc-border-color: #e2e8f0;
-        --fc-today-bg-color: #f8fafc;
-        --fc-neutral-bg-color: #f8fafc;
-        --fc-page-bg-color: white;
-    }
-
-    .fc-header-toolbar {
-        background: linear-gradient(195deg, var(--primary-color), var(--secondary-color));
-        color: white;
-        padding: 1rem;
-        margin: 0 !important;
-        border-radius: 8px 8px 0 0;
-    }
-    .fc-view-harness {
-        height: 100% !important;
-    }
-    .fc-button-primary {
-        background-color: var(--primary-color) !important;
-        border-color: var(--primary-color) !important;
-    }
-
-    .fc-event {
-        border: none !important;
-        border-radius: 8px !important;
-        padding: 6px 8px !important;
-        margin: 4px !important;
-        font-weight: 500 !important;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-        box-shadow: 0 3px 6px rgba(0,0,0,0.16) !important;
-        position: relative;
-        overflow: hidden;
-    }
-
-    .fc-event::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 4px;
-        height: 100%;
-    }
-    .fc .fc-button-primary {
-        background: var(--primary-color);
-        border-color: var(--primary-color);
-        text-transform: capitalize;
-    }
-
-    /* Hover Effects */
-    .fc-event:hover {
-        transform: translateY(-2px) scale(1.02);
-        box-shadow: 0 6px 12px rgba(0,0,0,0.25) !important;
-    }
-
-    /* Time Styling */
-    .fc-event-time {
-        font-weight: 300;
-        opacity: 0.8;
-        margin-right: 8px;
-    }
-
-    
-    .priority1 .fc-event-title,
-    .priority1 .fc-event-time {
-    color:rgb(206, 1, 1) !important; 
-    }
-
-    .priority2 .fc-event-title,
-    .priority2 .fc-event-time {
-    color:rgb(251, 145, 6) !important; 
-    }
-
-    .priority3 .fc-event-title,
-    .priority3 .fc-event-time {
-    color:rgb(1, 174, 27) !important;
-    }
-    .priority1 { background: rgba(255, 76, 76, 0.1) !important; border-left: 4px solid #ff4c4c !important; }
-    .priority2 { background: rgba(255, 152, 0, 0.1) !important; border-left: 4px solid #ff9800 !important; }
-    .priority3 { background: rgba(76, 175, 80, 0.1) !important; border-left: 4px solid #4caf50 !important; }
-
-    /* Responsive styles only - to be added at the end of existing CSS */
-
-/* Mobile devices (phones, less than 768px) */
-@media (max-width: 767.98px) {
-    /* Adjust grid layout for mobile */
-    .patient-profile {
-        display: flex;
-        flex-direction: column;
-        gap: 1.5rem;
-        padding: 1rem;
-        min-height: auto;
-    }
-    
-    /* Sidebar adjustments */
-    .patient-sidebar {
-        padding: 1.5rem;
-        width: 100%;
-    }
-    
-    /* Navigation tabs adjustments */
-    .nav-tabs {
-        flex-wrap: wrap;
-        gap: 0.5rem;
-    }
-    
-    .nav-item {
-        font-size: 0.9rem;
-        padding: 0.5rem 0.75rem;
-        flex: 1 0 auto;
-        text-align: center;
-        min-width: 120px;
-    }
-    
-    /* Calendar container adjustments */
-    .calendar-container {
-        height: auto;
-        min-height: 450px;
-    }
-    
-    /* Calendar toolbar adjustments */
-    .fc-header-toolbar {
-        flex-wrap: wrap;
-        padding: 0.75rem;
-    }
-    
-    .fc-toolbar-chunk {
-        margin-bottom: 0.5rem;
-        display: flex;
-        justify-content: center;
-        width: 100%;
-    }
-    
-    /* Make toolbar buttons more touch-friendly */
-    .fc-button {
-        padding: 0.5rem !important;
-        min-height: 44px !important;
-        min-width: 44px !important;
-        margin: 2px !important;
-    }
-    
-    /* Patient stats adjustments */
-    .patient-stats {
-        grid-template-columns: 1fr;
-    }
-    
-    .stat-card {
-        padding: 0.75rem;
-    }
-    
-    /* Detail section adjustments */
-    .detail-section {
-        padding: 1.5rem;
-    }
-    
-    /* Grid layout adjustments */
-    .grid.grid-cols-1.md\:grid-cols-2 {
-        display: flex;
-        flex-direction: column;
-        gap: 1.5rem;
-    }
-}
-
-/* Small devices (landscape phones) */
-@media (min-width: 576px) and (max-width: 767.98px) {
-    .patient-profile {
-        padding: 1.25rem;
-    }
-    
-    .patient-sidebar {
-        padding: 1.75rem;
-    }
-    
-    .detail-section {
-        padding: 1.75rem;
-    }
-    
-    /* Patient stats adjustments */
-    .patient-stats {
-        grid-template-columns: 1fr 1fr;
-    }
-}
-
-/* Medium devices (tablets) */
-@media (min-width: 768px) and (max-width: 991.98px) {
-    .patient-profile {
-        grid-template-columns: 250px 1fr;
-        gap: 1.5rem;
-        padding: 1.5rem;
-    }
-    
-    .patient-sidebar {
-        padding: 1.5rem;
-    }
-    
-    .calendar-container {
-        height: 450px;
-    }
-}
-
-/* Large devices (desktops) */
-@media (min-width: 992px) and (max-width: 1199.98px) {
-    .patient-profile {
-        grid-template-columns: 280px 1fr;
-    }
-}
-
-
-</style>
-<div class="patient-profile">
-    <!-- Left Sidebar -->
-    <div class="patient-sidebar">
-        <div class="profile-header">
-            <div class="patient-avatar">
-                {{ strtoupper(substr($patient_full_name, 0, 1)) }}
+<div class="min-h-screen bg-gradient-to-br from-cyan-50 via-sky-50 to-blue-50 p-6 mt-24">
+        <a onclick="window.history.back()" class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-cyan-100 text-cyan-700 hover:bg-cyan-200 transition-all">
+            <i class="fas fa-arrow-left"></i>
+        </a>
+    <div class="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-4 gap-8">
+        <!-- Sidebar -->
+        <div class="lg:col-span-1 bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 p-8 flex flex-col items-center">
+            
+            @if ($patient->image_path)
+                    <img src="{{ asset('storage/' . $patient->image_path) }}" alt="Image Preview" class="w-28 h-28 rounded-full object-cover border-4 border-cyan-300 shadow-lg mb-4">
+            @else
+                    <div class="w-28 h-28 bg-gradient-to-br from-cyan-400 to-sky-500 rounded-full flex items-center justify-center text-white font-bold text-3xl shadow-lg mb-4">
+                    {{ strtoupper(substr($patient_full_name, 0, 1)) }}
+                </div>
+            @endif
+            <h2 class="text-xl font-bold text-gray-900 mb-1">{{ $patient_full_name }}</h2>
+            <span class="text-sm text-gray-500 mb-4">ID: {{ $patient->id }}</span>
+            <div class="grid grid-cols-2 gap-4 mt-8 w-full">
+                <div class="bg-cyan-50 rounded-xl p-4 flex flex-col items-center shadow">
+                    <i class="fas fa-user-tag text-cyan-600 text-2xl mb-2"></i>
+                    <span class="text-xs text-gray-500">Type</span>
+                    <span class="font-semibold text-gray-900">{{ ucfirst($patient->patient_type) }}</span>
+                </div>
+                <div class="bg-cyan-50 rounded-xl p-4 flex flex-col items-center shadow">
+                    <i class="fas fa-birthday-cake text-cyan-600 text-2xl mb-2"></i>
+                    <span class="text-xs text-gray-500">Âge</span>
+                    <span class="font-semibold text-gray-900">{{ $patient->age }} ans</span>
+                </div>
+                <div class="bg-cyan-50 rounded-xl p-4 flex flex-col items-center shadow">
+                    <i class="fas fa-{{ $patient->gender == 'M' ? 'mars' : 'venus' }} text-cyan-600 text-2xl mb-2"></i>
+                    <span class="text-xs text-gray-500">Genre</span>
+                    <span class="font-semibold text-gray-900">{{ $patient->gender == 'M' ? 'Homme' : 'Femme' }}</span>
+                </div>
+                <div class="bg-cyan-50 rounded-xl p-4 flex flex-col items-center shadow">
+                    <i class="fas fa-calendar-week text-cyan-600 text-2xl mb-2"></i>
+                    <span class="text-xs text-gray-500">Quota hebdo.</span>
+                    <span class="font-semibold text-gray-900">{{ $patient->weekly_quota }} Max</span>
+                </div>
             </div>
-            <h2 class="text-xl font-semibold">{{ $patient_full_name }}</h2>
-            <span class="text-sm text-gray-500">ID: {{ $patient->id }}</span>
-            <input type="hidden" name="patient_id" id="patient_id" value="{{ $patient->id }}">
-
         </div>
+    <!-- Main Content -->
+        <div class="lg:col-span-3 flex flex-col gap-8">
+            <!-- Tabs -->
+            <div class="flex flex-wrap gap-2 bg-white/80 backdrop-blur-xl rounded-2xl shadow-xl border border-white/20 px-6 py-4 mb-2">
+                <button class="tab-btn px-4 py-2 rounded-xl font-semibold text-cyan-700 hover:bg-cyan-100 transition" id="personal" onclick="showTab('personal', this)">Informations personnelles</button>
+                <button class="tab-btn px-4 py-2 rounded-xl font-semibold text-cyan-700 hover:bg-cyan-100 transition" onclick="showTab('medical', this)">Informations médicales</button>
 
-        <div class="patient-stats">
-            <div class="stat-card">
-                <div class="stat-icon">
-                    <i class="fas fa-user-tag"></i>
-                </div>
+                <button class="tab-btn px-4 py-2 rounded-xl font-semibold text-cyan-700 hover:bg-cyan-100 transition" onclick="showTab('calendar', this)">Priorités</button>
+        </div>
+        <!-- Personal Info Tab -->
+            <div class="bg-white/80 backdrop-blur-xl rounded-2xl shadow-xl border border-white/20 p-8 profile-tab-content" id="personalTab">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div>
-                    <p class="text-sm text-gray-500">Type</p>
-                    <p class="font-medium">{{ ucfirst($patient->patient_type) }}</p>
-                </div>
-            </div>
-
-            <div class="stat-card">
-                <div class="stat-icon">
-                    <i class="fas fa-birthday-cake"></i>
-                </div>
+                        <h3 class="text-lg font-bold mb-4 text-cyan-700">Informations de contact</h3>
+                    <div class="space-y-2">
+                            <p><i class="fas fa-phone mr-2 text-cyan-500"></i> {{ $patient->phone }}</p>
+                            <p><i class="fas fa-envelope mr-2 text-cyan-500"></i> {{ $patient->email }}</p>
+                            <p><i class="fas fa-map-marker-alt mr-2 text-cyan-500"></i> {{ $patient->address }}</p>
+                        </div>
+                    </div>
+                @if ($patient->patient_type == 'kid' || $patient->patient_type == 'young')
                 <div>
-                    <p class="text-sm text-gray-500">Âge</p>
-                    <p class="font-medium">{{ $patient->age }} ans</p>
-                </div>
-            </div>
-
-            <div class="stat-card">
-                <div class="stat-icon">
-                    @if ($patient->gender == "M")
-                        <i class="fas fa-mars"></i>
-                    @else
-                        <i class="fas fa-venus"></i>
+                        <h3 class="text-lg font-bold mb-4 text-cyan-700">Détails du tuteur</h3>
+                    <div class="space-y-2">
+                            <p><i class="fas fa-user-tie mr-2 text-cyan-500"></i> {{ $patient->parent_first_name }} {{ $patient->parent_last_name }}</p>
+                            <p><i class="fas fa-briefcase mr-2 text-cyan-500"></i> {{ $patient->profession }}</p>
+                            <p><i class="fas fa-building mr-2 text-cyan-500"></i> {{ $patient->etablissment }}</p>
+                        </div>
+                    </div>
                     @endif
                 </div>
-                <div>
-                    <p class="text-sm text-gray-500">Sexe</p>
-                    <p class="font-medium">{{ $patient->gender == "M" ? 'Homme' : 'Femme' }}</p>
-                </div>
-
             </div>
-            
-        </div>
-    </div>
-
-    <!-- Main Content -->
-    <div class="patient-main">
-        <!-- Navigation Tabs -->
-        <div class="nav-tabs">
-            <div class="nav-item active" onclick="showTab('personal', this)">Informations Personnelles</div>
-            <div class="nav-item" onclick="showTab('medical', this)">Informations Médicales</div>
-            <!-- <div class="nav-item" onclick="showTab('coaches', this)">coaches Info</div> -->
-            <div class="nav-item" onclick="showTab('calendar', this)">Calendrier</div>
-        </div>
-
-
-        <!-- Personal Info Tab -->
-        <div class="detail-section" id="personalTab">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                    <h3 class="text-lg font-semibold mb-4">Informations de Contact</h3>
-                    <div class="space-y-2">
-                        <p><i class="fas fa-phone mr-2"></i> {{ $patient->phone }}</p>
-                        <p><i class="fas fa-envelope mr-2"></i> {{ $patient->email }}</p>
-                        <p><i class="fas fa-map-marker-alt mr-2"></i> {{ $patient->address }}</p>
-                    </div>
-                </div>
-
-                @if ($patient->patient_type == 'kid' || $patient->patient_type == 'young')
-                <div>
-                    <h3 class="text-lg font-semibold mb-4">Détails du Tuteur</h3>
-                    <div class="space-y-2">
-                        <p><i class="fas fa-user-tie mr-2"></i> {{ $patient->parent_first_name }} {{ $patient->parent_last_name }}</p>
-                        <p><i class="fas fa-briefcase mr-2"></i> {{ $patient->profession }}</p>
-                        <p><i class="fas fa-building mr-2"></i> {{ $patient->etablissment }}</p>
-                    </div>
-                </div>
-                @endif
-            </div>
-        </div>
-
         <!-- Medical Info Tab -->
-        <div class="detail-section hidden" id="medicalTab">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="bg-white/80 backdrop-blur-xl rounded-2xl shadow-xl border border-white/20 p-8 hidden profile-tab-content" id="medicalTab">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div>
-                    <h3 class="text-lg font-semibold mb-4">Informations sur le Traitement</h3>
+                        <h3 class="text-lg font-bold mb-4 text-cyan-700">Informations sur le traitement</h3>
                     <div class="space-y-2">
-                        <p><i class="fas fa-calendar-alt mr-2"></i> {{ $patient->subscription }}</p>
-                        <p><i class="fas fa-user-md mr-2"></i> {{ $patient->speciality->name }}</p>
-                        <p><i class="fas fa-laptop-medical mr-2"></i> {{ $patient->mode }}</p>
+                            <p><i class="fas fa-calendar-alt mr-2 text-cyan-500"></i> {{ $patient->subscription }}</p>
+                            <p><i class="fas fa-user-md mr-2 text-cyan-500"></i> {{ $patient->speciality->name }}</p>
+                            <p><i class="fas fa-laptop-medical mr-2 text-cyan-500"></i> {{ $patient->mode }}</p>
+                        </div>
                     </div>
-                </div>
-
                 @if ($patient->patient_type == 'kid' || $patient->patient_type == 'young')
                 <div>
-                    <h3 class="text-lg font-semibold mb-4">Détails de l'Éducation</h3>
+                        <h3 class="text-lg font-bold mb-4 text-cyan-700">Détails de l'éducation</h3>
                     <div class="space-y-2">
-                        <p><i class="fas fa-school mr-2"></i> {{ $patient->ecole }}</p>
-                        <p><i class="fas fa-sitemap mr-2"></i> {{ $patient->system }} Système</p>
+                            <p><i class="fas fa-school mr-2 text-cyan-500"></i> {{ $patient->ecole }}</p>
+                            <p><i class="fas fa-sitemap mr-2 text-cyan-500"></i> {{ $patient->system }} Système</p>
+                        </div>
                     </div>
+                    @endif
                 </div>
-                @endif
+            </div>
+
+            <div class="bg-white/80 backdrop-blur-xl rounded-2xl shadow-xl border border-white/20 p-8 hidden profile-tab-content" id="calendarTab">
+                <h3 class="text-lg font-bold mb-4 text-cyan-700">Priorités</h3>
+                <div id="availabilities-calendar"></div>
             </div>
         </div>
-
-              <!-- assigned coach Info Tab -->
-        <!-- <div class="detail-section hidden" id="coachesTab">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                    <h3 class="text-lg font-semibold mb-4">assigned Coaches</h3>
-                    <p class="alert alert-info"> select who can see <q> <b><i>{{ $patient_full_name }}</i></b> </q> reports </p>
-                    <div class="space-y-2">
-                    <form action="{{ route('coach_who_can_See',$patient->id) }}" method="post" >
-                        @csrf
-
-                        @foreach ($patient->coaches as $coach)
-                            <input type="checkbox"
-                                id="coachCheckbox{{ $coach->id }}"
-                                name="coaches[]"
-                                value="{{ $coach->id }}"
-                                {{ in_array($patient->id, $coach->can_see ?? []) ? 'checked' : '' }}>
-                            <label class="form-check-label" for="coachCheckbox{{ $coach->id }}">
-                                {{ $coach->full_name }}
-                            </label>
-                            <br>
-                        @endforeach
-
-                        <div class="text-center w-100">
-                            <button type="submit" class="btn btn-primary"> save </button>
-                        </div>
-                    </form>
-                    
-                    </div>
-                </div>
-            </div>
-        </div> -->
-
-
-
-        <div class="calendar-container hidden " id="calendarTab">
-            <div id="availabilities-calendar"></div>
-        </div> 
-  
     </div>
 </div>
-
 <script>
-
-      // Global calendar instance variables
-
-    let availabilitiesCalendarInstance;
     // Tab navigation
+    let availabilitiesCalendarInstance;
     function showTab(tabName, element) {
-        // Remove active class and hide all sections
-        document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
-        document.querySelectorAll('.detail-section, .calendar-container').forEach(el => el.style.display = 'none');
-        
-        // If an element is passed (i.e. from a click event), mark it as active
+        document.querySelectorAll('.tab-btn').forEach(item => item.classList.remove('bg-gradient-to-r', 'from-cyan-500', 'to-sky-600', 'text-white'));
+        document.querySelectorAll('.tab-btn').forEach(item => item.classList.add('text-cyan-700'));
+        document.querySelectorAll('.profile-tab-content').forEach(el => el.classList.add('hidden'));
         if (element) {
-            element.classList.add('active');
+            element.classList.add('bg-gradient-to-r', 'from-cyan-500', 'to-sky-600', 'text-white');
+            element.classList.remove('text-cyan-700');
         }
-        
-        // Show the target tab
-        document.getElementById(tabName + 'Tab').style.display = 'block';
-
-        // If showing the calendar tab, re-render and update its size after a brief delay
+        document.getElementById(tabName + 'Tab').classList.remove('hidden');
         if (tabName === 'calendar' && availabilitiesCalendarInstance) {
             setTimeout(() => {
             availabilitiesCalendarInstance.render();
@@ -524,13 +127,16 @@ $patient_full_name = $patient_first_name . ' ' . $patient_last_name;
             }, 100);
         }
     }
-    // Initialize default tab
     document.addEventListener('DOMContentLoaded', () => {
-        showTab('personal');
+        document.querySelectorAll('.tab-btn').forEach(item => item.classList.remove('bg-gradient-to-r', 'from-cyan-500', 'to-sky-600', 'text-white'));
+        document.querySelectorAll('.tab-btn').forEach(item => item.classList.add('text-cyan-700'));
+        document.querySelectorAll('.profile-tab-content').forEach(el => el.classList.add('hidden'));
+        document.getElementById('personal').classList.add('bg-gradient-to-r', 'from-cyan-500', 'to-sky-600', 'text-white');
+        document.getElementById('personal').classList.remove('text-cyan-700');
+        document.getElementById('personalTab').classList.remove('hidden');
         availabilitiesCalendarInstance = initAvailabilitiesCalendar();
     });
-
- // Function to initialize the availabilities calendar
+    // Calendar initialization (unchanged)
     function initAvailabilitiesCalendar() {
         let initialDate;
         var calendarEl = document.getElementById("availabilities-calendar");
@@ -538,27 +144,15 @@ $patient_full_name = $patient_first_name . ' ' . $patient_last_name;
         <?php
             $patientPriorities = json_decode($patient->priorities, true);
             $allPriorities = [];
-            // dd($patientPriorities);
-
             foreach ($patientPriorities as $priorityKey => $data) {
-                // dd($priorityKey,$data);
                 $priorityClass = '';
                 switch ($priorityKey) {
-                    case 'priority 1':
-                        $priorityClass = 'priority1';
-                        break;
-                    case 'priority 2':
-                        $priorityClass = 'priority2';
-                        break;
-                    case 'priority 3':
-                        $priorityClass = 'priority3';
-                        break;
-                }
-
+                case 'priority 1': $priorityClass = 'priority1'; break;
+                case 'priority 2': $priorityClass = 'priority2'; break;
+                case 'priority 3': $priorityClass = 'priority3'; break;
+            }
                 foreach ($data as $day => $slots) {
-
                     foreach ($slots as $slot) {
-                        // dd($slot["startTime"].':00');
                         $startTime = $slot['startTime'] . ':00';
                         $endTime = $slot['endTime'] . ':00';
                         $allPriorities[] = [
@@ -566,22 +160,15 @@ $patient_full_name = $patient_first_name . ' ' . $patient_last_name;
                             'start' => $day . 'T' . $startTime,
                             'end' => $day . 'T' . $endTime,
                             'className' => $priorityClass,
-                            'extendedProps' => [
-                                'priority' => $priorityKey
-                            ]
+                        'extendedProps' => [ 'priority' => $priorityKey ]
                         ];
                     }
                 }
             }
-
-            // dd($allPriorities)
             echo json_encode($allPriorities);
         ?>;
-             initialDate = allPatientPriorities.length > 0 ? allPatientPriorities[0].start : null;
-             initialDate = initialDate.split('T')[0]
-
-            console.log(allPatientPriorities);
-                        
+        initialDate = allPatientPriorities.length > 0 ? allPatientPriorities[0].start : null;
+        initialDate = initialDate ? initialDate.split('T')[0] : undefined;
         var calendar = new FullCalendar.Calendar(calendarEl, {
             initialView: "timeGridWeek",
             headerToolbar: {
@@ -592,9 +179,9 @@ $patient_full_name = $patient_first_name . ' ' . $patient_last_name;
             height: 'auto',
             contentHeight: 'auto',
             aspectRatio: 1.8,
-            eventMinHeight: 50,
             firstDay: 1, 
             hiddenDays: [0], 
+            eventMinHeight: 50,
             slotMinTime: '12:00:00',
             slotMaxTime: '20:00:00',
             allDaySlot: false,
@@ -603,10 +190,8 @@ $patient_full_name = $patient_first_name . ' ' . $patient_last_name;
             events: allPatientPriorities,
         });
         calendar.render();
-        calendar.gotoDate(initialDate);
+        if (initialDate) calendar.gotoDate(initialDate);
         return calendar;
-    };
-
+    }
 </script>
-
 @endsection

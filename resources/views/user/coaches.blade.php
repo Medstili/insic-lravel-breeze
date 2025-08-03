@@ -1,457 +1,133 @@
 @extends('layouts.app')
 @section('content')
 
-<style>
-    :root {
-        --primary: #6366f1;
-        --secondary: #4f46e5;
-        --light-bg: #f8fafc;
-        --dark-text: #1e293b;
-        --success: #10b981;
-        --danger: #ef4444;
-    }
-
-    /* Responsive container */
-    .coaches-container {
-        padding: 1rem;
-        background: var(--light-bg);
-        max-width: 100%;
-        overflow-x: hidden;
-    }
-
-    .header-card {
-        background: white;
-        border-radius: 12px;
-        padding: 1.25rem;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-        margin-bottom: 1.5rem;
-    }
-
-    .header-card h1 {
-        font-size: 1.5rem;
-        font-weight: 600;
-        color: var(--dark-text);
-        margin-bottom: 1rem;
-    }
-
-    /* Flex container for header */
-    .header-flex {
-        display: flex;
-        flex-direction: column;
-        gap: 1rem;
-    }
-
-    .search-card {
-        background: white;
-        border-radius: 12px;
-        padding: 1.25rem;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-        margin-bottom: 1.5rem;
-    }
-
-    /* Responsive search form */
-    .search-grid {
-        display: grid;
-        grid-template-columns: 1fr;
-        gap: 1rem;
-    }
-
-    .coaches-table {
-        background: white;
-        border-radius: 12px;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-        overflow-x: auto; /* Allow horizontal scrolling on small screens */
-    }
-
-    .coaches-table table {
-        width: 100%;
-        border-collapse: collapse;
-    }
-
-    .coaches-table thead {
-        background: linear-gradient(195deg, var(--primary), var(--secondary));
-        color: white;
-    }
-
-    .coaches-table th {
-        padding: 1rem;
-        text-align: left;
-        font-weight: 500;
-        white-space: nowrap;
-    }
-
-    .coaches-table td {
-        padding: 1rem;
-        border-bottom: 1px solid #e2e8f0;
-    }
-
-    .coaches-table tr:hover {
-        background: rgba(99, 102, 241, 0.05);
-    }
-
-    /* Coach info flex container */
-    .coach-info-flex {
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-    }
-
-    .coach-info-text {
-        display: flex;
-        flex-direction: column;
-    }
-
-    .status-badge {
-        display: inline-block;
-        padding: 0.5rem 1rem;
-        border-radius: 20px;
-        font-size: 0.875rem;
-        font-weight: 500;
-        white-space: nowrap;
-    }
-
-    .status-badge.available {
-        background: rgba(16, 185, 129, 0.1);
-        color: var(--success);
-    }
-
-    .status-badge.unavailable {
-        background: rgba(239, 68, 68, 0.1);
-        color: var(--danger);
-    }
-
-    .action-buttons {
-        display: flex;
-        gap: 0.5rem;
-    }
-
-    .btn {
-        padding: 0.5rem 1rem;
-        border-radius: 8px;
-        font-weight: 500;
-        transition: all 0.3s ease;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        gap: 0.5rem;
-        text-decoration: none;
-        cursor: pointer;
-        min-height: 44px; /* Better touch target */
-    }
-
-    .btn-primary {
-        background: var(--primary);
-        color: white;
-        border: none;
-    }
-
-    .btn-primary:hover {
-        background: var(--secondary);
-    }
-
-    .btn-secondary {
-        background: rgba(99, 102, 241, 0.1);
-        color: var(--primary);
-        border: none;
-    }
-
-    .btn-secondary:hover {
-        background: rgba(99, 102, 241, 0.2);
-    }
-
-    .btn-danger {
-        background: rgba(239, 68, 68, 0.1);
-        color: var(--danger);
-        border: none;
-    }
-
-    .btn-danger:hover {
-        background: rgba(239, 68, 68, 0.2);
-    }
-
-    .form-control {
-        padding: 0.75rem 1rem;
-        border-radius: 8px;
-        border: 1px solid #e2e8f0;
-        width: 100%;
-        transition: all 0.3s ease;
-        min-height: 44px; /* Better touch target */
-        font-size: 16px; /* Prevent zoom on iOS */
-    }
-
-    .form-control:focus {
-        border-color: var(--primary);
-        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
-    }
-
-    .alert-success {
-        background: rgba(16, 185, 129, 0.1);
-        color: var(--success);
-        border-radius: 8px;
-        padding: 1rem;
-        margin-bottom: 1.5rem;
-    }
-
-    .coach-avatar {
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        background: var(--primary);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: white;
-        font-size: 1.5rem;
-        flex-shrink: 0;
-    }
-
-    .coach-img-avatar {
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        object-fit: cover;
-        border: 2px solid var(--primary);
-        flex-shrink: 0;
-    }
-
-    /* Bootstrap display utilities */
-    .d-none {
-        display: none !important;
-    }
+<div class="min-h-screen bg-gradient-to-br from-gray-50 via-cyan-50 to-sky-50 p-6 mt-24">
     
-    .d-block {
-        display: block !important;
-    }
-    
-    @media (min-width: 768px) {
-        .d-md-none {
-            display: none !important;
-        }
-        
-        .d-md-block {
-            display: block !important;
-        }
-    }
-
-    /* Mobile-specific table transformations */
-    @media (max-width: 767px) {
-        .coaches-table-mobile {
-            display: block;
-            width: 100%;
-        }
-        
-        .coaches-table-mobile thead {
-            display: none; /* Hide table header on mobile */
-        }
-        
-        .coaches-table-mobile tbody {
-            display: block;
-            width: 100%;
-        }
-        
-        .coaches-table-mobile tr {
-            display: block;
-            margin-bottom: 1rem;
-            border: 1px solid #e2e8f0;
-            border-radius: 8px;
-            padding: 1rem;
-            background-color: white;
-        }
-        
-        .coaches-table-mobile td {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0.75rem 0;
-            border-bottom: 1px solid #f0f0f0;
-        }
-        
-        .coaches-table-mobile td:last-child {
-            border-bottom: none;
-        }
-        
-        .coaches-table-mobile td:before {
-            content: attr(data-label);
-            font-weight: 600;
-            margin-right: 1rem;
-            flex: 0 0 40%;
-        }
-        
-        /* Special handling for coach info cell */
-        .coaches-table-mobile td.coach-info-cell {
-            flex-direction: column;
-            align-items: flex-start;
-        }
-        
-        .coaches-table-mobile td.coach-info-cell:before {
-            margin-bottom: 0.5rem;
-        }
-        
-        /* Center action buttons on mobile */
-        .coaches-table-mobile .action-buttons {
-            margin-left: auto;
-        }
-        
-        /* Improve touch targets on mobile */
-        .coaches-table-mobile .btn {
-            min-width: 44px;
-        }
-    }
-
-    /* Extra small devices (phones, less than 576px) */
-    @media (max-width: 575.98px) {
-        .coaches-container {
-            padding: 0.75rem;
-        }
-        
-        .header-card, .search-card {
-            padding: 1rem;
-            margin-bottom: 1rem;
-        }
-        
-        .header-card h1 {
-            font-size: 1.3rem;
-        }
-        
-        .btn {
-            padding: 0.5rem 0.75rem;
-            font-size: 0.9rem;
-        }
-        
-        .coach-avatar, .coach-img-avatar {
-            width: 36px;
-            height: 36px;
-        }
-        
-        .coach-avatar {
-            font-size: 1.2rem;
-        }
-        
-        .status-badge {
-            padding: 0.4rem 0.75rem;
-            font-size: 0.8rem;
-        }
-    }
-
-    /* Small devices (landscape phones, 576px and up) */
-    @media (min-width: 576px) {
-        .coaches-container {
-            padding: 1.5rem;
-        }
-        
-        .header-card, .search-card {
-            padding: 1.5rem;
-        }
-        
-        .coach-avatar, .coach-img-avatar {
-            width: 45px;
-            height: 45px;
-        }
-    }
-
-    /* Medium devices (tablets, 768px and up) */
-    @media (min-width: 768px) {
-        .header-flex {
-            flex-direction: row;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .header-card h1 {
-            margin-bottom: 0;
-        }
-        
-        .search-grid {
-            grid-template-columns: repeat(2, 1fr);
-        }
-        
-        .coach-avatar, .coach-img-avatar {
-            width: 50px;
-            height: 50px;
-        }
-    }
-
-    /* Large devices (desktops, 992px and up) */
-    @media (min-width: 992px) {
-        .coaches-container {
-            padding: 2rem;
-        }
-        
-        .header-card {
-            padding: 1.5rem;
-        }
-        
-        .search-grid {
-            grid-template-columns: repeat(4, 1fr);
-        }
-        
-        .header-card h1 {
-            font-size: 1.75rem;
-        }
-    }
-    
-  
-    
-    /* Print styles */
-    @media print {
-        .coaches-container {
-            background: white;
-            padding: 0;
-        }
-        
-        .header-card, .search-card, .coaches-table {
-            box-shadow: none;
-            margin-bottom: 1rem;
-        }
-        
-        .btn-primary, .btn-secondary, .btn-danger {
-            display: none;
-        }
-        
-        .coaches-table thead {
-            background: #f8fafc;
-            color: black;
-        }
-        
-        .coaches-table-mobile tr {
-            page-break-inside: avoid;
-        }
-    }
-</style>
-
-<div class="coaches-container">
-    <!-- Success Message -->
-    @if(session('success'))
-    <div class="alert-success">
-        <i class="fas fa-check-circle mr-2"></i>
-        {{ session('success') }}
-    </div>
-    @endif
-
-    <!-- Header Section -->
-    <div class="header-card">
-        <div class="header-flex">
-            <h1>Gestion des entraîneurs</h1>
-            <a href="{{ route('user.create') }}" class="btn btn-primary">
-                <i class="fas fa-plus mr-2"></i>Ajouter un nouvel entraîneur
-            </a>
+    <!-- Hero Header -->
+    <div class="relative overflow-hidden bg-gradient-to-r from-cyan-500 via-sky-500 to-blue-500 rounded-3xl shadow-2xl mb-8">
+        <div class="absolute inset-0 bg-black/10"></div>
+        <div class="relative p-8 md:p-12">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-4xl md:text-5xl font-bold text-white mb-2">
+                        Gestion des Entraîneurs
+                    </h1>
+                    <p class="text-cyan-100 text-lg md:text-xl">
+                        Gérez et suivez tous vos entraîneurs en temps réel
+                    </p>
+                </div>
+                <div class="hidden md:block">
+                    <div class="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center">
+                        <i class="fas fa-users text-3xl text-white"></i>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
-    <!-- Search Form -->
-    <div class="search-card">
+    <!-- Success Message -->
+    @if(session('success'))
+    <div class="bg-green-50 border border-green-200 rounded-2xl p-6 mb-8">
+        <div class="flex items-center gap-3">
+            <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                <i class="fas fa-check-circle text-green-600"></i>
+            </div>
+            <div>
+                <h3 class="text-lg font-semibold text-green-800">Succès</h3>
+                <p class="text-green-700">{{ session('success') }}</p>
+            </div>
+        </div>
+    </div>
+    @endif
+
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div class="bg-white rounded-2xl shadow-lg border border-gray-200 p-6 hover:shadow-xl transition-all duration-300">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-gray-600 text-sm font-medium">Total Entraîneurs</p>
+                    <p class="text-3xl font-bold text-gray-900">{{ $users->count() }}</p>
+                </div>
+                <div class="w-12 h-12 bg-cyan-100 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-users text-cyan-600 text-xl"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-2xl shadow-lg border border-gray-200 p-6 hover:shadow-xl transition-all duration-300">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-gray-600 text-sm font-medium">Disponibles</p>
+                    <p class="text-3xl font-bold text-green-600">{{ $users->where('is_available', true)->count() }}</p>
+                </div>
+                <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-check-circle text-green-600 text-xl"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-2xl shadow-lg border border-gray-200 p-6 hover:shadow-xl transition-all duration-300">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-gray-600 text-sm font-medium">Occupés</p>
+                    <p class="text-3xl font-bold text-red-600">{{ $users->where('is_available', false)->count() }}</p>
+                </div>
+                <div class="w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-times-circle text-red-600 text-xl"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-2xl shadow-lg border border-gray-200 p-6 hover:shadow-xl transition-all duration-300">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-gray-600 text-sm font-medium">Spécialités</p>
+                    <p class="text-3xl font-bold text-blue-600">{{ $specialities->count() }}</p>
+                </div>
+                <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-tags text-blue-600 text-xl"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Search and Filter Section -->
+    <div class="bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 overflow-hidden mb-8">
+        <div class="bg-gradient-to-r from-cyan-500 to-sky-600 px-8 py-6">
+            <div class="flex items-center justify-between">
+                <h3 class="text-xl font-bold text-white flex items-center gap-3">
+                    <i class="fas fa-search"></i>
+                    Recherche et Filtres
+                </h3>
+                <a href="{{ route('user.create') }}" 
+                   class="bg-white text-cyan-600 px-6 py-3 rounded-xl font-semibold hover:bg-cyan-50 transition-all duration-200 flex items-center gap-3 shadow-lg hover:shadow-xl">
+                    <i class="fas fa-plus"></i>
+                    <span class="hidden sm:inline">Ajouter un Entraîneur</span>
+                </a>
+            </div>
+        </div>
+        <div class="p-8">
         <form action="{{ route('user.index') }}" method="GET">
-            <div class="search-grid">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 items-end">
+                    <div class="space-y-2">
+                        <label class="text-sm font-medium text-gray-700">Rechercher</label>
                 <input type="text" name="q" value="{{ request('q') }}" 
-                       class="form-control" placeholder="Rechercher des entraîneurs...">
+                               placeholder="Nom de l'entraîneur..." 
+                               class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-all duration-200 bg-white/50 backdrop-blur-sm">
+                    </div>
                 
-                <select name="availability" class="form-control">
+                    <div class="space-y-2">
+                        <label class="text-sm font-medium text-gray-700">Disponibilité</label>
+                        <select name="availability" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-all duration-200 bg-white/50 backdrop-blur-sm">
                     <option value="">Toutes les disponibilités</option>
                     <option value="1" {{ request('availability') == '1' ? 'selected' : '' }}>Disponible</option>
                     <option value="0" {{ request('availability') == '0' ? 'selected' : '' }}>Occupé</option>
                 </select>
+                    </div>
 
-                <select name="specialities" class="form-control">
+                    <div class="space-y-2">
+                        <label class="text-sm font-medium text-gray-700">Spécialité</label>
+                        <select name="specialities" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-all duration-200 bg-white/50 backdrop-blur-sm">
                     <option value="">Toutes les spécialités</option>
                     @foreach($specialities as $speciality)
                     <option value="{{ $speciality->id }}" {{ request('specialities') == $speciality->id ? 'selected' : '' }}>
@@ -459,67 +135,96 @@
                     </option>
                     @endforeach
                 </select>
+                    </div>
 
-                <button type="submit" class="btn btn-secondary">
-                    <i class="fas fa-search mr-2"></i>Rechercher
+                    <button type="submit" class="w-full bg-gradient-to-r from-cyan-500 to-sky-600 text-white px-6 py-3 rounded-xl font-semibold hover:from-cyan-600 hover:to-sky-700 transform hover:-translate-y-1 transition-all duration-200 flex items-center justify-center gap-3 shadow-lg hover:shadow-xl">
+                        <i class="fas fa-search"></i>
+                        <span class="hidden sm:inline">Rechercher</span>
                 </button>
             </div>
         </form>
     </div>
+    </div>
 
-    <!-- Coaches Table - Desktop Version -->
-    <div class="coaches-table d-none d-md-block">
-        <table>
+    <!-- Coaches Table Section -->
+    <div class="bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 overflow-hidden">
+        <div class="bg-gradient-to-r from-cyan-500 to-sky-600 px-8 py-6">
+            <h3 class="text-xl font-bold text-white flex items-center gap-3">
+                <i class="fas fa-list"></i>
+                Liste des Entraîneurs
+            </h3>
+    </div>
+
+        <!-- Desktop Table -->
+        <div class="hidden lg:block overflow-x-auto">
+            <table class="w-full">
             <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Entraîneur</th>
-                    <th>Spécialité</th>
-                    <th>Disponibilité</th>
-                    <th>Actions</th>
+                    <tr class="bg-gradient-to-r from-cyan-500 to-sky-600 text-white">
+                        <th class="px-6 py-4 text-left font-semibold text-sm uppercase tracking-wider">ID</th>
+                        <th class="px-6 py-4 text-left font-semibold text-sm uppercase tracking-wider">Entraîneur</th>
+                        <th class="px-6 py-4 text-left font-semibold text-sm uppercase tracking-wider">Spécialité</th>
+                        <th class="px-6 py-4 text-left font-semibold text-sm uppercase tracking-wider">Disponibilité</th>
+                        <th class="px-6 py-4 text-left font-semibold text-sm uppercase tracking-wider">Actions</th>
                 </tr>
             </thead>
-            <tbody>
+                <tbody class="divide-y divide-gray-100">
                 @foreach($users as $user)
-                <tr>
-                    <td>{{ $user->id }}</td>
-                    <td>
-                        <div class="coach-info-flex">
+                    <tr class="hover:bg-gray-50/80 transition-all duration-200 group">
+                        <td class="px-6 py-4">
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-cyan-100 text-cyan-800">
+                                #{{ $user->id }}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4">
+                            <div class="flex items-center gap-4">
                             @if ($user->image_path)
-                                <img src="{{ asset('storage/' . $user->image_path) }}" alt="Coach Avatar" class="coach-img-avatar">
+                                    <img src="{{ asset('storage/' . $user->image_path) }}" 
+                                         alt="Coach Avatar" 
+                                         class="w-12 h-12 rounded-full object-cover border-2 border-cyan-200">
                             @else
-                                <div class="coach-avatar">
+                                    <div class="w-12 h-12 bg-gradient-to-br from-cyan-400 to-sky-500 rounded-full flex items-center justify-center text-white font-semibold text-lg">
                                     {{ strtoupper(substr($user->full_name, 0, 1)) }}
                                 </div>
                             @endif
-                            <div class="coach-info-text">
-                                <div class="font-medium">{{ $user->full_name }}</div>
-                                <div class="text-sm text-gray-600">{{ $user->email }}</div>
+                                <div>
+                                    <div class="font-medium text-gray-900">{{ $user->full_name }}</div>
+                                    <div class="text-sm text-gray-500">{{ $user->email }}</div>
                             </div>   
                         </div>
                     </td>
-                    <td>
-                        <span class="badge bg-primary-light text-black fs-6">
+                        <td class="px-6 py-4">
+                            <span class="inline-flex px-3 py-1 text-sm font-medium bg-blue-100 text-blue-800 rounded-full">
                             {{ $user->speciality->name }}
                         </span>
                     </td>
-                    <td>
-                        <span class="status-badge {{ $user->is_available ? 'available' : 'unavailable' }}">
+                        <td class="px-6 py-4">
+                            @php
+                                $statusClasses = [
+                                    true => 'bg-green-100 text-green-800 border-green-200',
+                                    false => 'bg-red-100 text-red-800 border-red-200'
+                                ];
+                                $statusClass = $statusClasses[$user->is_available] ?? 'bg-gray-100 text-gray-800 border-gray-200';
+                            @endphp
+                            <span class="inline-flex px-3 py-1 text-sm font-medium rounded-full border {{ $statusClass }}">
+                                <span class="w-2 h-2 rounded-full mr-2 {{ $user->is_available ? 'bg-green-500' : 'bg-red-500' }}"></span>
                             {{ $user->is_available ? 'Disponible' : 'Occupé' }}
                         </span>
                     </td>
-                    <td>
-                        <div class="action-buttons">
+                        <td class="px-6 py-4">
+                            <div class="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                             <a href="{{ route('user.show', $user->id) }}" 
-                               class="btn btn-secondary">
-                               <i class="fas fa-eye"></i>
+                                   class="inline-flex items-center justify-center w-9 h-9 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-all duration-200 hover:scale-110" 
+                                   title="Voir les détails">
+                                    <i class="fas fa-eye text-sm"></i>
                             </a>
                             <form action="{{ route('user.destroy', $user->id) }}" method="POST" 
-                                  onsubmit="return deleteConfirmation()">
+                                      onsubmit="return deleteConfirmation()" class="inline">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" class="btn btn-danger">
-                                    <i class="fas fa-trash"></i>
+                                    <button type="submit" 
+                                            class="inline-flex items-center justify-center w-9 h-9 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-all duration-200 hover:scale-110" 
+                                            title="Supprimer">
+                                        <i class="fas fa-trash text-sm"></i>
                                 </button>
                             </form>
                         </div>
@@ -528,61 +233,82 @@
                 @endforeach
             </tbody>
         </table>
+        </div>
     </div>
 
-    <!-- Coaches Table - Mobile Version -->
-    <div class="coaches-table-mobile d-block d-md-none">
-        <table>
-            <tbody>
+    <!-- Mobile Cards View -->
+    <div class="lg:hidden space-y-6 mt-8">
                 @foreach($users as $user)
-                <tr>
-                    <td data-label="ID">{{ $user->id }}</td>
-                    <td data-label="Entraîneur" class="coach-info-cell">
-                        <div class="coach-info-flex">
+        <div class="bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 overflow-hidden hover:shadow-3xl transition-all duration-300">
+            <div class="bg-gradient-to-r from-cyan-500 to-sky-600 px-6 py-4 text-white">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
                             @if ($user->image_path)
-                                <img src="{{ asset('storage/' . $user->image_path) }}" alt="Coach Avatar" class="coach-img-avatar">
+                            <img src="{{ asset('storage/' . $user->image_path) }}" 
+                                 alt="Coach Avatar" 
+                                 class="w-12 h-12 rounded-full object-cover border-2 border-white/20">
                             @else
-                                <div class="coach-avatar">
-                                    {{ strtoupper(substr($user->full_name, 0, 1)) }}
+                            <div class="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
+                                <span class="text-white font-semibold text-lg">{{ strtoupper(substr($user->full_name, 0, 1)) }}</span>
                                 </div>
                             @endif
-                            <div class="coach-info-text">
-                                <div class="font-medium">{{ $user->full_name }}</div>
-                                <div class="text-sm text-gray-600">{{ $user->email }}</div>
-                            </div>   
+                        <div>
+                            <div class="font-semibold text-lg">{{ $user->full_name }}</div>
+                            <div class="text-cyan-100 text-sm">ID: #{{ $user->id }}</div>
                         </div>
-                    </td>
-                    <td data-label="Spécialité">
-                        <span class="badge bg-primary-light text-black fs-6">
+                    </div>
+                    @php
+                        $statusClasses = [
+                            true => 'bg-green-100 text-green-800',
+                            false => 'bg-red-100 text-red-800'
+                        ];
+                        $statusClass = $statusClasses[$user->is_available] ?? 'bg-gray-100 text-gray-800';
+                    @endphp
+                    <span class="inline-flex px-3 py-1 text-sm font-medium rounded-full {{ $statusClass }}">
+                        {{ $user->is_available ? 'Disponible' : 'Occupé' }}
+                    </span>
+                </div>
+            </div>
+            
+            <div class="p-6 space-y-4">
+                <div class="flex items-center justify-between">
+                    <div class="text-sm text-gray-600">Email:</div>
+                    <div class="text-gray-900 font-medium">{{ $user->email }}</div>
+                </div>
+                
+                <div class="flex items-center justify-between">
+                    <div class="text-sm text-gray-600">Spécialité:</div>
+                    <div>
+                        <span class="inline-flex px-3 py-1 text-sm font-medium bg-blue-100 text-blue-800 rounded-full">
                             {{ $user->speciality->name }}
                         </span>
-                    </td>
-                    <td data-label="Disponibilité">
-                        <span class="status-badge {{ $user->is_available ? 'available' : 'unavailable' }}">
-                            {{ $user->is_available ? 'Disponible' : 'Occupé' }}
-                        </span>
-                    </td>
-                    <td data-label="Actions">
-                        <div class="action-buttons">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="px-6 py-4 bg-gray-50/50 border-t border-gray-200/50">
+                <div class="flex items-center justify-end gap-2">
                             <a href="{{ route('user.show', $user->id) }}" 
-                               class="btn btn-secondary">
-                               <i class="fas fa-eye"></i>
+                       class="inline-flex items-center justify-center w-9 h-9 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-all duration-200 hover:scale-110" 
+                       title="Voir les détails">
+                        <i class="fas fa-eye text-sm"></i>
                             </a>
                             <form action="{{ route('user.destroy', $user->id) }}" method="POST" 
-                                  onsubmit="return deleteConfirmation()">
+                          onsubmit="return deleteConfirmation()" class="inline">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" class="btn btn-danger">
-                                    <i class="fas fa-trash"></i>
+                        <button type="submit" 
+                                class="inline-flex items-center justify-center w-9 h-9 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-all duration-200 hover:scale-110" 
+                                title="Supprimer">
+                            <i class="fas fa-trash text-sm"></i>
                                 </button>
                             </form>
                         </div>
-                    </td>
-                </tr>
+            </div>
+        </div>
                 @endforeach
-            </tbody>
-        </table>
     </div>
+
 </div>
 
 <script>
@@ -590,4 +316,5 @@
         return confirm('Êtes-vous sûr de vouloir supprimer cet entraîneur ?');
     }
 </script>
+
 @endsection

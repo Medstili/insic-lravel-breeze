@@ -51,9 +51,14 @@ class PatientController extends Controller
                 $query->where('speciality_id', $specialityId);
             }
             // Optionally, order by date or other column
-            $patients = $query->get();
+            $patients = $query->paginate(15);
+            // $patients = $query->get();
             $specialities = Speciality::all();
-            return view('patient/patients', compact('patients', 'specialities')) ;
+            $patientCount = Patient::count();
+            $adultCount = Patient::where('patient_type', 'adult')->count();
+            $kidCount = Patient::where('patient_type', 'kid')->count();
+            $youngCount = Patient::where('patient_type', 'young')->count();
+            return view('patient/patients', compact('patients', 'specialities','adultCount', 'patientCount','kidCount', 'youngCount')) ;
     }
 
     /**
@@ -255,8 +260,7 @@ class PatientController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
-    {
+    public function update(Request $request, string $id){
         // Retrieve the selected coach IDs from the form
         $newCoachIds = $request->coaches; 
         if (empty($newCoachIds)) {
@@ -287,9 +291,7 @@ class PatientController extends Controller
                     ->first();
                 }
 
-
-                $existingPatientId= $existingPatient->id;
-        if (!is_null($existingPatient) && $existingPatientId !=$id ) {
+        if (!is_null($existingPatient) && $existingPatient->id != $id) {
             return redirect()->back()->withErrors(['patient_exists' => 'Ce patient existe déjà.']);
         }
         // Prepare pivot data for each new coach (capacity) first

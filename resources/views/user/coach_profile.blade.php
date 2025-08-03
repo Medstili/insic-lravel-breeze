@@ -1,285 +1,271 @@
 
 @extends('layouts.app')
 @section('content')
-<div class="coach-profile-container">
+
+<div class="min-h-screen bg-gradient-to-br from-cyan-50 via-sky-50 to-blue-50 p-6 mt-24">
+    <div class="max-w-7xl mx-auto">
     <!-- Coach Header Card -->
-    <div class="coach-header-card">
-        <div class="coach-profile-header">
-            <!-- <div class="coach-avatar-wrapper"> -->
-                <div class="coach-avatar-initials">
-                    <img src="{{ asset('storage/' . $coach->image_path) }}" alt="Image Previe" class="coach-avatar">
+        <div class="bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 p-8 mb-8">
+            <div class="flex flex-col lg:flex-row items-center lg:items-start gap-8">
+                <!-- Coach Avatar -->
+                <div class="relative">
+                    <div class="w-32 h-32 rounded-full overflow-hidden border-4 border-cyan-200 shadow-lg">
+                        <img src="{{ asset('storage/' . $coach->image_path) }}" alt="Coach Avatar" class="w-full h-full object-cover">
                 </div>
-            <!-- </div> -->
-            <div class="coach-info-wrapper">
-                <h1 class="coach-name">{{$coach->full_name}}</h1>
-                <div class="coach-meta">
-                    <span class="coach-badge speciality-badge">
+                </div>
+                
+                <!-- Coach Info -->
+                <div class="flex-1 text-center lg:text-left">
+                    <h1 class="text-3xl font-bold text-cyan-800 mb-4">{{$coach->full_name}}</h1>
+                    
+                    <div class="flex flex-wrap gap-3 mb-6 justify-center lg:justify-start">
+                        <span class="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-cyan-100 to-sky-100 text-cyan-700 rounded-full text-sm font-semibold border border-cyan-200">
                         <i class="fas fa-certificate"></i> Entraîneur {{$coach->speciality->name}}
                     </span>
-                    <span class="coach-badge availability-badge {{$coach->is_available ? 'available' : 'busy'}}">
-                        <i class="fas fa-circle"></i> {{$coach->is_available ? 'Disponible Maintenant' : 'Actuellement Occupé'}}
+                        <span class="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold {{$coach->is_available ? 'bg-green-100 text-green-700 border border-green-200' : 'bg-red-100 text-red-700 border border-red-200'}}">
+                            <i class="fas fa-circle text-xs"></i> {{$coach->is_available ? 'Disponible Maintenant' : 'Actuellement Occupé'}}
                     </span>
                 </div>
-                <div class="coach-contact-info">
-                    <a href="mailto:{{$coach->email}}" class="contact-item">
+                    
+                    <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+                        <a href="mailto:{{$coach->email}}" class="inline-flex items-center gap-2 text-cyan-700 hover:text-cyan-600 transition-colors">
                         <i class="fas fa-envelope"></i> {{$coach->email}}
                     </a>
-                    <a href="tel:{{$coach->phone}}" class="contact-item">
+                        <a href="tel:{{$coach->phone}}" class="inline-flex items-center gap-2 text-cyan-700 hover:text-cyan-600 transition-colors">
                         <i class="fas fa-phone"></i> {{$coach->phone}}
                     </a>
                 </div>
             </div>
+                
+                <!-- Edit Profile Button -->
+            <div class="lg:self-start">
+                <a href="{{ route('user.edit',$coach->id) }}" class="inline-flex items-center gap-2 bg-gradient-to-r from-cyan-500 to-sky-600 text-white px-6 py-3 rounded-2xl font-semibold hover:from-cyan-600 hover:to-sky-700 transform hover:-translate-y-1 transition-all duration-200 shadow-lg hover:shadow-2xl">
+                    <i class="fas fa-pen-to-square"></i> Modifier le Profil
+                </a>
+            </div>
         </div>
-        <a href="{{ route('user.edit',$coach->id) }}" class="edit-profile-button">
-            <i class="fas fa-pen-to-square"></i> Modifier le Profil
-        </a>
     </div>
 
     <!-- Calendar Section -->
-    <div class="dashboard-section">
-        <div class="section-switcher">
-            <button class="switch-btn active" data-target="appointments-calendar">
+    <div class="bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 p-8 mb-8">
+            <div class="flex flex-wrap gap-3 mb-6">
+                <button class="switch-btn active bg-gradient-to-r from-cyan-500 to-sky-600 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-200 shadow-lg" data-target="appointments-calendar">
                 <i class="fas fa-calendar-day"></i> Rendez-vous
             </button>
-            <button class="switch-btn" data-target="availabilities-calendar">
+                <button class="switch-btn bg-gray-100 text-gray-700 hover:bg-gray-200 px-6 py-3 rounded-xl font-semibold transition-all duration-200" data-target="availabilities-calendar">
                 <i class="fas fa-user-clock"></i> Disponibilités
             </button>
         </div>
         
-            <div id="appointments-calendar" class="calendar-view active-view"></div>
-   
-            <div id="availabilities-calendar" class="calendar-view"></div>
+            <div id="appointments-calendar" class="calendar-view active-view bg-white rounded-2xl shadow-lg border border-cyan-100 p-6"></div>
+            <div id="availabilities-calendar" class="calendar-view bg-white rounded-2xl shadow-lg border border-cyan-100 p-6"></div>
     </div>
 
     <!-- Data Tables Section -->
-    
-    <div class="dashboard-section">
-        <div class="section-table-switcher mt-4 mb-2 ">
-            <button class="table-switch-btn me-2 active" data-target="appointments-table">
+    <div class="bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 p-8">
+            <div class="flex flex-wrap gap-3 mb-6">
+                <button class="table-switch-btn active bg-gradient-to-r from-cyan-500 to-sky-600 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-200 shadow-lg" data-target="appointments-table">
                 <i class="fas fa-calendar-check"></i> Rendez-vous
             </button>
-            <button class="table-switch-btn" data-target="patients-table">
+                <button class="table-switch-btn bg-gray-100 text-gray-700 hover:bg-gray-200 px-6 py-3 rounded-xl font-semibold transition-all duration-200" data-target="patients-table">
                 <i class="fas fa-users-medical"></i> Patients
             </button>
-            <button class="table-switch-btn" data-target="reports-table">
-                <i class="fas fa-users-medical"></i> Rapports des patients
+                <button class="table-switch-btn bg-gray-100 text-gray-700 hover:bg-gray-200 px-6 py-3 rounded-xl font-semibold transition-all duration-200" data-target="reports-table">
+                        <i class="fas fa-file-medical"></i> Rapports des patients
             </button>
         </div>
-
-        <!-- Tableau des Rendez-vous -->
+            <!-- Appointments Table -->
         <div id="appointments-table" class="data-table-container active-view">
-            <div>
-                <div class="table-responsive">   
-                    <table class="appointments-table">
+                <div class="overflow-x-auto">
+                    <table class="w-full">
                         <thead>
-                            <tr>
-                                <th>Patient</th>
-                                <th>Date &amp; Heure</th>
-                                <th>Statut</th>
-                                <th>Rapport</th>
-                                <th>Actions</th>
+                                    <tr class="bg-gradient-to-r from-cyan-500 via-sky-500 to-blue-500 text-white">
+                                        <th class="px-6 py-4 text-left font-semibold">Patient</th>
+                                        <th class="px-6 py-4 text-left font-semibold">Date &amp; Heure</th>
+                                        <th class="px-6 py-4 text-left font-semibold">Statut</th>
+                                        <th class="px-6 py-4 text-left font-semibold">Rapport</th>
+                                        <th class="px-6 py-4 text-left font-semibold">Actions</th>
                             </tr>
                         </thead>
-                        <tbody>
+                                <tbody class="bg-white">
                             @if ($coachAppointments!=null)
                                 @foreach ($coachAppointments as $appointment)
-                                    <tr>
-                                        <td class="d-flex align-items-center me-2">
+                                            <tr class="hover:bg-cyan-50 transition-colors border-b border-gray-100">
+                                                <td class="px-6 py-4">
+                                                    <div class="flex items-center gap-3">
                                             @if ($appointment->patient->image_path)
-                                                <div class="patient-avatar-initials me-2">
-                                                    <img src="{{ asset('storage/' . $appointment->patient->image_path) }}" alt="Image Previe" class="patient-img-avatar">
-                                                    
+                                                            <div class="w-10 h-10 rounded-full overflow-hidden border-2 border-cyan-200">
+                                                                <img src="{{ asset('storage/' . $appointment->patient->image_path) }}" alt="Patient Avatar" class="w-full h-full object-cover">
                                                 </div>
                                             @else
-                                                <div class="patient-avatar me-2">
-                                                    {{ strtoupper(substr($appointment->patient->patient_type=='adult'? $appointment->patient->parent_first_name : $patient->first_name, 0, 1)) }}
+                                                            <div class="w-10 h-10 rounded-full bg-gradient-to-r from-cyan-400 to-sky-500 text-white flex items-center justify-center font-semibold text-sm">
+                                                                {{ strtoupper(substr($appointment->patient->patient_type=='adult'? $appointment->patient->parent_first_name : $appointment->patient->first_name, 0, 1)) }}
                                                 </div>
-                                            
                                             @endif
-
+                                                        <div>
                                             @if ($appointment->patient->first_name==null)
                                             {{ $appointment->patient->parent_first_name}} {{ $appointment->patient->parent_last_name }}
                                             @else
                                                 {{ $appointment->patient->first_name}} {{ $appointment->patient->last_name }}
                                             @endif
+                                                        </div>
+                                                    </div>
                                         </td>
                                     
                                         @php
                                         $appointmentDate = json_decode($appointment->appointment_planning, true);
                                         @endphp
-                                        <td>
+                                                <td class="px-6 py-4">
                                             @if(is_array($appointmentDate))
                                                 @foreach ($appointmentDate as $date => $time)
-                                                    <span>{{ $date }}</span>
-                                                    <br
+                                                            <div class="font-medium">{{ $date }}</div>
                                                     @foreach ($time as $slot)
-                                                        <span>{{ $slot }} </span>
+                                                                <span class="text-sm text-gray-600">{{ $slot }}</span>
                                                     @endforeach
                                                 @endforeach
                                             @endif
                                         </td>
                                         @php
-                                            $color = '';
+                                                    $statusColor = '';
+                                                    $statusBg = '';
                                             if ($appointment->status == 'pending') {
-                                                $color = 'pending';
+                                                        $statusColor = 'text-green-700';
+                                                        $statusBg = 'bg-green-100';
                                             } elseif ($appointment->status == 'passed') {
-                                                $color = 'passed';
+                                                        $statusColor = 'text-orange-700';
+                                                        $statusBg = 'bg-orange-100';
                                             } elseif ($appointment->status == 'cancel') {
-                                                $color = 'cancel';
+                                                        $statusColor = 'text-red-700';
+                                                        $statusBg = 'bg-red-100';
                                             }
                                         @endphp
-                                        <td><span class="status-badge {{$color}}">{{ $appointment->status }}</span></td>
+                                                <td class="px-6 py-4">
+                                                    <span class="inline-flex px-3 py-1 rounded-full text-sm font-semibold {{ $statusBg }} {{ $statusColor }}">
+                                                        {{ $appointment->status }}
+                                                    </span>
+                                                </td>
                                         @if ($appointment->report_path)
-                                        <td class="d-flex justify-content-between ">
-                                            <a href="{{ route('appointments.viewReport', $appointment->id) }}" target="_blank" class="view-btn action-btn">
-                                                <i class="fas fa-file-alt "></i>
-                                            </a>
-                                            <a href="{{ route('appointments.downloadReport', $appointment->id) }}" class="download-btn action-btn">
-                                                <i class="fas fa-cloud-download-alt "></i>
-                                            </a>
+                                                <td class="px-6 py-4">
+                                                    <div class="flex gap-2">
+                                                        <a href="{{ route('appointments.viewReport', $appointment->id) }}" target="_blank" class="p-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-colors">
+                                                            <i class="fas fa-file-alt"></i>
+                                                        </a>
+                                                        <a href="{{ route('appointments.downloadReport', $appointment->id) }}" class="p-2 bg-green-100 text-green-600 rounded-lg hover:bg-green-200 transition-colors">
+                                                            <i class="fas fa-cloud-download-alt"></i>
+                                                        </a>
+                                                    </div>
                                         </td>
                                         @else
-                                        <td>Pas de rapport</td>
+                                                <td class="px-6 py-4 text-gray-500">Pas de rapport</td>
                                         @endif
                                             
-                                        <td class="text-center">
-                                            <a href="{{ route('appointment.show', $appointment->id) }}" class="btn btn-sm btn-outline-secondary me-2">
-                                                <i class="fas fa-eye"></i>
-                                            </a>
-                                            
+                                                <td class="px-6 py-4">
+                                                    <a href="{{ route('appointment.show', $appointment->id) }}" class="inline-flex items-center gap-2 px-4 py-2 bg-cyan-100 text-cyan-700 rounded-lg hover:bg-cyan-200 transition-colors">
+                                                        <i class="fas fa-eye"></i> Voir
+                                                    </a>
                                         </td>
                                     </tr>
                                 @endforeach
                             @endif
                         
-                            <!-- More rows if needed -->
                         </tbody>
                     </table>
                 </div>
             </div>
-        </div>
-
         <!-- Patients Table -->
         <div id="patients-table" class="data-table-container">
-            <div>
-                <div class="table-responsive">
-                    <table class="patient-table">
+                <div class="overflow-x-auto">
+                    <table class="w-full">
                             <thead>
-                                <tr>
-                                    <th>ID</th>
-                                    <th>Nom complet de l'enfant/jeune</th>
-                                    <th>Nom complet du parent/adulte</th>
-                                    <th>Âge</th>
-                                    <th>Contact</th>
-                                    <th>Adresse</th>
-                                    <th>Sexe</th>
-                                    <th>École/Système</th>
-                                    <th>Profession/Établissement</th>
-                                    <th>Mode</th>
-                                    <th>Abonnement</th>
-                                    <th>Actions</th>
+                            <tr class="bg-gradient-to-r from-cyan-500 via-sky-500 to-blue-500 text-white">
+                                <th class="px-6 py-4 text-left font-semibold">ID</th>
+                                <th class="px-6 py-4 text-left font-semibold">Nom complet de l'enfant/jeune</th>
+                                <th class="px-6 py-4 text-left font-semibold">Nom complet du parent/adulte</th>
+                                <th class="px-6 py-4 text-left font-semibold">Âge</th>
+                                <th class="px-6 py-4 text-left font-semibold">Contact</th>
+                                <th class="px-6 py-4 text-left font-semibold">Adresse</th>
+                                <th class="px-6 py-4 text-left font-semibold">Sexe</th>
+                                <th class="px-6 py-4 text-left font-semibold">École/Système</th>
+                                <th class="px-6 py-4 text-left font-semibold">Profession/Établissement</th>
+                                <th class="px-6 py-4 text-left font-semibold">Mode</th>
+                                <th class="px-6 py-4 text-left font-semibold">Abonnement</th>
+                                <th class="px-6 py-4 text-left font-semibold">Actions</th>
                                 </tr>
                             </thead>
-                            <tbody>
+                        <tbody class="bg-white">
                                 @foreach($coachAppointments as $appointment)
-                                    <tr class="hover-shadow">
-                                        <td class="fw-bold">#{{ $appointment->patient->id }}</td>
-                                        <!-- kidd full name -->
-                                        <td>
-                                            <div class="d-flex align-items-center">
+                                <tr class="hover:bg-cyan-50 transition-colors border-b border-gray-100">
+                                    <td class="px-6 py-4 font-bold">#{{ $appointment->patient->id }}</td>
+                                    <td class="px-6 py-4">
+                                        <div class="flex items-center gap-3">
                                                 @if ($appointment->patient->image_path)
-                                                    <div class="patient-avatar-initials me-2">
-                                                        <img src="{{ asset('storage/' . $appointment->patient->image_path) }}" alt="Image Previe" class="patient-img-avatar">
-                                                        
+                                                <div class="w-10 h-10 rounded-full overflow-hidden border-2 border-cyan-200">
+                                                    <img src="{{ asset('storage/' . $appointment->patient->image_path) }}" alt="Patient Avatar" class="w-full h-full object-cover">
                                                     </div>
                                                 @else
-                                                    <div class="patient-avatar me-2">
-                                                        {{ strtoupper(substr($appointment->patient->patient_type=='adult'? $appointment->patient->parent_first_name : $patient->first_name, 0, 1)) }}
+                                                < div class="w-10 h-10 rounded-full bg-gradient-to-r from-cyan-400 to-sky-500 text-white flex items-center justify-center font-semibold text-sm">
+                                                    {{ strtoupper(substr($appointment->patient->patient_type=='adult'? $appointment->patient->parent_first_name : $appointment->patient->first_name, 0, 1)) }}
                                                     </div>
-                                                
                                                 @endif
                                             
                                             @if ($appointment->patient->first_name==null)
-                                            &ndash;
+                                                <span class="text-gray-400">&ndash;</span>
                                             @else
-                                            <div >
                                                 <div>
-                                                    <div class="fw-bold">{{ $appointment->patient->first_name}} {{ $appointment->patient->last_name }}</div>
-                                                </div>
-                                                <small class="text-muted">{{ $appointment->patient->mode }}</small>
+                                                    <div class="font-bold">{{ $appointment->patient->first_name}} {{ $appointment->patient->last_name }}</div>
+                                                    <small class="text-gray-500">{{ $appointment->patient->mode }}</small>
                                             </div>
                                             @endif
                                             </div>
-
-
                                         </td>
-                                        <!--  parent/adult full name -->
-                                        <td>
-                                            <div class="fw-bold">{{ $appointment->patient->parent_first_name }} {{ $appointment->patient->parent_last_name }}</div>
-                                        
-                                        </td>
-                                    <!-- age -->
-                                    <td>{{ $appointment->patient->age }}</td>
-                                    <!-- contact -->
-                                        <td>
+                                    <td class="px-6 py-4 font-bold">{{ $appointment->patient->parent_first_name }} {{ $appointment->patient->parent_last_name }}</td>
+                                    <td class="px-6 py-4">{{ $appointment->patient->age }}</td>
+                                    <td class="px-6 py-4">
                                             <div>{{ $appointment->patient->phone }}</div>
-                                            <small class="text-muted">{{ $appointment->patient->email }}</small>
+                                        <small class="text-gray-500">{{ $appointment->patient->email }}</small>
                                         </td>
-                                        <!-- adresse -->
-                                        <td class="text-muted small">{{ $appointment->patient->address }}</td>
-                                        <!-- gender -->
-                                        <td>
+                                    <td class="px-6 py-4 text-gray-500 text-sm">{{ $appointment->patient->address }}</td>
+                                    <td class="px-6 py-4">
                                             @if($appointment->patient->gender == 'M')
-                                            <span class="badge bg-primary">
-                                                <i class="fas fa-mars me-1"></i>Homme
+                                            <span class="inline-flex items-center gap-1 px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm">
+                                                <i class="fas fa-mars"></i>Homme
                                             </span>
                                             @else
-                                            <span class="badge bg-danger">
-                                                <i class="fas fa-venus me-1"></i>Femme
+                                            <span class="inline-flex items-center gap-1 px-3 py-1 bg-pink-100 text-pink-700 rounded-full text-sm">
+                                                <i class="fas fa-venus"></i>Femme
                                             </span>
                                             @endif
                                         </td>
-                                        <!-- school/system -->
-                                        <td>
+                                    <td class="px-6 py-4">
                                             @if ($appointment->patient->ecole)
                                                 {{ $appointment->patient->ecole }}
-                                                <div class="text-muted small">{{ $appointment->patient->system }}</div>
+                                            <div class="text-gray-500 text-sm">{{ $appointment->patient->system }}</div>
                                             @else
-                                                &ndash;
+                                            <span class="text-gray-400">&ndash;</span>
                                             @endif
-
-                                            
-                                            
                                         </td>
-                                        <!-- profession/etablissment -->
-                                        <td>
+                                    <td class="px-6 py-4">
                                         {{ $appointment->patient->profession }}
-                                        <div class="text-muted small">{{ $appointment->patient->etablissment }}</div>
+                                        <div class="text-gray-500 text-sm">{{ $appointment->patient->etablissment }}</div>
                                         </td>
-                                        <!-- Mode -->
-                                        <td>{{ $appointment->patient->mode }}</td>
-                                        <!-- subscription -->
-                                        <td>{{  $appointment->patient->subscription }}</td>
-                                        <!-- actions -->
-                                        <td class="">
-                                            <a href="{{ route('patient.show', $appointment->patient->id) }}" 
-                                            class="btn btn-outline-secondary btn-sm me-1"
-                                            data-bs-toggle="tooltip" title="Voir les détails">
-                                                <i class="fas fa-eye"></i>
+                                    <td class="px-6 py-4">{{ $appointment->patient->mode }}</td>
+                                    <td class="px-6 py-4">{{  $appointment->patient->subscription }}</td>
+                                    <td class="px-6 py-4">
+                                        <div class="flex gap-2">
+                                            <a href="{{ route('patient.show', $appointment->patient->id) }}" class="inline-flex items-center gap-1 px-3 py-1 bg-cyan-100 text-cyan-700 rounded-lg hover:bg-cyan-200 transition-colors text-sm">
+                                                    <i class="fas fa-eye"></i> Voir
                                             </a>
                                             <form action="{{ route('patient.destroy', $appointment->patient->id) }}" 
                                                 method="POST" 
-                                                class="d-inline"
+                                                class="inline"
                                                 onsubmit="return confirm('Supprimer ce patient de manière permanente ?')">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" 
-                                                        class="btn btn-outline-danger btn-sm"
-                                                        data-bs-toggle="tooltip" 
-                                                        title="Supprimer le patient">
-                                                    <i class="fas fa-trash"></i>
+                                                <button type="submit" class="inline-flex items-center gap-1 px-3 py-1 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-colors text-sm">
+                                                        <i class="fas fa-trash"></i> Supprimer
                                                 </button>
                                             </form>
+                                        </div>
                                         </td>
                                     </tr>
                                 @endforeach
@@ -287,512 +273,81 @@
                     </table>
                 </div>
             </div>
-        </div>
-
-        <!-- Patients Report -->
-
+            <!-- Reports Table -->
         <div id="reports-table" class="data-table-container">
-            <div>
-                <div class="table-responsive">   
-                    <table class="reports-table">
-                        <thead>
-                            <tr>
-                                <th colspan="5">Patient</th>
-                                <th colspan="3">Rapport</th>
-                                <th colspan="4">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach($reports as $report => $reportData)
-                                @php $reportCount = count($reportData['report']); @endphp
-                                @if($reportCount > 0)
-                                    @php 
-                                        $firstReport = array_shift($reportData['report']);
-                                    @endphp
-                                    <tr>
-                                        <td rowspan="{{ $reportCount + 1 }}" colspan="5">{{ $reportData['patient_name'] }}</td>
-                                        <td colspan="3">{{ basename($firstReport['content']) }}</td>
-                                        <td colspan="4">
-                                            <div class="file-actions">
-                                                <a href="{{ route('appointments.downloadReport', $firstReport['app_id']) }}" class="btn-download">
-                                                    <i class="fas fa-download"></i>
-                                                </a>
-                                                <a href="{{ route('appointments.viewReport', $firstReport['app_id']) }}" target="_blank" class="btn-view">
-                                                    <i class="fas fa-eye"></i>
-                                                </a>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    @foreach($reportData['report'] as $rp)
-                                                
-                                        @if (!is_null($rp['content']))
-                                            <tr>
-                                                <td colspan="3">{{ basename($rp['content']) }}</td>
-                                                <td colspan="4">
-                                                    <div class="file-actions">
-                                                        <a href="{{ route('appointments.downloadReport', $rp['app_id']) }}" class="btn-download">
-                                                            <i class="fas fa-download"></i>
-                                                        </a>
-                                                        <a href="{{ route('appointments.viewReport', $rp['app_id']) }}" target="_blank" class="btn-view">
-                                                            <i class="fas fa-eye"></i>
-                                                        </a>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        @endif
-                                    
-                                    @endforeach
-                                @endif
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead>
+                        <tr class="bg-gradient-to-r from-cyan-500 via-sky-500 to-blue-500 text-white">
+                            <th class="px-6 py-4 text-left font-semibold">Patient</th>
+                            <th class="px-6 py-4 text-left font-semibold">Rapport</th>
+                            <th class="px-6 py-4 text-left font-semibold">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white">
+                        @foreach($reports as $report => $reportData)
+                            @php $reportCount = count($reportData['report']); @endphp
+                            @if($reportCount > 0)
+                                @foreach($reportData['report'] as $i => $rp)
+                                    @if (!is_null($rp['content']))
+                                        <tr class="hover:bg-cyan-50 transition-colors border-b border-gray-100">
+                                            @if($i == 0)
+                                                <td class="px-6 py-4 font-semibold align-top" rowspan="{{ $reportCount }}">{{ $reportData['patient_name'] }}</td>
+                                            @endif
+                                            <td class="px-6 py-4 align-top">{{ basename($rp['content']) }}</td>
+                                            <td class="px-6 py-4 align-top">
+                                                <div class="flex gap-2">
+                                                    <a href="{{ route('appointments.downloadReport', $rp['app_id']) }}" class="inline-flex items-center gap-1 px-3 py-1 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors">
+                                                        <i class="fas fa-download"></i> Télécharger
+                                                    </a>
+                                                    <a href="{{ route('appointments.viewReport', $rp['app_id']) }}" target="_blank" class="inline-flex items-center gap-1 px-3 py-1 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition-colors">
+                                                        <i class="fas fa-eye"></i> Voir
+                                                    </a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    @endif
+                                @endforeach
+                            @endif
+                        @endforeach
+                    </tbody>
+                </table>
             </div>
         </div>
-    </div>
+        </div>
+
+ 
 </div>
 
-<style>
-
-:root {
-        --primary-color: #6366f1;
-        --secondary-color: #4f46e5;
-        --success-color: #22c55e;
-        --warning-color: #f59e0b;
-        --danger-color: #ef4444;
-        --light-bg: #f8fafc;
-        --dark-text: #1e293b;
-    }
-/* Global responsive container */
-.coach-profile-container {
-  width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 15px;
-}
-
-/* Coach Header Card - Responsive Layout */
-/* .coach-header-card {
-  position: relative;
-} */
-
-.coach-profile-header {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 20px;
-}
-
-.coach-avatar-initials {
-  width: 120px;
-  height: 120px;
-  border-radius: 50%;
-  overflow: hidden;
-}
-
-.coach-avatar {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: 50%;
-  border: 3px solid var(--primary-color);
-}
-
-
-.coach-info-wrapper {
-  text-align: center;
-  flex: 1;
-}
-
-
-
-.coach-meta {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  margin-bottom: 15px;
-}
-
-
-.coach-contact-info {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  margin-top: 15px;
-}
-
-
-.edit-profile-button {
-    display: inline-block;
-    margin-top: 15px;
-    width: 100%;
-    text-align: center;
-    background: var(--primary-color);
-    color: white;
-    padding: 0.75rem 1.5rem;
-    border-radius: 0.75rem;
-    text-decoration: none;
-    align-items: center;
-    gap: 0.5rem;
-    transition: transform 0.2s, box-shadow 0.2s;
-}
-
-
-/* Section Switchers */
-.section-switcher,
-.section-table-switcher {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-bottom: 20px;
-}
-
-.switch-btn,
-.table-switch-btn {
-    background: none;
-    border: none;
-    padding: 0.75rem 1.5rem;
-    border-radius: 0.75rem;
-    color: #64748b;
-    cursor: pointer;
-    transition: all 0.2s;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;    
-    flex: 1;
-    justify-content: center;
-    min-height: 44px; /* Better touch target size */
-}
-
-/* Table responsiveness */
-.table-responsive {
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  max-width: 100%;
-  border-radius: 12px;
-}
-
-
-
-
-    /*  */
-
-
-    thead th {
-        background: linear-gradient(195deg, var(--primary-color), var(--secondary-color));
-        color: white;
-        padding: 1rem;
-        font-weight: 500;
-        position: sticky;
-        top: 0;
-        z-index: 2;
-    }
-
-    tbody td {
-        padding: 0.75rem;
-        border-bottom: 1px solid #e2e8f0;
-        vertical-align: middle;
-    }
-    .patient-table {
-        width: 200%;
-        overflow: scroll;
-        border-collapse: collapse;
-        background: var(--glass-bg);
-    }
-    .appointments-table , .reports-table {
-        width: 100%;
-        border-collapse: collapse;
-    }
-    .hover-shadow:hover {
-        background: rgba(99, 102, 241, 0.05);
-        transform: translateY(-2px);
-        transition: all 0.3s ease;
-    }
-
-    .badge {
-        padding: 0.5em 0.75em;
-        border-radius: 8px;
-        font-weight: 500;
-    }
-
-    .action-buttons {
-        width: 40px;
-        height: 40px;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 8px;
-        transition: all 0.3s ease;
-    }
-
-    .action-buttons .btn-outline-secondary {
-        border-color: #e2e8f0;
-    }
-
-    .action-buttons .btn-outline-secondary:hover {
-        background: var(--light-bg);
-    }
-
-    .action-buttons .btn-outline-danger:hover {
-        background: rgba(239, 83, 80, 0.1);
-    }
-
-  
-    /* Coach Header Card */
-    .coach-header-card {
-        background: white;
-        border-radius: 1rem;
-        padding: 2rem;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-        margin-bottom: 2rem;
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
-        gap: 2rem;
-        position: relative;
-    }
-
-
-    .coach-name {
-        font-size: 1.875rem;
-        color: var(--dark-text);
-        margin: 0 0 0.5rem;
-    }
-    .coach-badge {
-        padding: 0.5rem 1rem;
-        border-radius: 2rem;
-        font-size: 0.875rem;
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-    }
-
-    .speciality-badge {
-        background: #eef2ff;
-        color: var(--primary-color);
-        border: 1px solid #c7d2fe;
-    }
-
-    .availability-badge {
-        background: #f0fdf4;
-        color: var(--success-color);
-        border: 1px solid #bbf7d0;
-    }
-
-    .availability-badge.busy {
-        background: #fef2f2;
-        color: var(--danger-color);
-        border-color: #fecaca;
-    }
-
-    .contact-item {
-        color: var(--dark-text);
-        text-decoration: none;
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-        transition: color 0.2s;
-    }
-
-    .contact-item:hover {
-        color: var(--primary-color);
-    }
-
-    .edit-profile-button:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 6px -1px rgba(99, 102, 241, 0.3);
-    }
-
-    /* Section Switcher */
-    .section-switcher {
-        display: flex;
-        gap: 1rem;
-        margin-bottom: 1.5rem;
-    }
-
-
-    .switch-btn.active {
-        background: var(--primary-color);
-        color: white;
-        box-shadow: 0 2px 4px rgba(99, 102, 241, 0.2);
-    }
-    .table-switch-btn.active{
-        background: var(--primary-color);
-        color: white;
-        box-shadow: 0 2px 4px rgba(99, 102, 241, 0.2);
-    }
-    
-    /* Calendar Views */
-    .calendar-view {
-        background: white;
-        border-radius: 1rem;
-        padding: 1.5rem;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-        display: none;
-    }
-
-
-    .calendar-view.active-view {
-        display: block;
-    }
-
-    /* Data Tables */
-    .data-table-container {
-        background: white;
-        border-radius: 1rem;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-        display: none;
-    }
-
-    .data-table-container.active-view {
-        display: block;
-    }
-
-    /* Modern FullCalendar Overrides */
-    .fc {
-        --fc-border-color: #e2e8f0;
-        --fc-today-bg-color: #f8fafc;
-        --fc-neutral-bg-color: #f8fafc;
-        --fc-page-bg-color: white;
-    }
-
-    .fc .fc-button-primary {
-        background: var(--primary-color);
-        border-color: var(--primary-color);
-        text-transform: capitalize;
-    }
-
-    .fc-event {
-        border: none !important;
-        border-radius: 8px !important;
-        padding: 8px 12px !important;
-        margin: 4px !important;
-        font-weight: 500 !important;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-        box-shadow: 0 3px 6px rgba(0,0,0,0.16) !important;
-        position: relative;
-        overflow: hidden;
-    }
-
-    .fc-event::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 4px;
-        height: 100%;
-    }
-
-    .fc-header-toolbar {
-        background: linear-gradient(195deg, var(--primary-color), var(--secondary-color));
-        color: white;
-        padding: 1rem;
-        border-radius: 8px 8px 0 0;
-    }
-
-    .fc-button-primary {
-        background-color: var(--primary-color) !important;
-        border-color: var(--primary-color) !important;
-    }
-    
-    .fc-event.pending {
-            background:rgb(10, 144, 1) !important;
-
-            color:rgb(16, 236, 0) !important;
-
-        }
-        .fc-event.pending::before {
-            background: rgba(91, 252, 99, 0.76);
-        }
-
-        /* passed  */
-        .fc-event.passed {
-            background: rgb(245, 110, 7) !important;
-    
-            color:rgb(231, 140, 2) !important;
-
-        }
-        .fc-event.passed::before {
-            /* background: rgb(16, 236, 0) ; */
-            background: rgb(238, 169, 67);
-
-        }
-        .fc-event.cancel {
-            
-            background:rgb(255, 38, 38) !important;
-            color:rgb(255, 38, 38) !important;
-        }
-        .fc-event.cancel::before {
-            background: rgb(247, 79, 79) ;
-            /* background:rgb(255, 38, 38); */
-        }
-    .cancel .fc-event-title,
-    .cancel .fc-event-time {
-    color:rgb(255, 255, 255) !important; 
-    }
-
-    .pending .fc-event-title,
-    .pending .fc-event-time {
-     color:rgb(255, 255, 255) !important;
-    
-    }
-
-    .passed .fc-event-title,
-    .passed .fc-event-time {
-
-        color:rgb(243, 243, 243) !important; 
-
-    }
-    /* Hover Effects */
-    .fc-event:hover {
-        transform: translateY(-2px) scale(1.02);
-        box-shadow: 0 6px 12px rgba(0,0,0,0.25) !important;
-    }
-
-    /* Time Styling */
-    .fc-event-time {
-        font-weight: 300;
-        opacity: 0.8;
-        margin-right: 8px;
-    }
-    .btn-download, .btn-view, .btn-delete {
-        padding: 0.5rem;
-        border-radius: 6px;
-        transition: all 0.3s ease;
-    }
-
-    .btn-download {
-        color: #2563eb;
-        background: #dbeafe;
-    }
-
-    .btn-view {
-        color: #16a34a;
-        background: #dcfce7;
-    }
-    .file-actions {
-        display: flex;
-        gap: 1rem;
-    }
-    .coach-avatar {
-        width: 100px;
-        height: 100px;
-        border-radius: 50%;
-        object-fit: cover;
-        border: 3px solid var(--primary-color);
-    }
-</style>
-
-
 <script>
-
-  
     let appointmentsCalendarInstance;
     let availabilitiesCalendarInstance;
-    // Enhanced Interaction Script
+
      document.addEventListener('DOMContentLoaded', function() {
+    // Initialize calendars
         appointmentsCalendarInstance = initAppointmentsCalendar();
         availabilitiesCalendarInstance = initAvailabilitiesCalendar();
+    
+    // Initialize visibility - only show first tab of each section
+    document.querySelectorAll('.calendar-view').forEach((view, index) => {
+        if (index === 0) {
+            view.classList.add('active-view');
+            view.style.display = 'block';
+        } else {
+            view.classList.remove('active-view');
+            view.style.display = 'none';
+        }
+    });
+    
+    document.querySelectorAll('.data-table-container').forEach((view, index) => {
+        if (index === 0) {
+            view.classList.add('active-view');
+            view.style.display = 'block';
+        } else {
+            view.classList.remove('active-view');
+            view.style.display = 'none';
+        }
+    });
     });
 
     document.querySelectorAll('.switch-btn').forEach(button => {
@@ -800,15 +355,28 @@
                 const target = this.dataset.target;
                 
                 // Remove active state from all buttons
-                document.querySelectorAll('.switch-btn').forEach(btn => 
-                    btn.classList.remove('active'));
+        document.querySelectorAll('.switch-btn').forEach(btn => {
+            btn.classList.remove('active', 'bg-gradient-to-r', 'from-cyan-500', 'to-sky-600', 'text-white', 'shadow-lg');
+            btn.classList.add('bg-gray-100', 'text-gray-700', 'hover:bg-gray-200');
+        });
                 
                 // Activate selected
-                this.classList.add('active');
-                document.querySelectorAll('.calendar-view').forEach(view=>{
+        this.classList.add('active', 'bg-gradient-to-r', 'from-cyan-500', 'to-sky-600', 'text-white', 'shadow-lg');
+        this.classList.remove('bg-gray-100', 'text-gray-700', 'hover:bg-gray-200');
+        
+        // Hide all calendar views
+        document.querySelectorAll('.calendar-view').forEach(view => {
                     view.classList.remove('active-view');
-                })
-                document.getElementById(target).classList.add('active-view');
+            view.style.display = 'none';
+        });
+        
+        // Show selected calendar view
+        const selectedView = document.getElementById(target);
+        if (selectedView) {
+            selectedView.classList.add('active-view');
+            selectedView.style.display = 'block';
+        }
+        
                 if (target === 'appointments-calendar' && appointmentsCalendarInstance) {
                 appointmentsCalendarInstance.updateSize();
                 } else if (target === 'availabilities-calendar' && availabilitiesCalendarInstance) {
@@ -816,21 +384,33 @@
                 }
             });
         });
+
     document.querySelectorAll('.table-switch-btn').forEach(button => {
             button.addEventListener('click', function() {
                 const target = this.dataset.target;
                 
                 // Remove active state from all buttons
-                document.querySelectorAll('.table-switch-btn').forEach(btn => 
-                    btn.classList.remove('active'));
+        document.querySelectorAll('.table-switch-btn').forEach(btn => {
+            btn.classList.remove('active', 'bg-gradient-to-r', 'from-cyan-500', 'to-sky-600', 'text-white', 'shadow-lg');
+            btn.classList.add('bg-gray-100', 'text-gray-700', 'hover:bg-gray-200');
+        });
                 
                 // Activate selected
-                this.classList.add('active');
-                document.querySelectorAll('.data-table-container').forEach(view=>{
+        this.classList.add('active', 'bg-gradient-to-r', 'from-cyan-500', 'to-sky-600', 'text-white', 'shadow-lg');
+        this.classList.remove('bg-gray-100', 'text-gray-700', 'hover:bg-gray-200');
+        
+        // Hide all table containers
+        document.querySelectorAll('.data-table-container').forEach(view => {
                     view.classList.remove('active-view');
-                })
-                document.getElementById(target).classList.add('active-view');
-          
+            view.style.display = 'none';
+        });
+        
+        // Show selected table container
+        const selectedView = document.getElementById(target);
+        if (selectedView) {
+            selectedView.classList.add('active-view');
+            selectedView.style.display = 'block';
+        }
             });
         });
  

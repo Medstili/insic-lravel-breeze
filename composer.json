@@ -7,19 +7,20 @@
     "license": "MIT",
     "require": {
         "php": "^8.2",
-        "laravel/framework": "^11.31",
-        "laravel/tinker": "^2.9",
-        "laravel/ui": "^4.6",
-        "ext-mbstring": "*",
         "ext-curl": "*",
         "ext-json": "*",
-        "ext-openssl": "*"
+        "ext-mbstring": "*",
+        "ext-openssl": "*",
+        "inertiajs/inertia-laravel": "*",
+        "laravel/framework": "^11.31",
+        "laravel/tinker": "^2.9",
+        "laravel/ui": "^4.6"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",
         "laravel/breeze": "^2.3",
         "laravel/pail": "^1.1",
-        "laravel/pint": "^1.13",
+        "laravel/pint": "*",
         "laravel/sail": "^1.26",
         "mockery/mockery": "^1.6",
         "nunomaduro/collision": "^8.1",

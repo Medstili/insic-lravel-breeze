@@ -1,31 +1,115 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="appointment-container">
+<div class="min-h-screen bg-gradient-to-br from-gray-50 via-cyan-50 to-sky-50 p-6 mt-24">
     
-    <!-- Header -->
-    <div class="appointment-header">
-        <div class="header-content">
-            <h1>Gestion des Rendez-vous</h1>
-        </div>
-        
-        <!-- Section Calendrier -->
-        <div class="calendar-section">
-            <div id="calendar"></div>
+    <!-- Hero Header -->
+    <div class="relative overflow-hidden bg-gradient-to-r from-cyan-500 via-sky-500 to-blue-500 rounded-3xl shadow-2xl mb-8">
+        <div class="absolute inset-0 bg-black/10"></div>
+        <div class="relative p-8 md:p-12">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-4xl md:text-5xl font-bold text-white mb-2">
+                        Gestion des Rendez-vous
+                    </h1>
+                    <p class="text-cyan-100 text-lg md:text-xl">
+                        Gérez et suivez tous vos rendez-vous en temps réel
+                    </p>
+                </div>
+                <div class="hidden md:block">
+                    <div class="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center">
+                        <i class="fas fa-calendar-alt text-3xl text-white"></i>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
-    <!-- Recherche et Filtrage -->
-    <div class="search-filter-card">
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div class="bg-white rounded-2xl shadow-lg border border-gray-200 p-6 hover:shadow-xl transition-all duration-300">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-gray-600 text-sm font-medium">Total Rendez-vous</p>
+                    <p class="text-3xl font-bold text-gray-900">{{ $appointments->count() }}</p>
+                </div>
+                <div class="w-12 h-12 bg-cyan-100 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-calendar text-cyan-600 text-xl"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-2xl shadow-lg border border-gray-200 p-6 hover:shadow-xl transition-all duration-300">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-gray-600 text-sm font-medium">En Attente</p>
+                    <p class="text-3xl font-bold text-green-600">{{ $appointments->where('status', 'pending')->count() }}</p>
+                </div>
+                <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-clock text-green-600 text-xl"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-2xl shadow-lg border border-gray-200 p-6 hover:shadow-xl transition-all duration-300">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-gray-600 text-sm font-medium">Terminés</p>
+                    <p class="text-3xl font-bold text-orange-600">{{ $appointments->where('status', 'passed')->count() }}</p>
+                </div>
+                <div class="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-check-circle text-orange-600 text-xl"></i>
+                </div>
+            </div>
+        </div>
+        
+        <div class="bg-white rounded-2xl shadow-lg border border-gray-200 p-6 hover:shadow-xl transition-all duration-300">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-gray-600 text-sm font-medium">Annulés</p>
+                    <p class="text-3xl font-bold text-red-600">{{ $appointments->where('status', 'cancel')->count() }}</p>
+                </div>
+                <div class="w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-times-circle text-red-600 text-xl"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Calendar Section -->
+    <div class="hidden lg:blocke bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 overflow-hidden mb-8">
+        <div class="bg-gradient-to-r from-cyan-500 to-sky-600 px-8 py-6">
+            <h3 class="text-xl font-bold text-white flex items-center gap-3">
+                <i class="fas fa-calendar-week"></i>
+                Calendrier des Rendez-vous
+            </h3>
+        </div>
+        <div class="p-6">
+            <div id="calendar" class="bg-white rounded-2xl shadow-lg border border-gray-200 p-4"></div>
+        </div>
+    </div>
+
+    <!-- Search and Filter Section -->
+    <div class="bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 overflow-hidden mb-8">
+        <div class="bg-gradient-to-r from-cyan-500 to-sky-600 px-8 py-6">
+            <h3 class="text-xl font-bold text-white flex items-center gap-3">
+                <i class="fas fa-search"></i>
+                Recherche et Filtres
+            </h3>
+        </div>
+        <div class="p-8">
         <form action="{{ route('appointment.index') }}" method="GET">
-            <div class="filter-grid">
-                <div class="filter-group">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 items-end">
+                    <div class="space-y-2">
+                        <label class="text-sm font-medium text-gray-700">Rechercher Patient</label>
                     <input type="text" name="q" value="{{ request('q') }}" 
-                           placeholder="Rechercher par Patient..." class="search-input">
+                               placeholder="Nom du patient..." 
+                               class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-all duration-200 bg-white/50 backdrop-blur-sm">
                 </div>
                 
-                <div class="filter-group">
-                    <select name="speciality" class="select-input">
+                    <div class="space-y-2">
+                        <label class="text-sm font-medium text-gray-700">Spécialité</label>
+                        <select name="speciality" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-all duration-200 bg-white/50 backdrop-blur-sm">
                         <option value="">Toutes les spécialités</option>
                         @foreach($specilaities as $speciality)
                         <option value="{{ $speciality->id }}" {{ request('speciality') == $speciality->id ? 'selected' : '' }}>
@@ -35,112 +119,155 @@
                     </select>
                 </div>
 
-                <div class="filter-group">
-                    <select name="status" class="select-input">
+                    <div class="space-y-2">
+                        <label class="text-sm font-medium text-gray-700">Statut</label>
+                        <select name="status" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-all duration-200 bg-white/50 backdrop-blur-sm">
                         <option value="">Tous les statuts</option>
-                        <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }} class="status-pending">En attente</option>
-                        <option value="passed" {{ request('status') == 'passed' ? 'selected' : '' }}  class="status-passed">Passé</option>
-                        <option value="cancel" {{ request('status') == 'cancel' ? 'selected' : '' }} class="status-cancel">Annulé</option>
+                            <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>En attente</option>
+                            <option value="passed" {{ request('status') == 'passed' ? 'selected' : '' }}>Terminé</option>
+                            <option value="cancel" {{ request('status') == 'cancel' ? 'selected' : '' }}>Annulé</option>
                     </select>
                 </div>
 
-                <div class="filter-group">
+                    <div class="space-y-2">
+                        <label class="text-sm font-medium text-gray-700">Date</label>
                     <input type="date" name="date" value="{{ request('date') }}" 
-                           class="date-input">
+                               class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-all duration-200 bg-white/50 backdrop-blur-sm">
                 </div>
 
-                <button type="submit" class="filter-btn">
-                    <i class="fas fa-search"></i> <span class="btn-text">Appliquer les filtres</span>
+                    <button type="submit" class="w-full bg-gradient-to-r from-cyan-500 to-sky-600 text-white px-6 py-3 rounded-xl font-semibold hover:from-cyan-600 hover:to-sky-700 transform hover:-translate-y-1 transition-all duration-200 flex items-center justify-center gap-3 shadow-lg hover:shadow-xl">
+                        <i class="fas fa-search"></i>
+                        <span class="hidden sm:inline">Appliquer</span>
                 </button>
             </div>
         </form>
     </div>
+    </div>
 
-    <!-- Tableau des Rendez-vous (Desktop) -->
-    <div class="appointments-table desktop-table">
-        <div class="table-responsive">
-            <table class="appointments-list">
+    <!-- Appointments Table Section -->
+    <div class="hidden lg:block bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 overflow-hidden">
+        <div class="bg-gradient-to-r from-cyan-500 to-sky-600 px-8 py-6">
+            <h3 class="text-xl font-bold text-white flex items-center gap-3">
+                <i class="fas fa-list"></i>
+                Liste des Rendez-vous
+            </h3>
+        </div>
+        
+        <!-- Desktop Table -->
+        <div class="overflow-x-auto">
+            <table class="w-full">
                 <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Patient</th>
-                        <th>Horaire</th>
-                        <th>Coach</th>
-                        <th>Spécialité</th>
-                        <th>Statut</th>
-                        <th>Actions</th>
+                    <tr class="bg-gradient-to-r from-cyan-500 to-sky-600 text-white">
+                        <th class="px-6 py-4 text-left font-semibold text-sm uppercase tracking-wider">ID</th>
+                        <th class="px-6 py-4 text-left font-semibold text-sm uppercase tracking-wider">Patient</th>
+                        <th class="px-6 py-4 text-left font-semibold text-sm uppercase tracking-wider">Horaire</th>
+                        <th class="px-6 py-4 text-left font-semibold text-sm uppercase tracking-wider">Coach</th>
+                        <th class="px-6 py-4 text-left font-semibold text-sm uppercase tracking-wider">Spécialité</th>
+                        <th class="px-6 py-4 text-left font-semibold text-sm uppercase tracking-wider">Statut</th>
+                        <th class="px-6 py-4 text-left font-semibold text-sm uppercase tracking-wider">Actions</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody class="divide-y divide-gray-100">
                     @foreach($appointments as $appointment)
-                    <tr>
-                        <td>#{{ $appointment->id }}</td>
-                        <td class="patient-info">
+                    <tr class="hover:bg-gray-50/80 transition-all duration-200 group">
+                        <td class="px-6 py-4">
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-cyan-100 text-cyan-800">
+                                #{{ $appointment->id }}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4">
+                            <div class="flex items-center">
+                                <div class="w-10 h-10 bg-gradient-to-br from-cyan-400 to-sky-500 rounded-full flex items-center justify-center text-white font-semibold text-sm mr-3">
+                                    {{ strtoupper(substr(($appointment->patient->patyient_type == 'Kid'||$appointment->patient->patyient_type =='young') ?
+                                        $appointment->patient->first_name : $appointment->patient->parent_first_name, 0, 1)) }}
+                                </div>
+                                <div>
+                                    <div class="font-medium text-gray-900">
                             {{ ($appointment->patient->patyient_type == 'Kid'||$appointment->patient->patyient_type =='young') ?
                                 $appointment->patient->first_name.' '.$appointment->patient->last_name :
                                 $appointment->patient->parent_first_name.' '.$appointment->patient->parent_last_name }}
+                                    </div>
+                                    <div class="text-sm text-gray-500">{{ $appointment->patient->patyient_type }}</div>
+                                </div>
+                            </div>
                         </td>
-                        <td class="schedule-info">
+                        <td class="px-6 py-4">
                             @php
                                 $schedule = json_decode($appointment->appointment_planning, true);
                             @endphp
                             @if (is_array($schedule))
                                 @foreach ($schedule as $day => $time)
-                                <div class="schedule-item">
-                                    <div class="schedule-day">{{ $day }}</div>
+                                <div class="mb-2 last:mb-0">
+                                    <div class="font-medium text-gray-900 text-sm">{{ $day }}</div>
                                     @foreach ($time as $slot)
-                                    <div class="schedule-time">{{ $slot }}</div>
+                                    <div class="text-xs text-gray-600 bg-gray-100 px-2 py-1 rounded-md inline-block mr-1 mb-1">{{ $slot }}</div>
                                     @endforeach
                                 </div>
                                 @endforeach
                             @endif
                         </td>
-                        <td>{{ $appointment->coach->full_name }}</td>
-                        <td>
-                            <span class="specialty-badge">
+                        <td class="px-6 py-4">
+                            <div class="flex items-center">
+                                <div class="w-8 h-8 bg-gradient-to-br from-sky-400 to-blue-500 rounded-full flex items-center justify-center text-white font-semibold text-xs mr-2">
+                                    {{ strtoupper(substr($appointment->coach->full_name, 0, 1)) }}
+                                </div>
+                                <span class="text-gray-900 font-medium">{{ $appointment->coach->full_name }}</span>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4">
+                            <span class="inline-flex px-3 py-1 text-sm font-medium bg-cyan-100 text-cyan-800 rounded-full">
                                 {{ $appointment->Speciality->name }}
                             </span>
                         </td>
-                        <td>
+                        <td class="px-6 py-4">
                             @php
-                                $colorClasses = [
-                                    'pending' => 'status-pending',
-                                    'passed' => 'status-passed',
-                                    'cancel' => 'status-cancel'
-                                ][$appointment->status] ?? 'status-default';
+                                $statusClasses = [
+                                    'pending' => 'bg-green-100 text-green-800 border-green-200',
+                                    'passed' => 'bg-orange-100 text-orange-800 border-orange-200',
+                                    'cancel' => 'bg-red-100 text-red-800 border-red-200'
+                                ];
+                                $statusClass = $statusClasses[$appointment->status] ?? 'bg-gray-100 text-gray-800 border-gray-200';
                             @endphp
-                            <span class="status-badge {{ $colorClasses }}">
+                            <span class="inline-flex px-3 py-1 text-sm font-medium rounded-full border {{ $statusClass }}">
+                                <span class="w-2 h-2 rounded-full mr-2 {{ $appointment->status == 'pending' ? 'bg-green-500' : ($appointment->status == 'passed' ? 'bg-orange-500' : 'bg-red-500') }}"></span>
                                 {{ $appointment->status }}
                             </span>
                         </td>
-                        <td class="actions">
-                            <div class="action-buttons">
+                        <td class="px-6 py-4">
+                            <div class="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                                 @if ($appointment->report_path)
                                 <a href="{{ route('appointments.downloadReport', $appointment->id) }}" 
-                                class="action-btn download-btn" title="Télécharger le rapport">
-                                    <i class="fas fa-file-download"></i>
+                                   class="inline-flex items-center justify-center w-9 h-9 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-all duration-200 hover:scale-110" 
+                                   title="Télécharger le rapport">
+                                    <i class="fas fa-file-download text-sm"></i>
                                 </a>
-                                <a href="{{ route('appointments.viewReport', $appointment->id) }}" target="_blank" class="action-btn btn-view" title="View">
-                                    <i class="fas fa-file-alt"></i>
+                                <a href="{{ route('appointments.viewReport', $appointment->id) }}" target="_blank" 
+                                   class="inline-flex items-center justify-center w-9 h-9 bg-gray-100 text-gray-600 rounded-lg hover:bg-gray-200 transition-all duration-200 hover:scale-110" 
+                                   title="Voir le rapport">
+                                    <i class="fas fa-file-alt text-sm"></i>
                                 </a>
                                 @endif
                                 
                                 <a href="{{ route('appointment.show', $appointment->id) }}" 
-                                class="action-btn view-btn" title="Voir les détails">
-                                    <i class="fas fa-eye"></i>
+                                   class="inline-flex items-center justify-center w-9 h-9 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-all duration-200 hover:scale-110" 
+                                   title="Voir les détails">
+                                    <i class="fas fa-eye text-sm"></i>
                                 </a>
 
                                 @if ($appointment->status == "pending")
                                 <a href="{{ route('appointment.edit', $appointment->id) }}"
-                                class="action-btn edit-btn" title="Modifier le rendez-vous">
-                                    <i class="fa-regular fa-rectangle-xmark"></i>
+                                   class="inline-flex items-center justify-center w-9 h-9 bg-yellow-100 text-yellow-600 rounded-lg hover:bg-yellow-200 transition-all duration-200 hover:scale-110" 
+                                   title="Modifier le rendez-vous">
+                                    <i class="fa-regular fa-rectangle-xmark text-sm"></i>
                                 </a>
                                 
-                                <form action="{{ route('appointments.update-appointment-status', [$appointment->id, 'passed']) }}" method="POST" class="inline-form">
+                                <form action="{{ route('appointments.update-appointment-status', [$appointment->id, 'passed']) }}" method="POST" class="inline">
                                     @csrf 
                                     @method('PATCH')
-                                    <button type="submit" class="action-btn complete-btn" title="Marquer comme terminé">
-                                        <i class="fas fa-check-circle"></i>
+                                    <button type="submit" 
+                                            class="inline-flex items-center justify-center w-9 h-9 bg-green-100 text-green-600 rounded-lg hover:bg-green-200 transition-all duration-200 hover:scale-110" 
+                                            title="Marquer comme terminé">
+                                        <i class="fas fa-check-circle text-sm"></i>
                                     </button>
                                 </form>
                                 @endif
@@ -153,60 +280,86 @@
         </div>
     </div>
 
-    <!-- Mobile Cards View for Appointments -->
-    <div class="mobile-appointments">
+    <!-- Mobile Cards View -->
+    <div class="lg:hidden space-y-6 mt-8">
         @foreach($appointments as $appointment)
-        <div class="appointment-card">
-            <div class="card-header">
-                <div class="appointment-id">#{{ $appointment->id }}</div>
-                @php
-                    $colorClasses = [
-                        'pending' => 'status-pending',
-                        'passed' => 'status-passed',
-                        'cancel' => 'status-cancel'
-                    ][$appointment->status] ?? 'status-default';
+        <div class="bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 overflow-hidden hover:shadow-3xl transition-all duration-300">
+            <div class="bg-gradient-to-r from-cyan-500 to-sky-600 px-6 py-4 text-white">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
+                            <i class="fas fa-calendar text-xl"></i>
+                        </div>
+                        <div>
+                            <div class="font-semibold text-lg">#{{ $appointment->id }}</div>
+                            <div class="text-cyan-100 text-sm">Rendez-vous</div>
+                        </div>
+                    </div>
+                    @php
+                        $statusClasses = [
+                            'pending' => 'bg-green-100 text-green-800',
+                            'passed' => 'bg-orange-100 text-orange-800',
+                            'cancel' => 'bg-red-100 text-red-800'
+                        ];
+                        $statusClass = $statusClasses[$appointment->status] ?? 'bg-gray-100 text-gray-800';
                 @endphp
-                <span class="status-badge {{ $colorClasses }}">
+                    <span class="inline-flex px-3 py-1 text-sm font-medium rounded-full {{ $statusClass }}">
                     {{ $appointment->status }}
                 </span>
+                </div>
             </div>
             
-            <div class="card-body">
-                <div class="info-row">
-                    <div class="info-label">Patient:</div>
-                    <div class="info-value">
+            <div class="p-6 space-y-4">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-gradient-to-br from-cyan-400 to-sky-500 rounded-full flex items-center justify-center text-white font-semibold text-sm">
+                            {{ strtoupper(substr(($appointment->patient->patyient_type == 'Kid'||$appointment->patient->patyient_type =='young') ?
+                                $appointment->patient->first_name : $appointment->patient->parent_first_name, 0, 1)) }}
+                        </div>
+                        <div>
+                            <div class="font-medium text-gray-900">
                         {{ ($appointment->patient->patyient_type == 'Kid'||$appointment->patient->patyient_type =='young') ?
                             $appointment->patient->first_name.' '.$appointment->patient->last_name :
                             $appointment->patient->parent_first_name.' '.$appointment->patient->parent_last_name }}
+                            </div>
+                            <div class="text-sm text-gray-500">{{ $appointment->patient->patyient_type }}</div>
+                        </div>
                     </div>
                 </div>
                 
-                <div class="info-row">
-                    <div class="info-label">Coach:</div>
-                    <div class="info-value">{{ $appointment->coach->full_name }}</div>
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 bg-gradient-to-br from-sjy-400 to-blue-500 rounded-full flex items-center justify-center text-white font-semibold text-xs">
+                            {{ strtoupper(substr($appointment->coach->full_name, 0, 1)) }}
+                        </div>
+                        <div>
+                            <div class="font-medium text-gray-900">{{ $appointment->coach->full_name }}</div>
+                            <div class="text-sm text-gray-500">Coach</div>
+                        </div>
+                    </div>
                 </div>
                 
-                <div class="info-row">
-                    <div class="info-label">Spécialité:</div>
-                    <div class="info-value">
-                        <span class="specialty-badge">
+                <div class="flex items-center justify-between">
+                    <div class="font-medium text-gray-900">Spécialité:</div>
+                    <div>
+                        <span class="inline-flex px-3 py-1 text-sm font-medium bg-cyan-100 text-cyan-800 rounded-full">
                             {{ $appointment->Speciality->name }}
                         </span>
                     </div>
                 </div>
                 
-                <div class="info-row">
-                    <div class="info-label">Horaire:</div>
-                    <div class="info-value schedule-info">
+                <div class="space-y-2">
+                    <div class="font-medium text-gray-900">Horaire:</div>
+                    <div class="text-gray-900">
                         @php
                             $schedule = json_decode($appointment->appointment_planning, true);
                         @endphp
                         @if (is_array($schedule))
                             @foreach ($schedule as $day => $time)
-                            <div class="schedule-item">
-                                <div class="schedule-day">{{ $day }}</div>
+                            <div class="mb-2 last:mb-0">
+                                <div class="font-medium text-gray-900 text-sm">{{ $day }}</div>
                                 @foreach ($time as $slot)
-                                <div class="schedule-time">{{ $slot }}</div>
+                                <div class="text-xs text-gray-600 bg-gray-100 px-2 py-1 rounded-md inline-block mr-1 mb-1">{{ $slot }}</div>
                                 @endforeach
                             </div>
                             @endforeach
@@ -215,31 +368,36 @@
                 </div>
             </div>
             
-            <div class="card-footer">
-                <div class="action-buttons">
+            <div class="px-6 py-4 bg-gray-50/50 border-t border-gray-200/50">
+                <div class="flex items-center justify-end gap-2">
                     @if ($appointment->report_path)
                     <a href="{{ route('appointments.downloadReport', $appointment->id) }}" 
-                    class="action-btn download-btn" title="Télécharger le rapport">
-                        <i class="fas fa-file-download"></i>
+                       class="inline-flex items-center justify-center w-9 h-9 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-all duration-200 hover:scale-110" 
+                       title="Télécharger le rapport">
+                        <i class="fas fa-file-download text-sm"></i>
                     </a>
                     @endif
                     
                     <a href="{{ route('appointment.show', $appointment->id) }}" 
-                    class="action-btn view-btn" title="Voir les détails">
-                        <i class="fas fa-eye"></i>
+                       class="inline-flex items-center justify-center w-9 h-9 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-all duration-200 hover:scale-110" 
+                       title="Voir les détails">
+                        <i class="fas fa-eye text-sm"></i>
                     </a>
 
                     @if ($appointment->status == "pending")
                     <a href="{{ route('appointment.edit', $appointment->id) }}"
-                    class="action-btn edit-btn" title="Modifier le rendez-vous">
-                        <i class="fa-regular fa-rectangle-xmark"></i>
+                       class="inline-flex items-center justify-center w-9 h-9 bg-yellow-100 text-yellow-600 rounded-lg hover:bg-yellow-200 transition-all duration-200 hover:scale-110" 
+                       title="Modifier le rendez-vous">
+                        <i class="fa-regular fa-rectangle-xmark text-sm"></i>
                     </a>
                     
-                    <form action="{{ route('appointments.update-appointment-status', [$appointment->id, 'passed']) }}" method="POST" class="inline-form">
+                    <form action="{{ route('appointments.update-appointment-status', [$appointment->id, 'passed']) }}" method="POST" class="inline">
                         @csrf 
                         @method('PATCH')
-                        <button type="submit" class="action-btn complete-btn" title="Marquer comme terminé">
-                            <i class="fas fa-check-circle"></i>
+                        <button type="submit" 
+                                class="inline-flex items-center justify-center w-9 h-9 bg-green-100 text-green-600 rounded-lg hover:bg-green-200 transition-all duration-200 hover:scale-110" 
+                                title="Marquer comme terminé">
+                            <i class="fas fa-check-circle text-sm"></i>
                         </button>
                     </form>
                     @endif
@@ -251,603 +409,12 @@
 
 </div>
 
-<style>
-:root {
-    --primary-color: #6366f1;
-    --secondary-color: #4f46e5;
-    --success-color: #10b981;
-    --warning-color: #f59e0b;
-    --danger-color: #ef4444;
-    --background-light: #f8fafc;
-    --text-dark: #1e293b;
-    --text-light: #64748b;
-    --border-color: #e2e8f0;
-    --shadow-sm: 0 4px 6px rgba(0, 0, 0, 0.05);
-    --shadow-md: 0 6px 12px rgba(0, 0, 0, 0.1);
-    --radius-sm: 6px;
-    --radius-md: 8px;
-    --radius-lg: 12px;
-}
-
-/* Base styles */
-.appointment-container {
-    padding: 2rem;
-    background: var(--background-light);
-    min-height: 100vh;
-}
-
-.appointment-header {
-    background: white;
-    border-radius: var(--radius-lg);
-    padding: 2rem;
-    box-shadow: var(--shadow-sm);
-    margin-bottom: 2rem;
-}
-
-.header-content {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 2rem;
-}
-
-.header-content h1 {
-    font-size: 2rem;
-    color: var(--text-dark);
-    font-weight: 600;
-    margin: 0;
-}
-
-/* Search and filter styles */
-.search-filter-card {
-    background: white;
-    border-radius: var(--radius-lg);
-    padding: 1.5rem;
-    margin-bottom: 2rem;
-    box-shadow: var(--shadow-sm);
-}
-
-.filter-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1rem;
-    align-items: end;
-}
-
-.filter-group {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-}
-
-.search-input, .select-input, .date-input {
-    padding: 0.75rem;
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-md);
-    width: 100%;
-    transition: all 0.2s ease;
-}
-
-.search-input:focus, .select-input:focus, .date-input:focus {
-    border-color: var(--primary-color);
-    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
-    outline: none;
-}
-
-.filter-btn {
-    background: var(--primary-color);
-    color: white;
-    padding: 0.75rem 1.5rem;
-    border: none;
-    border-radius: var(--radius-md);
-    cursor: pointer;
-    transition: all 0.2s ease;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    justify-content: center;
-    font-weight: 500;
-}
-
-.filter-btn:hover {
-    background: var(--secondary-color);
-    transform: translateY(-1px);
-}
-
-/* Table styles */
-.appointments-table {
-    background: white;
-    border-radius: var(--radius-lg);
-    overflow: hidden;
-    box-shadow: var(--shadow-sm);
-}
-
-.table-responsive {
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-}
-
-.appointments-list {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-.appointments-list thead {
-    background: linear-gradient(195deg, var(--primary-color), var(--secondary-color));
-    color: white;
-}
-
-.appointments-list th {
-    padding: 1rem;
-    text-align: left;
-    font-weight: 500;
-    white-space: nowrap;
-}
-
-.appointments-list td {
-    padding: 1rem;
-    border-bottom: 1px solid var(--border-color);
-    color: var(--text-dark);
-}
-
-.appointments-list tr:hover {
-    background: rgba(99, 102, 241, 0.05);
-}
-
-.appointments-list tr:last-child td {
-    border-bottom: none;
-}
-
-/* Schedule styles */
-.schedule-item {
-    margin-bottom: 0.5rem;
-}
-
-.schedule-item:last-child {
-    margin-bottom: 0;
-}
-
-.schedule-day {
-    font-weight: 500;
-    color: var(--text-dark);
-}
-
-.schedule-time {
-    font-size: 0.875rem;
-    color: var(--text-light);
-}
-
-/* Status badge styles */
-.status-badge {
-    display: inline-block;
-    padding: 0.25rem 0.75rem;
-    border-radius: 20px;
-    font-size: 0.875rem;
-    font-weight: 500;
-    white-space: nowrap;
-}
-
-.status-passed {
-    background: rgba(245, 158, 11, 0.1);
-    color: #d97706;
-}
-
-.status-pending {
-    background: rgba(16, 185, 129, 0.1);
-    color: #059669;
-}
-
-.status-cancel {
-    background: rgba(239, 68, 68, 0.1);
-    color: #dc2626;
-}
-
-/* Specialty badge styles */
-.specialty-badge {
-    background: rgba(99, 102, 241, 0.1);
-    color: var(--primary-color);
-    padding: 0.25rem 0.75rem;
-    border-radius: 20px;
-    font-size: 0.875rem;
-    white-space: nowrap;
-}
-
-/* Action button styles */
-.action-buttons {
-    display: flex;
-<<<<<<< HEAD
-    gap: 0.5rem;
-    flex-wrap: wrap;
-=======
-    gap: 0.2rem;
->>>>>>> 5c42dbee2462d4ee9de33f328d088d813db4169f
-}
-
-.action-btn {
-    width: 36px;
-    height: 36px;
-    border: none;
-    border-radius: var(--radius-md);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    text-decoration: none;
-}
-
-.view-btn {
-    background: rgba(59, 130, 246, 0.1);
-    color: #3b82f6;
-}
-
-.view-btn:hover {
-    background: #3b82f6;
-    color: white;
-}
-.show-btn {
-    background: rgba(59, 130, 246, 0.1);
-    color: grey;
-}
-
-.show-btn:hover {
-    background:grey;
-    color: white;
-}
-
-.edit-btn {
-    background: rgba(245, 158, 11, 0.1);
-    color: #f59e0b;
-}
-
-.edit-btn:hover {
-    background: #f59e0b;
-    color: white;
-}
-
-.complete-btn {
-    background: rgba(16, 185, 129, 0.1);
-    color: #10b981;
-}
-
-.complete-btn:hover {
-    background: #10b981;
-    color: white;
-}
-
-.download-btn {
-    background: rgba(99, 102, 241, 0.1);
-    color: var(--primary-color);
-}
-
-.download-btn:hover {
-    background: var(--primary-color);
-    color: white;
-}
-
-.inline-form {
-    display: inline;
-}
-
-/* Calendar Styling */
-.calendar-section {
-    margin-top: 2rem;
-}
-
-.fc-event {
-    border: none !important;
-    border-radius: var(--radius-md) !important;
-    padding: 8px 12px !important;
-    margin: 4px !important;
-    font-weight: 500 !important;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-    box-shadow: var(--shadow-sm) !important;
-    overflow: auto;
-    scrollbar-width: none;
-}
-
-.fc-event::-webkit-scrollbar {
-    display: none;
-}
-
-.fc-event::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 4px;
-    height: 100%;
-}
-
-/* cancel */
-.fc-event.cancel {
-    background: rgb(255, 38, 38) !important;
-    color: rgb(255, 38, 38) !important;
-}
-
-.fc-event.cancel::before {
-    background: rgb(247, 79, 79);
-}
-
-/* pending  */
-.fc-event.pending {
-    background: rgb(10, 144, 1) !important;
-    color: rgb(16, 236, 0) !important;
-}
-
-.fc-event.pending::before {
-    background: rgba(91, 252, 99, 0.76);
-}
-
-/* passed  */
-.fc-event.passed {
-    background: rgb(245, 110, 7) !important;
-    color: rgb(231, 140, 2) !important;
-}
-
-.fc-event.passed::before {
-    background: rgb(238, 169, 67);
-}
-
-.cancel .fc-event-title,
-.cancel .fc-event-time {
-    color: rgb(255, 255, 255) !important;
-}
-
-.pending .fc-event-title,
-.pending .fc-event-time {
-    color: rgb(255, 255, 255) !important;
-}
-
-.passed .fc-event-title,
-.passed .fc-event-time {
-    color: rgb(243, 243, 243) !important;
-}
-
-/* Hover Effects */
-.fc-event:hover {
-    transform: translateY(-2px) scale(1.02);
-    box-shadow: var(--shadow-md) !important;
-}
-
-/* Time Styling */
-.fc-event-time {
-    font-weight: 300;
-    opacity: 0.8;
-    margin-right: 8px;
-}
-
-.fc-header-toolbar {
-    background: linear-gradient(195deg, var(--primary-color), var(--secondary-color));
-    color: white;
-    padding: 1rem;
-    border-radius: 8px 8px 0 0;
-}
-
-.fc .fc-button-primary {
-    background-color: var(--primary-color) !important;
-    border-color: var(--primary-color) !important;
-    text-transform: capitalize;
-}
-
-/* Mobile card view styles */
-.mobile-appointments {
-    display: none;
-}
-
-.appointment-card {
-    background: white;
-    border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-sm);
-    margin-bottom: 1rem;
-    overflow: hidden;
-}
-
-.card-header {
-    padding: 1rem;
-    background: linear-gradient(195deg, var(--primary-color), var(--secondary-color));
-    color: white;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.appointment-id {
-    font-weight: 600;
-    font-size: 1.1rem;
-}
-
-.card-body {
-    padding: 1rem;
-}
-
-.info-row {
-    display: flex;
-    margin-bottom: 0.75rem;
-    flex-wrap: wrap;
-}
-
-.info-row:last-child {
-    margin-bottom: 0;
-}
-
-.info-label {
-    font-weight: 600;
-    color: var(--text-dark);
-    width: 100px;
-    flex-shrink: 0;
-}
-
-.info-value {
-    color: var(--text-dark);
-    flex: 1;
-}
-
-.card-footer {
-    padding: 1rem;
-    background: rgba(99, 102, 241, 0.05);
-    border-top: 1px solid var(--border-color);
-    display: flex;
-    justify-content: flex-end;
-}
-
-.btn-view {
-        color: var(--text-light);
-        background:rgb(208, 221, 240);
-    }
-
-    .btn-view:hover {
-        background: var(--text-light);
-        color: white;
-    }
-/* Responsive styles */
-@media (max-width: 1200px) {
-    .appointment-container {
-        padding: 1.5rem;
-    }
-    
-    .appointment-header, 
-    .search-filter-card {
-        padding: 1.5rem;
-    }
-    
-    .header-content h1 {
-        font-size: 1.75rem;
-    }
-}
-
-@media (max-width: 991px) {
-    .appointment-container {
-        padding: 1rem;
-    }
-    
-    .appointment-header, 
-    .search-filter-card {
-        padding: 1.25rem;
-    }
-    
-    .header-content h1 {
-        font-size: 1.5rem;
-    }
-    
-    .filter-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
-
-@media (max-width: 768px) {
-    .appointment-container {
-        padding: 0.75rem;
-    }
-    
-    .appointment-header, 
-    .search-filter-card {
-        padding: 1rem;
-        border-radius: var(--radius-md);
-    }
-    
-    .header-content {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 1rem;
-    }
-    
-    .header-content h1 {
-        font-size: 1.35rem;
-    }
-    
-    .filter-grid {
-        grid-template-columns: 1fr;
-    }
-    
-    .btn-text {
-        display: none;
-    }
-    
-    .filter-btn {
-        width: 100%;
-        justify-content: center;
-    }
-    
-    /* Hide desktop table, show mobile cards */
-    .desktop-table {
-        display: none;
-    }
-    
-    .mobile-appointments {
-        display: block;
-    }
-    
-    /* Calendar responsive adjustments */
-    .fc-header-toolbar {
-        flex-direction: column;
-        gap: 0.5rem;
-        align-items: stretch !important;
-    }
-    
-    .fc-toolbar-chunk {
-        display: flex;
-        justify-content: center;
-    }
-    
-    .fc-toolbar-title {
-        font-size: 1.1rem !important;
-        text-align: center;
-    }
-    
-    .fc-button {
-        padding: 0.4em 0.65em !important;
-        font-size: 0.9em !important;
-    }
-}
-
-@media (max-width: 480px) {
-    .appointment-container {
-        padding: 0.5rem;
-    }
-    
-    .appointment-header, 
-    .search-filter-card {
-        padding: 0.75rem;
-        border-radius: var(--radius-sm);
-    }
-    
-    .header-content h1 {
-        font-size: 1.25rem;
-    }
-    
-    .action-buttons {
-        justify-content: center;
-    }
-    
-    .info-row {
-        flex-direction: column;
-    }
-    
-    .info-label {
-        width: 100%;
-        margin-bottom: 0.25rem;
-    }
-    
-    .card-header {
-        flex-direction: column;
-        gap: 0.5rem;
-        align-items: flex-start;
-    }
-    
-    .card-header .status-badge {
-        align-self: flex-start;
-    }
-}
-</style>
-
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         var events = <?php
             $allEvents = [];
             foreach ($appointments as $app) {
                 $patientFullName ='';
-                // dd($app);
                 $statusClass = '';
                 switch ($app->status) {
                     case 'passed':
@@ -896,7 +463,6 @@
             height: 'auto',
             contentHeight: 'auto',
             aspectRatio: 1.8,
-            // Make calendar responsive
             windowResize: function(view) {
                 if (window.innerWidth < 768) {
                     calendar.changeView('timeGridDay');
@@ -908,12 +474,10 @@
         
         calendar.render();
         
-        // Initialize with correct view based on screen size
         if (window.innerWidth < 768) {
             calendar.changeView('timeGridDay');
         }
     });
 </script>
-
 
 @endsection

@@ -3,10 +3,57 @@
 @section('content')
 
     <div>
-        <h1 class="text-center w-100 fs-1 fw-bold mb-4 mt-4">Liste des Patients</h1>
+        <h1 class="text-center w-100 fs-1 fw-bold mb-4 mt-24">Liste des Patients</h1>
     </div>
     <!-- search form -->
-    <form action="{{ route('patients_list', auth()->user()->id) }}" method="GET" class="mb-4 glass-card p-4">
+         <!-- Search and Filter Section -->
+    <div class="bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 overflow-hidden mb-8">
+        <div class="bg-gradient-to-r from-cyan-500 to-sky-600 px-8 py-6">
+            <div class="flex items-center justify-between">
+                <h3 class="text-xl font-bold text-white flex items-center gap-3">
+                    <i class="fas fa-search"></i>
+                    Recherche et Filtres
+                </h3>
+            </div>
+        </div>
+        <div class="p-8">
+            <form action="{{ route('patients_list', auth()->user()->id) }}" method="GET">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 items-end">
+                    <div class="space-y-2">
+                        <label class="text-sm font-medium text-gray-700">Rechercher</label>
+                        <input type="text" name="q" value="{{ request('q') }}" 
+                               placeholder="Nom, email ou téléphone..." 
+                               class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-all duration-200 bg-white/50 backdrop-blur-sm">
+                    </div>
+                    
+                    <di v class="space-y-2">
+                        <label class="text-sm font-medium text-gray-700">Type de Patient</label>
+                        <select name="patient_type" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-all duration-200 bg-white/50 backdrop-blur-sm">
+                            <option value="">Tous les types</option>
+                            <option value="adult" {{ request('patient_type') == 'adult' ? 'selected' : '' }}>Adulte</option>
+                    <option value="kid" {{ request('patient_type') == 'kid' ? 'selected' : '' }}>Enfant</option>
+                    <option value="young" {{ request('patient_type') == 'young' ? 'selected' : '' }}>Jeune</option>
+                        </select>
+                    </div>
+
+                    <div class="space-y-2">
+                        <label class="text-sm font-medium text-gray-700">Genre</label>
+                        <select name="gender" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-all duration-200 bg-white/50 backdrop-blur-sm">
+                            <option value="">Tous les genres</option>
+                            <option value="M" {{ request('gender') == 'M' ? 'selected' : '' }}>Masculin</option>
+                            <option value="F" {{ request('gender') == 'F' ? 'selected' : '' }}>Féminin</option>
+                </select>
+            </div>
+
+                <button type="submit" class="w-full bg-gradient-to-r from-cyan-500 to-sky-600 text-white px-6 py-3 rounded-xl font-semibold hover:from-cyan-600 hover:to-sky-700 transform hover:-translate-y-1 transition-all duration-200 flex items-center justify-center gap-3 shadow-lg hover:shadow-xl">
+                        <i class="fas fa-search"></i>
+                        <span class="hidden sm:inline">Rechercher</span>
+                </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- <form action="{{ route('patients_list', auth()->user()->id) }}" method="GET" class="mb-4 glass-card p-4">
         <div class="row g-2">
             <div class="col-md-6">
                 <input type="text" name="q" value="{{ request('q') }}" placeholder="Rechercher par patient" class="form-control bg-transparent">
@@ -32,7 +79,8 @@
                 </button>
             </div>
         </div>
-    </form>
+    </form> -->
+
     <!-- Patients Table -->
     <div id="patients-table" class="data-table-container">
          <div>
@@ -190,108 +238,6 @@
         border-radius: 8px;
         font-weight: 500;
     }
-/* Responsive styles only - to be added at the end of existing CSS */
-
-/* Mobile devices (phones, less than 768px) */
-@media (max-width: 767.98px) {
-    /* Header adjustments */
-    h1.text-center {
-        font-size: 1.5rem !important;
-        margin: 1rem 0 !important;
-    }
-    
-    /* Search form adjustments */
-    .glass-card.p-4 {
-        padding: 1rem !important;
-    }
-    
-    .row.g-2 > div {
-        margin-bottom: 0.5rem;
-    }
-    
-    /* Table adjustments */
-    .table-responsive {
-        max-height: 60vh;
-    }
-    
-    .patient-table {
-        width: 300%; /* Extra wide for horizontal scrolling */
-    }
-    
-    thead th, tbody td {
-        padding: 0.5rem;
-        font-size: 0.9rem;
-    }
-    
-    /* Improve touch targets */
-    .btn, .form-control, .form-select {
-        min-height: 44px;
-    }
-    
-    .action-buttons .btn {
-        width: 44px;
-        height: 44px;
-    }
-    
-    /* Avatar adjustments */
-    .avatar-sm {
-        width: 30px;
-        height: 30px;
-    }
-    
-    .badge {
-        font-size: 0.7rem;
-        padding: 0.4em 0.6em;
-    }
-}
-
-/* Small devices (landscape phones) */
-@media (min-width: 576px) and (max-width: 767.98px) {
-    .glass-card.p-4 {
-        padding: 1.25rem !important;
-    }
-    
-    h1.text-center {
-        font-size: 1.75rem !important;
-    }
-}
-
-/* Medium devices (tablets) */
-@media (min-width: 768px) and (max-width: 991.98px) {
-    .patient-table {
-        width: 250%; /* Less wide for tablets */
-    }
-    
-    /* Search form adjustments for tablets */
-    .row.g-2 {
-        display: flex;
-        flex-wrap: wrap;
-    }
-    
-    .row.g-2 > div:first-child {
-        flex: 0 0 100%;
-        max-width: 100%;
-        margin-bottom: 0.5rem;
-    }
-    
-    .row.g-2 > div:not(:first-child) {
-        flex: 1;
-    }
-}
-
-/* Large devices (desktops) */
-@media (min-width: 992px) and (max-width: 1199.98px) {
-    .patient-table {
-        width: 200%;
-    }
-}
-
-/* Extra large devices (large desktops) */
-@media (min-width: 1200px) {
-    .patient-table {
-        width: 200%;
-    }
-}
 
 
 
