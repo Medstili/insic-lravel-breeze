@@ -17,8 +17,8 @@
         <!-- Main Form Container -->
         <div class="bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 p-8 mb-8">
             <form action="{{ route('update_profile', $user->id) }}" onsubmit="return coachUpdatePlanning()" enctype="multipart/form-data" method="POST">
-      @csrf
-      @method('PUT')
+              @csrf
+              @method('PUT')
 
                 <!-- Form Grid -->
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
@@ -27,43 +27,42 @@
                         <div class="form-group">
                             <label for="fullName" class="form-label">Nom complet</label>
                             <input type="text" class="form-input" id="fullName" name="full_name" value="{{ $user->full_name }}" required>
-                    @error('full_name')
-                                <div class="text-red-500 text-sm mt-1">{{ $message }}</div>
-                    @enderror
-                </div>
+                            @error('full_name')
+                                        <div class="text-red-500 text-sm mt-1">{{ $message }}</div>
+                            @enderror
+                        </div>
                 
                         <div class="form-group">
                             <label for="tel" class="form-label">Numéro de téléphone</label>
                             <input type="tel" class="form-input" id="tel" name="tel" value="{{ $user->phone }}" required>
-                </div>
+                        </div>
                 
                         <div class="form-group">
                             <label for="email" class="form-label">Adresse e-mail</label>
                             <input type="email" class="form-input @error('email') border-red-500 @enderror" 
                                    id="email" name="email" value="{{ $user->email }}" required>
-                    @error('email')
-                                <div class="text-red-500 text-sm mt-1">{{ $message }}</div>
-                    @enderror
-                </div>
-            </div>
+                            @error('email')
+                                        <div class="text-red-500 text-sm mt-1">{{ $message }}</div>
+                            @enderror
+                        </div>
+                      </div>
 
                     <!-- Right Column -->
                     <div class="space-y-6">
                         <div class="form-group">
                             <label for="password" class="form-label">Mot de passe</label>
-                            <div style="position: relative;">
-                                <input type="password" class="form-input" id="password" name="password" placeholder="Laissez vide pour ne pas changer">
-                            </div>
+                            <input type="password" class="form-input" id="password" name="password" placeholder="Laissez vide pour ne pas changer">
                             <small class="text-gray-500">Laissez vide pour ne pas changer le mot de passe</small>
                         </div>
 
                         <div class="form-group">
                             <label for="password_confirmation" class="form-label">Confirmation du mot de passe</label>
-                            <div style="position: relative;">
-                                <input type="password" class="form-input" id="password_confirmation" name="password_confirmation" placeholder="Confirmez le mot de passe">
-                            </div>
+                            <input type="password" class="form-input" id="password_confirmation" name="password_confirmation" placeholder="Confirmez le mot de passe">
                             <small class="text-gray-500">Laissez vide pour ne pas changer le mot de passe</small>
                         </div>
+                        @error('password')
+                              <div class="text-red-500 text-sm mt-1">{{ $message }}</div>
+                        @enderror  
 
                         <div class="form-group">
                             <label class="form-label">Statut de disponibilité</label>
@@ -89,6 +88,9 @@
                                     <img src="{{ asset('storage/' . $user->image_path) }}" alt="Aperçu de l'image" 
                                          id="image-preview-img" class="w-20 h-20 rounded-full object-cover border-4 border-cyan-200 shadow-lg">
                                 </div>
+                                @error('image')
+                                  <div class="text-red-500 text-sm mt-1">{{ $message }}</div>
+                                @enderror
                             </div>
                         </div>
                     </div>

@@ -17,8 +17,8 @@
         <!-- Main Form Container -->
         <div class="bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 p-8 mb-8">
             <form action="{{ route('user.update', $user->id) }}" onsubmit="return coachUpdatePlanning()" enctype="multipart/form-data" method="POST">
-      @csrf
-      @method('PUT')
+              @csrf
+              @method('PUT')
 
                 <!-- Form Grid -->
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
@@ -27,25 +27,40 @@
                         <div class="form-group">
                             <label for="fullName" class="form-label">Nom complet</label>
                             <input type="text" class="form-input" id="fullName" name="full_name" value="{{ $user->full_name }}" required>
-                    @error('full_name')
-                                <div class="text-red-500 text-sm mt-1">{{ $message }}</div>
-                    @enderror
-                </div>
+                            @error('full_name')
+                                        <div class="text-red-500 text-sm mt-1">{{ $message }}</div>
+                            @enderror
+                        </div>
                 
                         <div class="form-group">
                             <label for="tel" class="form-label">Numéro de téléphone</label>
                             <input type="tel" class="form-input" id="tel" name="tel" value="{{ $user->phone }}" required>
-                </div>
+
+                        </div>
                 
                         <div class="form-group">
                             <label for="email" class="form-label">Adresse e-mail</label>
                             <input type="email" class="form-input @error('email') border-red-500 @enderror" 
                                    id="email" name="email" value="{{ $user->email }}" required>
-                    @error('email')
-                                <div class="text-red-500 text-sm mt-1">{{ $message }}</div>
-                    @enderror
-                </div>
-            </div>
+                            @error('email')
+                              <div class="text-red-500 text-sm mt-1">{{ $message }}</div>
+                            @enderror
+                        </div>
+                        <div class="form-group">
+                            <label for="password" class="form-label">Mot de passe</label>
+                              <input type="password" class="form-input" id="password" name="password" placeholder="Laissez vide pour ne pas changer">
+                              <small class="text-gray-500">Laissez vide pour ne pas changer le mot de passe</small>
+                            @error('password')
+                              <div class="text-red-500 text-sm mt-1">{{ $message }}</div>
+                            @enderror                              
+                        </div>
+
+                        <div class="form-group">
+                            <label for="password_confirmation" class="form-label">Confirmation du mot de passe</label>
+                            <input type="password" class="form-input" id="password_confirmation" name="password_confirmation" placeholder="Confirmez le mot de passe">
+                            <small class="text-gray-500">Laissez vide pour ne pas changer le mot de passe</small>
+                        </div>
+                      </div>
 
                     <!-- Right Column -->
                     <div class="space-y-6">
@@ -53,13 +68,13 @@
                             <label for="specialist" class="form-label">Spécialisation</label>
                             <select class="form-select" id="specialist" name="speciality_id" required>
                                 <option value="" disabled>Choisir une spécialisation</option>
-                        @foreach ($specialities as $speciality)
-                                    <option value="{{ $speciality->id }}" {{ $user->speciality_id == $speciality->id ? 'selected' : '' }}>
-                                        {{ $speciality->name }}
-                                    </option>
-                        @endforeach
-                    </select>
-                </div>
+                                @foreach ($specialities as $speciality)
+                                            <option value="{{ $speciality->id }}" {{ $user->speciality_id == $speciality->id ? 'selected' : '' }}>
+                                                {{ $speciality->name }}
+                                            </option>
+                                @endforeach
+                              </select>
+                          </div>
 
                         <div class="form-group">
                             <label class="form-label">Statut de disponibilité</label>
@@ -74,8 +89,8 @@
                             <select class="form-select" name="role">
                                 <option value="coach" {{ $user->role == 'coach' ? 'selected' : '' }}>Entraîneur</option>
                                 <option value="admin" {{ $user->role == 'admin' ? 'selected' : '' }}>Administrateur</option>
-                    </select>
-                </div>
+                            </select>
+                        </div>
 
                         <div class="form-group">
                             <label class="form-label">Photo de profil</label>
@@ -84,44 +99,46 @@
                                 
                                 <label for="image-input" class="inline-flex items-center gap-2 bg-gradient-to-r from-cyan-500 to-sky-600 text-white px-6 py-3 rounded-xl font-semibold hover:from-cyan-600 hover:to-sky-700 transform hover:-translate-y-1 transition-all duration-200 shadow-lg hover:shadow-xl cursor-pointer">
                                     <i class="fas fa-upload"></i> Télécharger une image
-                    </label>
+                                </label>
 
                                 <div class="text-xs text-gray-500 mt-2">Taille maximale: 2MB</div>
 
                                 <!-- Image Preview -->
                                 <div id="image-preview" class="mt-4 {{ $user->image_path == null ? 'hidden' : '' }}">
-                                    <img src="{{ asset('storage/' . $user->image_path) }}" alt="Aperçu de l'image" 
-                                         id="image-preview-img" class="w-20 h-20 rounded-full object-cover border-4 border-cyan-200 shadow-lg">
+                                  <img src="{{ asset('storage/' . $user->image_path) }}" alt="Aperçu de l'image" id="image-preview-img" class="w-20 h-20 rounded-full object-cover border-4 border-cyan-200 shadow-lg">
                                 </div>
+                                @error('image')
+                                  <div class="text-red-500 text-sm mt-1">{{ $message }}</div>
+                                @enderror
                             </div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Error Messages -->
-        @error('planning')
-                    <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl mb-6">
-                        <div class="flex items-center gap-2">
-                            <i class="fas fa-exclamation-circle"></i>
-              {{ $message }}
-                        </div>
-          </div>
-        @enderror
+                @error('planning')
+                            <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl mb-6">
+                                <div class="flex items-center gap-2">
+                                    <i class="fas fa-exclamation-circle"></i>
+                      {{ $message }}
+                                </div>
+                  </div>
+                @enderror
 
                 <!-- Calendar Section -->
                 <div class="bg-white rounded-2xl shadow-lg border border-cyan-100 p-6 mb-8">
                     <h3 class="text-xl font-semibold text-gray-800 mb-4">Planification de disponibilité</h3>
                     <div id="calendar" class="min-h-[500px]"></div>
-        </div>
+                </div>
 
                 <!-- Hidden Input and Submit -->
         <input type="hidden" id="planning" name="planning">
                 <div class="text-center">
                     <button type="submit" class="inline-flex items-center gap-2 bg-gradient-to-r from-cyan-500 to-sky-600 text-white px-8 py-4 rounded-2xl font-semibold hover:from-cyan-600 hover:to-sky-700 transform hover:-translate-y-1 transition-all duration-200 shadow-lg hover:shadow-2xl">
                         <i class="fas fa-save"></i> Mettre à jour le profil
-        </button>
+                    </button>
                 </div>
-    </form>
+            </form>
         </div>
     </div>
 </div>
@@ -335,5 +352,13 @@
       reader.readAsDataURL(file);
     }
   }
+  document.getElementById('password').addEventListener('input', function() {
+    const passwordConfirmation = document.getElementById('password_confirmation');
+    if (this.value) {
+      passwordConfirmation.setAttribute('required', 'required');
+    } else {
+      passwordConfirmation.removeAttribute('required');
+    }
+  });
 </script>
 @endsection
