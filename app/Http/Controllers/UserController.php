@@ -6,6 +6,7 @@ use App\Models\Patient;
 use App\Models\Speciality;
 use App\Models\User;
 use Carbon\Carbon;
+use Hash;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -218,16 +219,15 @@ class UserController extends Controller
     
     public function coach_update(Request $request, string $id)
     {
-        // dd($request->all());
         $request->validate([
             'full_name' => 'required',
             'email' => ['required', 'email', Rule::unique('users', 'email')->ignore($id)],
             'tel' => 'required',
-            'speciality_id' => 'required',
             'is_available'=> 'required',
-            'role'=>'required',
             'planning'=>'required',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048'
+            'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'password' => 'nullable|string|min:8|confirmed',
+            'password_confirmation' => 'nullable|string|min:8',
 
 
         ],[
@@ -242,9 +242,7 @@ class UserController extends Controller
         $user->full_name = $request->full_name;
         $user->email = $request->email;
         $user->is_available = (int)$request->is_available;
-        $user->speciality_id = $request->speciality_id;
         $user->phone = $request->tel;
-        $user->role = $request->role;
         $user->planning = $request->planning;
 
         if ($request->hasFile('image')) {
@@ -257,6 +255,9 @@ class UserController extends Controller
             $user->image_path = $imagePath;
         };
      
+        if (!$request->filled('password')) {
+            $user->password = $request->password;
+        }
         $user->save();
        return redirect()->route('coach_profile', $user->id)->with('success','updated successfully');
     }

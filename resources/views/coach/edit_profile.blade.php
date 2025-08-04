@@ -50,32 +50,28 @@
                     <!-- Right Column -->
                     <div class="space-y-6">
                         <div class="form-group">
-                            <label for="specialist" class="form-label">Spécialisation</label>
-                            <select class="form-select" id="specialist" name="speciality_id" required>
-                                <option value="" disabled>Choisir une spécialisation</option>
-                        @foreach ($specialities as $speciality)
-                                    <option value="{{ $speciality->id }}" {{ $user->speciality_id == $speciality->id ? 'selected' : '' }}>
-                                        {{ $speciality->name }}
-                                    </option>
-                        @endforeach
-                    </select>
-                </div>
+                            <label for="password" class="form-label">Mot de passe</label>
+                            <div style="position: relative;">
+                                <input type="password" class="form-input" id="password" name="password" placeholder="Laissez vide pour ne pas changer">
+                            </div>
+                            <small class="text-gray-500">Laissez vide pour ne pas changer le mot de passe</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="password_confirmation" class="form-label">Confirmation du mot de passe</label>
+                            <div style="position: relative;">
+                                <input type="password" class="form-input" id="password_confirmation" name="password_confirmation" placeholder="Confirmez le mot de passe">
+                            </div>
+                            <small class="text-gray-500">Laissez vide pour ne pas changer le mot de passe</small>
+                        </div>
 
                         <div class="form-group">
                             <label class="form-label">Statut de disponibilité</label>
                             <select class="form-select" name="is_available">
                                 <option value="1" {{ $user->is_available == 1 ? 'selected' : '' }}>Disponible</option>
                                 <option value="0" {{ $user->is_available == 0 ? 'selected' : '' }}>Indisponible</option>
-                    </select>
-                </div>
-
-                        <div class="form-group">
-                            <label class="form-label">Rôle dans le système</label>
-                            <select class="form-select" name="role">
-                                <option value="coach" {{ $user->role == 'coach' ? 'selected' : '' }}>Entraîneur</option>
-                                <option value="admin" {{ $user->role == 'admin' ? 'selected' : '' }}>Administrateur</option>
-                    </select>
-                </div>
+                            </select>
+                        </div>
 
                         <div class="form-group">
                             <label class="form-label">Photo de profil</label>
@@ -84,7 +80,7 @@
                                 
                                 <label for="image-input" class="inline-flex items-center gap-2 bg-gradient-to-r from-cyan-500 to-sky-600 text-white px-6 py-3 rounded-xl font-semibold hover:from-cyan-600 hover:to-sky-700 transform hover:-translate-y-1 transition-all duration-200 shadow-lg hover:shadow-xl cursor-pointer">
                                     <i class="fas fa-upload"></i> Télécharger une image
-                    </label>
+                                </label>
 
                                 <div class="text-xs text-gray-500 mt-2">Taille maximale: 2MB</div>
 
@@ -133,7 +129,8 @@
   console.log(storedPlanning);
   if (storedPlanning!=null) {
     availabilityData = storedPlanning;
-  } else {
+  } 
+  else {
     availabilityData = {};
     console.log("Disponibilités initiales :", availabilityData);
   }
@@ -335,5 +332,14 @@
       reader.readAsDataURL(file);
     }
   }
+
+  document.getElementById('password').addEventListener('input', function() {
+    const passwordConfirmation = document.getElementById('password_confirmation');
+    if (this.value) {
+      passwordConfirmation.setAttribute('required', 'required');
+    } else {
+      passwordConfirmation.removeAttribute('required');
+    }
+  });
 </script>
 @endsection
