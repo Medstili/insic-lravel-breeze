@@ -152,7 +152,6 @@ class UserController extends Controller
     }
     public function update(Request $request, string $id)
     {
-        // dd($request->all());
         $user = User::findOrFail($id);
 
         $request->validate([
@@ -163,18 +162,26 @@ class UserController extends Controller
             'is_available'=> 'required',
             'planning'=>'required',
             'role'=>'required',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048'
+            'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'password' => 'nullable|string|min:8|confirmed',
+            'password_confirmation' => 'nullable|string|min:8',
         ],[
-            'email.unique' => 'This email is already in use.',
-            'full_name.unique' => 'This full name is already in use.'
+            'email.unique' => 'Cet e-mail est déjà utilisé.',
+            'full_name.unique' => 'Ce nom complet est déjà utilisé.',
+            'image.image' => 'L’image doit être un fichier image valide.',
+            'image.mimes' => 'L’image doit être de type : jpeg, png, jpg.',
+            'image.max' => 'L’image ne doit pas dépasser 2 Mo.',
+            'password.min' => 'Le mot de passe doit contenir au moins 8 caractères.',
+            'password.confirmed' => 'La confirmation du mot de passe ne correspond pas.'
+
         ]);
 
           // Log validation errors for debugging
-    if ($errors = session('errors')) {
-        Log::debug('Validation Errors:', $errors->toArray());
-    }
+        if ($errors = session('errors')) {
+            Log::debug('Validation Errors:', $errors->toArray());
+        }
         if ($request->planning === '{}' ) {
-            return redirect()->back()->withErrors(['planning' => 'planning is required']);
+            return redirect()->back()->withErrors(['planning' => 'La planification est requise.']);
         }
 
         // $user = User::find($id);
@@ -199,6 +206,10 @@ class UserController extends Controller
             $imagePath = $image->storeAs('uploadsImages', $imageName, 'public');
             $user->image_path = $imagePath;
         };
+
+        if ($request->filled('password')) {
+            $user->password =$request->password;
+        }
      
         $user->save();
        return redirect()->route('user.show', $user->id)->with('success','updated successfully');
@@ -231,11 +242,17 @@ class UserController extends Controller
 
 
         ],[
-            'email.unique' => 'This email is already in use.'
+            'email.unique' => 'Cet e-mail est déjà utilisé.',
+            'full_name.unique' => 'Ce nom complet est déjà utilisé.',
+            'image.image' => 'L’image doit être un fichier image valide.',
+            'image.mimes' => 'L’image doit être de type : jpeg, png, jpg.',
+            'image.max' => 'L’image ne doit pas dépasser 2 Mo.',
+            'password.min' => 'Le mot de passe doit contenir au moins 8 caractères.',
+            'password.confirmed' => 'La confirmation du mot de passe ne correspond pas.',
         ]);
 
         if ($request->planning === '{}' ) {
-            return redirect()->back()->withErrors(['planning' => 'planning is required']);
+            return redirect()->back()->withErrors(['planning' => 'La planification est requise.']);
         };
 
         $user = User::find($id);
